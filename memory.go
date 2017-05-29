@@ -51,10 +51,11 @@ func (self Memory) ContendWriteNoMreq_loop(address uint16, time int, count uint)
 }
 
 func (self Memory) Read(address uint16) byte {
-    return 0;
+    panic("Not implemented")
 }
 
 func (self Memory) Write(address uint16, value byte, protectROM bool) {
+    panic("Not implemented")
 }
 
 // Data returns the memory content.
