@@ -3,8 +3,6 @@ package main
 import "fmt"
 import "github.com/remogatto/z80"
 
-
-
 func main() {
     fmt.Println("hey, world");
     var memory Memory;
