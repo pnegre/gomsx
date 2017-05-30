@@ -10,6 +10,9 @@ func (self *Ports) ReadPort(address uint16) byte {
 	switch {
 	case ad >= 0xa8 && ad <= 0xab:
 		return ppi_readPort(ad)
+
+	case ad >= 0xa0 && ad <= 0xa2:
+		return sound_readPort(ad)
 	}
 
 	log.Fatalf("ReadPort: %02x\n", ad)
@@ -21,6 +24,10 @@ func (self *Ports) WritePort(address uint16, b byte) {
 	switch {
 	case ad >= 0xa8 && ad <= 0xab:
 		ppi_writePort(ad, b)
+		return
+
+	case ad >= 0xa0 && ad <= 0xa2:
+		sound_writePort(ad, b)
 		return
 	}
 
