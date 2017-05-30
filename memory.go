@@ -1,39 +1,44 @@
 package main
 
-//import "io/ioutil"
+import "os"
 
 type Memory struct {
-    data [0x10000]byte
+	data [0x10000]byte
 }
 
 func NewMemory(romFile string) *Memory {
-    mem := new(Memory)
-    //dat, err := ioutil.ReadFile("/tmp/dat")
+	mem := new(Memory)
+	f, err := os.Open(romFile)
+	if err != nil {
+		panic(err)
+	}
 
-    return mem
+    f.Read(mem.data[:32768]) //32k
+	f.Close()
+
+	return mem
 }
 
-
 func (self *Memory) ReadByte(address uint16) byte {
-    panic("ReadByte")
+	panic("ReadByte")
 }
 
 // ReadByteInternal reads a byte from address without taking
 // into account contention.
 func (self *Memory) ReadByteInternal(address uint16) byte {
-    return self.data[address]
+	return self.data[address]
 }
 
 // WriteByte writes a byte at address taking into account
 // contention.
 func (self *Memory) WriteByte(address uint16, value byte) {
-    panic("WriteByte")
+	panic("WriteByte")
 }
 
 // WriteByteInternal writes a byte at address without taking
 // into account contention.
 func (self *Memory) WriteByteInternal(address uint16, value byte) {
-    self.data[address] = value
+	self.data[address] = value
 }
 
 // Follow contention methods. Leave unimplemented if you don't
@@ -42,32 +47,32 @@ func (self *Memory) WriteByteInternal(address uint16, value byte) {
 // ContendRead increments the Tstates counter by time as a
 // result of a memory read at the given address.
 func (self *Memory) ContendRead(address uint16, time int) {
-    //panic("ContendRead not implemented")
+	//panic("ContendRead not implemented")
 }
 
 func (self *Memory) ContendReadNoMreq(address uint16, time int) {
-    panic("ContendReadNoMreq not implemented")
+	panic("ContendReadNoMreq not implemented")
 }
 func (self *Memory) ContendReadNoMreq_loop(address uint16, time int, count uint) {
-    panic("ContendReadNoMreq_loop not implemented")
+	panic("ContendReadNoMreq_loop not implemented")
 }
 
 func (self *Memory) ContendWriteNoMreq(address uint16, time int) {
-    panic("ContendWriteNoMreq not implemented")
+	panic("ContendWriteNoMreq not implemented")
 }
 func (self *Memory) ContendWriteNoMreq_loop(address uint16, time int, count uint) {
-    panic("ContendWriteNoMreq_loop not implemented")
+	panic("ContendWriteNoMreq_loop not implemented")
 }
 
 func (self *Memory) Read(address uint16) byte {
-    panic("Memory.Read Not implemented")
+	panic("Memory.Read Not implemented")
 }
 
 func (self *Memory) Write(address uint16, value byte, protectROM bool) {
-    panic("Memory.Write Not implemented")
+	panic("Memory.Write Not implemented")
 }
 
 // Data returns the memory content.
 func (self *Memory) Data() []byte {
-    return nil;
+	return nil
 }
