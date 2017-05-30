@@ -13,14 +13,14 @@ func NewMemory(romFile string) *Memory {
 		panic(err)
 	}
 
-    f.Read(mem.data[:32768]) //32k
+	f.Read(mem.data[:32768]) //32k
 	f.Close()
 
 	return mem
 }
 
 func (self *Memory) ReadByte(address uint16) byte {
-	panic("ReadByte")
+	return self.ReadByteInternal(address)
 }
 
 // ReadByteInternal reads a byte from address without taking

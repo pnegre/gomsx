@@ -1,6 +1,7 @@
 package main
 
 import "github.com/remogatto/z80"
+import "fmt"
 
 func main() {
 	memory := NewMemory("hb-501p_basic-bios1.rom")
@@ -8,6 +9,8 @@ func main() {
 	cpuZ80 := z80.NewZ80(memory, ports)
 	cpuZ80.Reset()
 	cpuZ80.SetPC(0)
-	cpuZ80.DoOpcode()
-	println(cpuZ80.PC())
+	for {
+		cpuZ80.DoOpcode()
+		fmt.Printf("PC = %04x\n", cpuZ80.PC())
+	}
 }
