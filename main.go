@@ -3,11 +3,11 @@ package main
 import "github.com/remogatto/z80"
 
 func main() {
-    memory := new(Memory);
+    memory := NewMemory("hb-501p_basic-bios.rom")
     ports := new(Ports);
-    z80 := z80.NewZ80(memory, ports)
-    z80.Reset()
-    z80.SetPC(0)
-    z80.DoOpcode()
-    println(z80.PC())
+    cpuZ80 := z80.NewZ80(memory, ports)
+    cpuZ80.Reset()
+    cpuZ80.SetPC(0)
+    cpuZ80.DoOpcode()
+    println(cpuZ80.PC())
 }

@@ -1,7 +1,16 @@
 package main
 
+//import "io/ioutil"
+
 type Memory struct {
     data [0x10000]byte
+}
+
+func NewMemory(romFile string) *Memory {
+    mem := new(Memory)
+    //dat, err := ioutil.ReadFile("/tmp/dat")
+
+    return mem
 }
 
 
@@ -33,21 +42,21 @@ func (self *Memory) WriteByteInternal(address uint16, value byte) {
 // ContendRead increments the Tstates counter by time as a
 // result of a memory read at the given address.
 func (self *Memory) ContendRead(address uint16, time int) {
-
+    //panic("ContendRead not implemented")
 }
 
 func (self *Memory) ContendReadNoMreq(address uint16, time int) {
-
+    panic("ContendReadNoMreq not implemented")
 }
 func (self *Memory) ContendReadNoMreq_loop(address uint16, time int, count uint) {
-
+    panic("ContendReadNoMreq_loop not implemented")
 }
 
 func (self *Memory) ContendWriteNoMreq(address uint16, time int) {
-
+    panic("ContendWriteNoMreq not implemented")
 }
 func (self *Memory) ContendWriteNoMreq_loop(address uint16, time int, count uint) {
-
+    panic("ContendWriteNoMreq_loop not implemented")
 }
 
 func (self *Memory) Read(address uint16) byte {
