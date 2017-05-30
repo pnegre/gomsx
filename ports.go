@@ -1,10 +1,19 @@
 package main
 
+import "log"
+
 type Ports struct {
 }
 
 func (self *Ports) ReadPort(address uint16) byte {
-	panic("ReadPort")
+	ad := byte(address & 0xFF)
+	switch {
+	case ad >= 0xa8 && ad <= 0xab:
+		return ppi_readPort(ad)
+	}
+
+	log.Fatalf("ReadPort: %02x\n", ad)
+	return 0
 }
 
 func (self *Ports) WritePort(address uint16, b byte) {
@@ -15,7 +24,7 @@ func (self *Ports) WritePort(address uint16, b byte) {
 		return
 	}
 
-	panic("WritePort")
+	log.Fatalf("Writeport: %02x -> %02x\n", ad, b)
 }
 
 func (self *Ports) ReadPortInternal(address uint16, contend bool) byte {

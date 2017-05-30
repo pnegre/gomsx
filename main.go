@@ -9,10 +9,11 @@ func main() {
 	cpuZ80 := z80.NewZ80(memory, ports)
 	cpuZ80.Reset()
 	cpuZ80.SetPC(0)
+	log.Println("Beginning simulation...")
 	for {
-		pc := cpuZ80.PC()
-		instr, _, _ := z80.Disassemble(memory, pc, 0)
-		log.Printf("%04x: %s\n", pc, instr)
+		//pc := cpuZ80.PC()
+		//instr, _, _ := z80.Disassemble(memory, pc, 0)
+		//log.Printf("%04x: %s\n", pc, instr)
 		cpuZ80.DoOpcode()
 
 	}

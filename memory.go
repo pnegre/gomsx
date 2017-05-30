@@ -32,7 +32,7 @@ func (self *Memory) ReadByteInternal(address uint16) byte {
 // WriteByte writes a byte at address taking into account
 // contention.
 func (self *Memory) WriteByte(address uint16, value byte) {
-	panic("WriteByte")
+	self.WriteByteInternal(address, value)
 }
 
 // WriteByteInternal writes a byte at address without taking
@@ -51,17 +51,17 @@ func (self *Memory) ContendRead(address uint16, time int) {
 }
 
 func (self *Memory) ContendReadNoMreq(address uint16, time int) {
-	panic("ContendReadNoMreq not implemented")
+	//panic("ContendReadNoMreq not implemented")
 }
 func (self *Memory) ContendReadNoMreq_loop(address uint16, time int, count uint) {
-	panic("ContendReadNoMreq_loop not implemented")
+	///panic("ContendReadNoMreq_loop not implemented")
 }
 
 func (self *Memory) ContendWriteNoMreq(address uint16, time int) {
-	panic("ContendWriteNoMreq not implemented")
+	//panic("ContendWriteNoMreq not implemented")
 }
 func (self *Memory) ContendWriteNoMreq_loop(address uint16, time int, count uint) {
-	panic("ContendWriteNoMreq_loop not implemented")
+	//panic("ContendWriteNoMreq_loop not implemented")
 }
 
 func (self *Memory) Read(address uint16) byte {
