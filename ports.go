@@ -1,7 +1,6 @@
 package main
 
 type Ports struct {
-	a int
 }
 
 func (self *Ports) ReadPort(address uint16) byte {
@@ -12,7 +11,8 @@ func (self *Ports) WritePort(address uint16, b byte) {
 	ad := byte(address & 0xFF)
 	switch {
 	case ad >= 0xa8 && ad <= 0xab:
-		panic("PPI")
+		ppi_writePort(ad, b)
+		return
 	}
 
 	panic("WritePort")

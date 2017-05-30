@@ -1,7 +1,7 @@
 package main
 
 import "github.com/remogatto/z80"
-import "fmt"
+import "log"
 
 func main() {
 	memory := NewMemory("hb-501p_basic-bios1.rom")
@@ -12,7 +12,7 @@ func main() {
 	for {
 		pc := cpuZ80.PC()
 		instr, _, _ := z80.Disassemble(memory, pc, 0)
-		fmt.Printf("%04x: %s\n", pc, instr)
+		log.Printf("%04x: %s\n", pc, instr)
 		cpuZ80.DoOpcode()
 
 	}
