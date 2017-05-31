@@ -20,6 +20,7 @@ func main() {
 			log.Printf("%04x: %s\n", pc, instr)
 		}
 		cpuZ80.DoOpcode()
+		vdp_renderScreen()
 
 	}
 }

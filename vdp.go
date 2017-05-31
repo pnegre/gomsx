@@ -2,14 +2,54 @@ package main
 
 import "log"
 
+const (
+	SCREEN0 = 0
+	SCREEN1 = 1
+	SCREEN2 = 2
+	SCREEN3 = 3
+)
+
+var vdp_screenMode int
 var vdp_valueRead byte
 var vdp_writeState = 0
 
-// 8 registres, però van de 1 a 8, no de 0 a 7...
-var vdp_registers [9]byte
+var vdp_registers [8]byte
 var vdp_writeToVRAM bool
 var vdp_VRAM [0x10000]byte
 var vdp_pointerVRAM uint16
+
+func vdp_updateRegisters() {
+	m1 := vdp_registers[1]&0x10 != 0
+	m2 := vdp_registers[1]&0x08 != 0
+	m3 := vdp_registers[0]&0x02 != 0
+	m4 := vdp_registers[0]&0x04 != 0
+	m5 := vdp_registers[0]&0x08 != 0
+	switch {
+	case m1 == false && m2 == false && m3 == false && m4 == false && m5 == false:
+		vdp_screenMode = SCREEN1
+		break
+
+	case m1 == true && m2 == false && m3 == false && m4 == false && m5 == false:
+		vdp_screenMode = SCREEN0
+		break
+
+	case m1 == false && m2 == true && m3 == false && m4 == false && m5 == false:
+		vdp_screenMode = SCREEN3
+		break
+
+	case m1 == false && m2 == false && m3 == true && m4 == false && m5 == false:
+		vdp_screenMode = SCREEN2
+		break
+
+	default:
+		println(m1)
+		println(m2)
+		println(m3)
+		println(m4)
+		println(m5)
+		panic("VDP: Screen mode not implemented")
+	}
+}
 
 func vdp_writePort(ad byte, val byte) {
 	//log.Printf("VDP: Out(%02x, %02x)\n", ad, val)
@@ -23,10 +63,11 @@ func vdp_writePort(ad byte, val byte) {
 			vdp_writeState = 0
 			// Bit 7 must be 1 for write
 			if val&0x80 != 0 {
-				regn := val - 127
+				regn := val - 128
 				vdp_registers[regn] = vdp_valueRead
 				log.Printf("vdp[%d] = %02x\n", regn, vdp_valueRead)
 				log.Printf("VDPS: %v\n", vdp_registers)
+				vdp_updateRegisters()
 				return
 			} else {
 				vdp_writeToVRAM = (val&0x40 != 0)
@@ -61,4 +102,28 @@ func vdp_readPort(ad byte) byte {
 
 	log.Fatalf("Not implemented: VDP: In(%02x)", ad)
 	return 0
+}
+
+func vdp_renderScreen() {
+	switch {
+	case vdp_screenMode == SCREEN0:
+		// Render SCREEN0
+		return
+
+	case vdp_screenMode == SCREEN1:
+		// Render SCREEN1
+		return
+
+	case vdp_screenMode == SCREEN2:
+		// Render SCREEN2
+		return
+
+	case vdp_screenMode == SCREEN3:
+		// Render SCREEN3
+		return
+
+	default:
+		panic("RenderScreen: impossible mode")
+
+	}
 }
