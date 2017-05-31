@@ -4,6 +4,7 @@ import "log"
 
 var vdp_valueRead byte
 var vdp_writeState = 0
+
 // 8 registres, però van de 1 a 8, no de 0 a 7...
 var vdp_registers [9]byte
 var vdp_writeToVRAM bool
@@ -24,8 +25,8 @@ func vdp_writePort(ad byte, val byte) {
 			if val&0x80 != 0 {
 				regn := val - 127
 				vdp_registers[regn] = vdp_valueRead
-                log.Printf("vdp[%d] = %02x\n", regn, vdp_valueRead)
-                log.Printf("VDPS: %v\n", vdp_registers)
+				log.Printf("vdp[%d] = %02x\n", regn, vdp_valueRead)
+				log.Printf("VDPS: %v\n", vdp_registers)
 				return
 			} else {
 				vdp_writeToVRAM = (val&0x40 != 0)
@@ -49,15 +50,15 @@ func vdp_writePort(ad byte, val byte) {
 }
 
 func vdp_readPort(ad byte) byte {
-    switch {
-    case ad == 0x98:
-        // Reading from VRAM
-        //log.Printf("Reading from VRAM: %04x", vdp_pointerVRAM)
-        r := vdp_VRAM[vdp_pointerVRAM]
-        vdp_pointerVRAM++
-        return r
-    }
+	switch {
+	case ad == 0x98:
+		// Reading from VRAM
+		//log.Printf("Reading from VRAM: %04x", vdp_pointerVRAM)
+		r := vdp_VRAM[vdp_pointerVRAM]
+		vdp_pointerVRAM++
+		return r
+	}
 
-    log.Fatalf("Not implemented: VDP: In(%02x)", ad)
-    return 0
+	log.Fatalf("Not implemented: VDP: In(%02x)", ad)
+	return 0
 }
