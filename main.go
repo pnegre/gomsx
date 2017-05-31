@@ -3,6 +3,7 @@ package main
 import "github.com/remogatto/z80"
 import "github.com/pnegre/gogame"
 import "log"
+import "time"
 
 const (
 	WINTITLE = "gomsx"
@@ -17,7 +18,7 @@ func main() {
 	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
 		log.Fatal(err)
 	}
-	gogame.SetLogicalSize(320,192)
+	gogame.SetLogicalSize(320, 192)
 	defer gogame.Quit()
 
 	memory := NewMemory(ROMFILE)
@@ -26,9 +27,9 @@ func main() {
 	cpuZ80.Reset()
 	cpuZ80.SetPC(0)
 	log.Println("Beginning simulation...")
-	ticks := 0
+	lastTm := time.Now().UnixNano()
+	delta := int64(0)
 	for {
-		ticks++
 		if logAssembler {
 			pc := cpuZ80.PC()
 			instr, _, _ := z80.Disassemble(memory, pc, 0)
@@ -40,11 +41,12 @@ func main() {
 			break
 		}
 
-		if (ticks > 2000) && vdp_screenEnabled {
+		delta = time.Now().UnixNano() - lastTm
+		if delta > 10000000 {
 			gogame.RenderClear()
 			vdp_renderScreen()
 			gogame.RenderPresent()
-			ticks = 0
+			lastTm = time.Now().UnixNano()
 		}
 
 	}

@@ -117,8 +117,8 @@ func vdp_renderScreen() {
 		// Render SCREEN0
 		// Pattern table: 0x0800 - 0x0FFF
 		// Name table: 0x0000 - 0x03BF
-		patTable := vdp_VRAM[0x800 : 0xFFF]
-		doPattern := func(x,y int, pt int) {
+		patTable := vdp_VRAM[0x800:0xFFF]
+		doPattern := func(x, y int, pt int) {
 			for i := 0; i < 8; i++ {
 				b := patTable[i+pt]
 				xx := 0
@@ -132,9 +132,9 @@ func vdp_renderScreen() {
 		}
 
 		nameTable := vdp_VRAM[0x000:0x03BF]
-		for y := 0; y < 1; y++ {
-			for x := 0; x < 30; x++ {
-				doPattern(x*8, y*8, int(nameTable[x+y*5])*8)
+		for y := 0; y < 3; y++ {
+			for x := 0; x < 40; x++ {
+				doPattern(x*8, y*8, int(nameTable[x+y*40])*8)
 			}
 		}
 		//doPattern(100,100)
