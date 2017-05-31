@@ -29,6 +29,14 @@ func (self *Ports) WritePort(address uint16, b byte) {
 	case ad >= 0xa0 && ad <= 0xa2:
 		sound_writePort(ad, b)
 		return
+
+	case ad >= 0x90 && ad <= 0x91:
+		// Printer. Do nothing
+		return
+
+	case ad >= 0x98 && ad <= 0x9b:
+		vdp_writePort(ad, b)
+		return
 	}
 
 	log.Fatalf("Writeport: %02x -> %02x\n", ad, b)
