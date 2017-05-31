@@ -131,9 +131,10 @@ func vdp_renderScreen() {
 			}
 		}
 
+		nameTable := vdp_VRAM[0x000:0x03BF]
 		for y := 0; y < 1; y++ {
-			for x := 0; x < 10; x++ {
-				doPattern(x*8, y*8, 65*8) // int(nameTable[x+y*5])*8)
+			for x := 0; x < 30; x++ {
+				doPattern(x*8, y*8, int(nameTable[x+y*5])*8)
 			}
 		}
 		//doPattern(100,100)
