@@ -1,6 +1,7 @@
 package main
 
 import "log"
+import "fmt"
 
 const (
 	SCREEN0 = 0
@@ -108,6 +109,10 @@ func vdp_renderScreen() {
 	switch {
 	case vdp_screenMode == SCREEN0:
 		// Render SCREEN0
+		// Pattern table: 0x0800 - 0x0FFF
+		// Name table: 0x0000 - 0x03BF
+		patTable := vdp_VRAM[0x800+8*65 : 0xFFF]
+		fmt.Printf("%02x %02x %02x %02x %02x %02x %02x %02x\n", patTable[0], patTable[1], patTable[2], patTable[3], patTable[4], patTable[5], patTable[6], patTable[7])
 		return
 
 	case vdp_screenMode == SCREEN1:
