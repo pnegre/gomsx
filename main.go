@@ -42,7 +42,7 @@ func main() {
 		}
 
 		delta = time.Now().UnixNano() - lastTm
-		if delta > 10000000 {
+		if delta > 100000000 {
 			gogame.RenderClear()
 			vdp_renderScreen()
 			gogame.RenderPresent()
