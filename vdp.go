@@ -4,13 +4,14 @@ import "log"
 
 var vdp_valueRead byte
 var vdp_writeState = 0
-var vdp_registers [27]byte
+// 8 registres, però van de 1 a 8, no de 0 a 7...
+var vdp_registers [9]byte
 var vdp_writeToVRAM bool
 var vdp_VRAM [0x10000]byte
 var vdp_pointerVRAM uint16
 
 func vdp_writePort(ad byte, val byte) {
-	log.Printf("VDP: Out(%02x, %02x)\n", ad, val)
+	//log.Printf("VDP: Out(%02x, %02x)\n", ad, val)
 	switch {
 	case ad == 0x99:
 		if vdp_writeState == 0 {
@@ -23,6 +24,8 @@ func vdp_writePort(ad byte, val byte) {
 			if val&0x80 != 0 {
 				regn := val - 127
 				vdp_registers[regn] = vdp_valueRead
+                log.Printf("vdp[%d] = %02x\n", regn, vdp_valueRead)
+                log.Printf("VDPS: %v\n", vdp_registers)
 				return
 			} else {
 				vdp_writeToVRAM = (val&0x40 != 0)
@@ -36,11 +39,25 @@ func vdp_writePort(ad byte, val byte) {
 
 	case ad == 0x98:
 		// Writing to VRAM
-		log.Printf("Writing to VRAM: %04x -> %02x", vdp_pointerVRAM, val)
+		//log.Printf("Writing to VRAM: %04x -> %02x", vdp_pointerVRAM, val)
 		vdp_VRAM[vdp_pointerVRAM] = val
 		vdp_pointerVRAM++
 		return
 
 	}
 	log.Fatalf("Not implemented: VDP: Out(%02x, %02x)", ad, val)
+}
+
+func vdp_readPort(ad byte) byte {
+    switch {
+    case ad == 0x98:
+        // Reading from VRAM
+        //log.Printf("Reading from VRAM: %04x", vdp_pointerVRAM)
+        r := vdp_VRAM[vdp_pointerVRAM]
+        vdp_pointerVRAM++
+        return r
+    }
+
+    log.Fatalf("Not implemented: VDP: In(%02x)", ad)
+    return 0
 }

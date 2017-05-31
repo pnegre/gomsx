@@ -13,6 +13,9 @@ func (self *Ports) ReadPort(address uint16) byte {
 
 	case ad >= 0xa0 && ad <= 0xa2:
 		return sound_readPort(ad)
+
+	case ad >= 0x98 && ad <= 0x9b:
+		return vdp_readPort(ad)
 	}
 
 	log.Fatalf("ReadPort: %02x\n", ad)
