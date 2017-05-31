@@ -1,7 +1,6 @@
 package main
 
 import "log"
-import "fmt"
 import "github.com/pnegre/gogame"
 
 const (
@@ -129,9 +128,6 @@ func vdp_renderScreen() {
 				x++
 			}
 		}
-		// gogame.DrawPixel(100, 100, gogame.COLOR_WHITE)
-		fmt.Printf("%02x %02x %02x %02x %02x %02x %02x %02x\n", patTable[0], patTable[1], patTable[2], patTable[3], patTable[4], patTable[5], patTable[6], patTable[7])
-
 		return
 
 	case vdp_screenMode == SCREEN1:
