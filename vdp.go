@@ -2,6 +2,7 @@ package main
 
 import "log"
 import "fmt"
+import "github.com/pnegre/gogame"
 
 const (
 	SCREEN0 = 0
@@ -10,6 +11,7 @@ const (
 	SCREEN3 = 3
 )
 
+var vdp_screenEnabled bool = false
 var vdp_screenMode int
 var vdp_valueRead byte
 var vdp_writeState = 0
@@ -20,6 +22,7 @@ var vdp_VRAM [0x10000]byte
 var vdp_pointerVRAM uint16
 
 func vdp_updateRegisters() {
+	vdp_screenEnabled = vdp_registers[1]&0x40 != 0
 	m1 := vdp_registers[1]&0x10 != 0
 	m2 := vdp_registers[1]&0x08 != 0
 	m3 := vdp_registers[0]&0x02 != 0
@@ -106,13 +109,29 @@ func vdp_readPort(ad byte) byte {
 }
 
 func vdp_renderScreen() {
+	if !vdp_screenEnabled {
+		return
+	}
+
 	switch {
 	case vdp_screenMode == SCREEN0:
 		// Render SCREEN0
 		// Pattern table: 0x0800 - 0x0FFF
 		// Name table: 0x0000 - 0x03BF
-		patTable := vdp_VRAM[0x800+8*65 : 0xFFF]
+		patTable := vdp_VRAM[0x800+8*66 : 0xFFF]
+		for i := 0; i < 8; i++ {
+			b := patTable[i]
+			x := 0
+			for j := 0x80; j > 0; j >>= 1 {
+				if byte(j)&b != 0 {
+					gogame.DrawPixel(100+x, 100+i, gogame.COLOR_WHITE)
+				}
+				x++
+			}
+		}
+		// gogame.DrawPixel(100, 100, gogame.COLOR_WHITE)
 		fmt.Printf("%02x %02x %02x %02x %02x %02x %02x %02x\n", patTable[0], patTable[1], patTable[2], patTable[3], patTable[4], patTable[5], patTable[6], patTable[7])
+
 		return
 
 	case vdp_screenMode == SCREEN1:
