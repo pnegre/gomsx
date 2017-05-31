@@ -6,7 +6,7 @@ import "log"
 const logAssembler = 0
 
 func main() {
-	memory := NewMemory("hb-501p_basic-bios1.rom")
+	memory := NewMemory("msx1.rom")
 	ports := new(Ports)
 	cpuZ80 := z80.NewZ80(memory, ports)
 	cpuZ80.Reset()
