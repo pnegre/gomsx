@@ -17,6 +17,7 @@ func main() {
 	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
 		log.Fatal(err)
 	}
+	gogame.SetLogicalSize(320,192)
 	defer gogame.Quit()
 
 	memory := NewMemory(ROMFILE)
