@@ -32,7 +32,6 @@ func main() {
 	delta := int64(0)
 	logAssembler := false
 	for {
-		delta = 0
 		for delta < NANOS_SCR {
 			if logAssembler {
 				pc := cpuZ80.PC()
@@ -42,6 +41,7 @@ func main() {
 			delta = time.Now().UnixNano() - lastTm
 			cpuZ80.DoOpcode()
 		}
+		delta -= NANOS_SCR
 		lastTm = time.Now().UnixNano()
 
 		if quit := gogame.SlurpEvents(); quit == true {
