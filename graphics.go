@@ -82,7 +82,7 @@ func graphics_drawPattern(x, y int, pt int, patTable []byte) {
 			if mask&b != 0 {
 				gogame.DrawPixel(x+xx, y+i, colors[15])
 			} else {
-				// gogame.DrawPixel(x+xx, y+i, colors[4])
+				gogame.DrawPixel(x+xx, y+i, colors[4])
 			}
 			xx++
 		}

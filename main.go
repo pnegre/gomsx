@@ -32,27 +32,28 @@ func main() {
 	delta := int64(0)
 	logAssembler := false
 	for {
-		for delta < NANOS_SCR {
+		for i := 0; i < 500; i++ {
 			if logAssembler {
 				pc := cpuZ80.PC()
 				instr, _, _ := z80.Disassemble(memory, pc, 0)
 				log.Printf("%04x: %s\n", pc, instr)
 			}
-			delta = time.Now().UnixNano() - lastTm
 			cpuZ80.DoOpcode()
 		}
-		delta -= NANOS_SCR
-		lastTm = time.Now().UnixNano()
 
-		if quit := gogame.SlurpEvents(); quit == true {
-			break
-		}
+		delta = time.Now().UnixNano() - lastTm
+		if delta > NANOS_SCR {
+			if quit := gogame.SlurpEvents(); quit == true {
+				break
+			}
 
-		graphics_renderScreen()
-		vdp_setFrameFlag()
-		if vdp_enabledInterrupts {
-			cpuZ80.Interrupt()
+			graphics_renderScreen()
+			vdp_setFrameFlag()
+			if vdp_enabledInterrupts {
+				cpuZ80.Interrupt()
+			}
+			lastTm = time.Now().UnixNano()
+			gogame.Delay(1)
 		}
-		gogame.Delay(5)
 	}
 }
