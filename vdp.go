@@ -114,7 +114,7 @@ func vdp_renderScreen() {
 
 	switch {
 	case vdp_screenMode == SCREEN0:
-		// Render SCREEN0
+		// Render SCREEN0 (40x24)
 		// Pattern table: 0x0800 - 0x0FFF
 		// Name table: 0x0000 - 0x03BF
 		patTable := vdp_VRAM[0x800 : 0xFFF+1]
@@ -141,7 +141,29 @@ func vdp_renderScreen() {
 		return
 
 	case vdp_screenMode == SCREEN1:
-		// Render SCREEN1
+		// Render SCREEN1 (32x24)
+		// Pattern table: 0x0000 - 0x07FF
+		// Name table: 0x1800 - 0x1AFF
+		patTable := vdp_VRAM[0x0000 : 0x07FF+1]
+		doPattern := func(x, y int, pt int) {
+			for i := 0; i < 8; i++ {
+				b := patTable[i+pt]
+				xx := 0
+				for j := 0x80; j > 0; j >>= 1 {
+					if byte(j)&b != 0 {
+						gogame.DrawPixel(x+xx, y+i, gogame.COLOR_WHITE)
+					}
+					xx++
+				}
+			}
+		}
+
+		nameTable := vdp_VRAM[0x1800 : 0x1AFF+1]
+		for y := 0; y < 24; y++ {
+			for x := 0; x < 32; x++ {
+				doPattern(x*8, y*8, int(nameTable[x+y*32])*8)
+			}
+		}
 		return
 
 	case vdp_screenMode == SCREEN2:
