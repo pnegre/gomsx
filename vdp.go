@@ -13,7 +13,7 @@ var vdp_screenEnabled bool = false
 var vdp_screenMode int
 var vdp_valueRead byte
 var vdp_writeState = 0
-
+var vdp_enabledInterrupts = false
 var vdp_registers [8]byte
 var vdp_writeToVRAM bool
 var vdp_VRAM [0x10000]byte
@@ -21,6 +21,7 @@ var vdp_pointerVRAM uint16
 
 func vdp_updateRegisters() {
 	vdp_screenEnabled = vdp_registers[1]&0x40 != 0
+	vdp_enabledInterrupts = vdp_registers[1]&0x20 != 0
 	m1 := vdp_registers[1]&0x10 != 0
 	m2 := vdp_registers[1]&0x08 != 0
 	m3 := vdp_registers[0]&0x02 != 0
@@ -100,6 +101,11 @@ func vdp_readPort(ad byte) byte {
 		r := vdp_VRAM[vdp_pointerVRAM]
 		vdp_pointerVRAM++
 		return r
+
+	case ad == 0x99:
+		// Reading status register
+		// TODO: mirar-ho bé....
+		return 0
 	}
 
 	log.Fatalf("Not implemented: VDP: In(%02x)", ad)
