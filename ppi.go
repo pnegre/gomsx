@@ -48,11 +48,20 @@ func ppi_readPort(ad byte) byte {
 		return ppi_regc
 
 	case ad == 0xa9:
-		// Return keyboard column input
-		// TODO: FER!!
-		return 0xff
+		return ppi_keyboardMatrix()
 	}
 
 	log.Fatalf("PPI: not implemented: in(%02x)", ad)
 	return 0
+}
+
+func ppi_keyboardMatrix() byte {
+	// Mirar http://map.grauw.nl/articles/keymatrix.php
+	row := ppi_regc & 0x0F
+	switch row {
+	case 2:
+		return 0xbf
+	default:
+		return 0xff
+	}
 }
