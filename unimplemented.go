@@ -38,3 +38,20 @@ func (self *Memory) Write(address uint16, value byte, protectROM bool) {
 func (self *Memory) Data() []byte {
 	return nil
 }
+
+func (self *Ports) ReadPortInternal(address uint16, contend bool) byte {
+	panic("ReadPortInternal")
+}
+
+func (self *Ports) WritePortInternal(address uint16, b byte, contend bool) {
+	panic("WritePortInternal")
+}
+
+func (self *Ports) ContendPortPreio(address uint16) {
+	panic("ContendPortPreio")
+
+}
+
+func (self *Ports) ContendPortPostio(address uint16) {
+	panic("ContendPortPostio")
+}
