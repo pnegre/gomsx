@@ -26,10 +26,10 @@ func keyMatrix(row byte) (result byte) {
 	}
 
 	result = 0xff
-	switch row {
-	case 2:
+	switch {
+	case row < 6:
 		for i := 0; i < 8; i++ {
-			if gogame.IsKeyPressed(data[2][i]) {
+			if gogame.IsKeyPressed(data[row][i]) {
 				result &= ^byte(1 << byte(7-i))
 			}
 		}
