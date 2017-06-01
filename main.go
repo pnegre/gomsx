@@ -42,13 +42,13 @@ func main() {
 			delta = time.Now().UnixNano() - lastTm
 			cpuZ80.DoOpcode()
 		}
+		lastTm = time.Now().UnixNano()
 
 		if quit := gogame.SlurpEvents(); quit == true {
 			break
 		}
 
 		graphics_renderScreen()
-		lastTm = time.Now().UnixNano()
 		vdp_setFrameFlag()
 		if vdp_enabledInterrupts {
 			cpuZ80.Interrupt()
