@@ -46,7 +46,7 @@ func main() {
 		delta = time.Now().UnixNano() - lastTm
 		if delta > NANOS_SCR {
 			gogame.RenderClear()
-			vdp_renderScreen()
+			graphics_renderScreen()
 			gogame.RenderPresent()
 			lastTm = time.Now().UnixNano()
 		}
