@@ -6,14 +6,13 @@ import "log"
 import "time"
 
 const (
-	WINTITLE     = "gomsx"
-	WIN_W        = 800
-	WIN_H        = 600
-	MSX_W        = 320
-	MSX_H        = 192
-	ROMFILE      = "msx1.rom"
-	logAssembler = false
-	NANOS_SCR    = 100000000
+	WINTITLE  = "gomsx"
+	WIN_W     = 800
+	WIN_H     = 600
+	MSX_W     = 320
+	MSX_H     = 192
+	ROMFILE   = "msx1.rom"
+	NANOS_SCR = 20000000 // 50Hz -> Interval de 20Mseg
 )
 
 func main() {
@@ -31,6 +30,7 @@ func main() {
 	log.Println("Beginning simulation...")
 	lastTm := time.Now().UnixNano()
 	delta := int64(0)
+	logAssembler := false
 	for {
 		if logAssembler {
 			pc := cpuZ80.PC()
@@ -43,10 +43,19 @@ func main() {
 			break
 		}
 
+		if gogame.IsKeyPressed(gogame.K_A) {
+			logAssembler = true
+		}
+
+		if gogame.IsKeyPressed(gogame.K_Z) {
+			logAssembler = false
+		}
+
 		delta = time.Now().UnixNano() - lastTm
 		if delta > NANOS_SCR {
 			graphics_renderScreen()
 			lastTm = time.Now().UnixNano()
+			//cpuZ80.Interrupt()
 		}
 
 	}
