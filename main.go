@@ -43,13 +43,13 @@ func main() {
 			break
 		}
 
-		if gogame.IsKeyPressed(gogame.K_A) {
-			logAssembler = true
-		}
-
-		if gogame.IsKeyPressed(gogame.K_Z) {
-			logAssembler = false
-		}
+		// if gogame.IsKeyPressed(gogame.K_A) {
+		// 	logAssembler = true
+		// }
+		//
+		// if gogame.IsKeyPressed(gogame.K_Z) {
+		// 	logAssembler = false
+		// }
 
 		delta = time.Now().UnixNano() - lastTm
 		if delta > NANOS_SCR {
