@@ -2,6 +2,29 @@ package main
 
 import "github.com/pnegre/gogame"
 
+var colors []*gogame.Color
+
+func init() {
+	colors = []*gogame.Color{
+		&gogame.Color{255, 255, 255, 0},      // Transparent
+		&gogame.Color{0, 0, 0, 255},          // Black
+		&gogame.Color{0x20, 0xc8, 0x40, 255}, // Green
+		&gogame.Color{0x58, 0xd8, 0x78, 255}, // Light Green
+		&gogame.Color{0x50, 0x50, 0xe8, 255}, // Dark Blue
+		&gogame.Color{0x78, 0x70, 0xf7, 255}, // Light Blue
+		&gogame.Color{0xd0, 0x50, 0x48, 255}, // Dark Red
+		&gogame.Color{0x40, 0xe8, 0xf0, 255}, // Cyan
+		&gogame.Color{0xf7, 0x50, 0x50, 255}, // Red
+		&gogame.Color{0xf7, 0x78, 0x78, 255}, // Bright Red
+		&gogame.Color{0xd0, 0xc0, 0x50, 255}, // Yellow
+		&gogame.Color{0xe0, 0xc8, 0x80, 255}, // Light Yellow
+		&gogame.Color{0x20, 0xb0, 0x38, 255}, // Dark Green
+		&gogame.Color{0xc8, 0x58, 0xb8, 255}, // Purple
+		&gogame.Color{0xc8, 0xc8, 0xc8, 255}, // Gray
+		&gogame.Color{0xf7, 0xf7, 0xf7, 255}, // White
+	}
+}
+
 func graphics_renderScreen() {
 	if !vdp_screenEnabled {
 		return
@@ -57,7 +80,9 @@ func graphics_drawPattern(x, y int, pt int, patTable []byte) {
 		xx := 0
 		for mask = 0x80; mask > 0; mask >>= 1 {
 			if mask&b != 0 {
-				gogame.DrawPixel(x+xx, y+i, gogame.COLOR_WHITE)
+				gogame.DrawPixel(x+xx, y+i, colors[15])
+			} else {
+				//gogame.DrawPixel(x+xx, y+i, colors[4])
 			}
 			xx++
 		}
