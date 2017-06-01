@@ -6,19 +6,21 @@ import "log"
 import "time"
 
 const (
-	WINTITLE = "gomsx"
-	WIN_W    = 800
-	WIN_H    = 600
+	WINTITLE     = "gomsx"
+	WIN_W        = 800
+	WIN_H        = 600
+	MSX_W        = 320
+	MSX_H        = 192
+	ROMFILE      = "msx1.rom"
+	logAssembler = false
+	NANOS_SCR    = 100000000
 )
-
-const logAssembler = false
-const ROMFILE = "msx1.rom"
 
 func main() {
 	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
 		log.Fatal(err)
 	}
-	gogame.SetLogicalSize(320, 192)
+	gogame.SetLogicalSize(MSX_W, MSX_H)
 	defer gogame.Quit()
 
 	memory := NewMemory(ROMFILE)
@@ -42,7 +44,7 @@ func main() {
 		}
 
 		delta = time.Now().UnixNano() - lastTm
-		if delta > 100000000 {
+		if delta > NANOS_SCR {
 			gogame.RenderClear()
 			vdp_renderScreen()
 			gogame.RenderPresent()
