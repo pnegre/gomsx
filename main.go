@@ -53,6 +53,6 @@ func main() {
 		if vdp_enabledInterrupts {
 			cpuZ80.Interrupt()
 		}
-		gogame.Delay(1)
+		gogame.Delay(5)
 	}
 }
