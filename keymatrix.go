@@ -2,9 +2,11 @@ package main
 
 import "github.com/pnegre/gogame"
 
-func keyMatrix(row byte) (result byte) {
+var data [][]int
+
+func init() {
 	// Mirar http://map.grauw.nl/articles/keymatrix.php
-	data := [][]int{
+	data = [][]int{
 		{
 			gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, // 7 &	6 ^	5 %	4 $	3 #	2 @	1 !	0 )
 		},
@@ -39,7 +41,9 @@ func keyMatrix(row byte) (result byte) {
 			gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, // NUM.	NUM,	NUM-	NUM9	NUM8	NUM7	NUM6	NUM5
 		},
 	}
+}
 
+func keyMatrix(row byte) (result byte) {
 	result = 0xff
 	if row < 11 {
 		for i := 0; i < 8; i++ {
