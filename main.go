@@ -55,6 +55,7 @@ func main() {
 		if delta > NANOS_SCR {
 			graphics_renderScreen()
 			lastTm = time.Now().UnixNano()
+			vdp_setFrameFlag()
 			if vdp_enabledInterrupts {
 				cpuZ80.Interrupt()
 			}

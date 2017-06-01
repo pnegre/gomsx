@@ -15,7 +15,7 @@ func graphics_renderScreen() {
 		// Name table: 0x0000 - 0x03BF
 		patTable := vdp_VRAM[0x800 : 0xFFF+1]
 		nameTable := vdp_VRAM[0x000 : 0x03BF+1]
-		for y := 0; y < 5; y++ {
+		for y := 0; y < 24; y++ {
 			for x := 0; x < 40; x++ {
 				graphics_drawPattern(x*8, y*8, int(nameTable[x+y*40])*8, patTable)
 			}

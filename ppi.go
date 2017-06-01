@@ -13,7 +13,17 @@ func ppi_writePort(ad byte, val byte) {
 			// PPI initialization
 			return
 		} else {
-			panic("PPI Write command register")
+			// Manipulate directly register C
+			bitn := (val & 0x0F) >> 1
+			vl := val & 0x01
+			//log.Printf("PPI: manipulate regC: Set bit %d to %d\n", bitn, vl)
+			if vl == 1 {
+				ppi_regc |= (0x01 << (bitn + 1))
+			} else {
+				ppi_regc &= ^(0x01 << (bitn + 1))
+			}
+			return
+			//panic("PPI Write command register")
 		}
 
 	case ad == 0xa8:
@@ -33,6 +43,14 @@ func ppi_readPort(ad byte) byte {
 	switch {
 	case ad == 0xa8:
 		return ppi_slots
+
+	case ad == 0xaa:
+		return ppi_regc
+
+	case ad == 0xa9:
+		// Return keyboard column input
+		// TODO: FER!!
+		return 0xff
 	}
 
 	log.Fatalf("PPI: not implemented: in(%02x)", ad)
