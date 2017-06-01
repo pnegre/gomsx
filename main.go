@@ -32,24 +32,18 @@ func main() {
 	delta := int64(0)
 	logAssembler := false
 	for {
-		if logAssembler {
-			pc := cpuZ80.PC()
-			instr, _, _ := z80.Disassemble(memory, pc, 0)
-			log.Printf("%04x: %s\n", pc, instr)
+		for i := 0; i < 500; i++ {
+			if logAssembler {
+				pc := cpuZ80.PC()
+				instr, _, _ := z80.Disassemble(memory, pc, 0)
+				log.Printf("%04x: %s\n", pc, instr)
+			}
+			cpuZ80.DoOpcode()
 		}
-		cpuZ80.DoOpcode()
 
 		if quit := gogame.SlurpEvents(); quit == true {
 			break
 		}
-
-		// if gogame.IsKeyPressed(gogame.K_A) {
-		// 	logAssembler = true
-		// }
-		//
-		// if gogame.IsKeyPressed(gogame.K_Z) {
-		// 	logAssembler = false
-		// }
 
 		delta = time.Now().UnixNano() - lastTm
 		if delta > NANOS_SCR {
@@ -60,6 +54,6 @@ func main() {
 				cpuZ80.Interrupt()
 			}
 		}
-
+		gogame.Delay(1)
 	}
 }
