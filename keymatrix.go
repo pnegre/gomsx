@@ -14,7 +14,7 @@ func init() {
 			gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_9, gogame.K_8, // ; :	] }	[ {	\ ¦	= +	- _	9 (	8 *
 		},
 		{
-			gogame.K_B, gogame.K_A, gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_F11, // B	A	DEAD	/ ?	. >	, <	` ~	' "
+			gogame.K_B, gogame.K_A, gogame.K_F11, gogame.K_SLASH, gogame.K_PERIOD, gogame.K_COMMA, gogame.K_F11, gogame.K_F11, // B	A	DEAD	/ ?		. >		, <		` ~		' "
 		},
 		{
 			gogame.K_J, gogame.K_I, gogame.K_H, gogame.K_G, gogame.K_F, gogame.K_E, gogame.K_D, gogame.K_C,
