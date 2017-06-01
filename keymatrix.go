@@ -27,7 +27,7 @@ func keyMatrix(row byte) (result byte) {
 			gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, // F3 F F1 CODE CAPS GRAPH CTRL SHIFT
 		},
 		{
-			gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, // RET SELECT BS STOP TAB ESC F5 F4
+			gogame.K_RETURN, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, // RET SELECT BS STOP TAB ESC F5 F4
 		},
 		{
 			gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_UP, gogame.K_SPACE, // → ↓ ↑ ← DEL INS HOME SPACE
