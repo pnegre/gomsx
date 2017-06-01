@@ -51,11 +51,12 @@ func graphics_renderScreen() {
 }
 
 func graphics_drawPattern(x, y int, pt int, patTable []byte) {
+	var mask byte
 	for i := 0; i < 8; i++ {
 		b := patTable[i+pt]
 		xx := 0
-		for j := 0x80; j > 0; j >>= 1 {
-			if byte(j)&b != 0 {
+		for mask = 0x80; mask > 0; mask >>= 1 {
+			if mask&b != 0 {
 				gogame.DrawPixel(x+xx, y+i, gogame.COLOR_WHITE)
 			}
 			xx++
