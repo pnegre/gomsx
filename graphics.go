@@ -7,6 +7,7 @@ func graphics_renderScreen() {
 		return
 	}
 
+	gogame.RenderClear()
 	switch {
 	case vdp_screenMode == SCREEN0:
 		// Render SCREEN0 (40x24)
@@ -19,7 +20,7 @@ func graphics_renderScreen() {
 				graphics_drawPattern(x*8, y*8, int(nameTable[x+y*40])*8, patTable)
 			}
 		}
-		return
+		break
 
 	case vdp_screenMode == SCREEN1:
 		// Render SCREEN1 (32x24)
@@ -32,20 +33,21 @@ func graphics_renderScreen() {
 				graphics_drawPattern(x*8, y*8, int(nameTable[x+y*32])*8, patTable)
 			}
 		}
-		return
+		break
 
 	case vdp_screenMode == SCREEN2:
 		// Render SCREEN2
-		return
+		break
 
 	case vdp_screenMode == SCREEN3:
 		// Render SCREEN3
-		return
+		break
 
 	default:
 		panic("RenderScreen: impossible mode")
 
 	}
+	gogame.RenderPresent()
 }
 
 func graphics_drawPattern(x, y int, pt int, patTable []byte) {
