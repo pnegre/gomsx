@@ -11,7 +11,7 @@ func init() {
 			gogame.K_7, gogame.K_6, gogame.K_5, gogame.K_4, gogame.K_3, gogame.K_2, gogame.K_1, gogame.K_0, // 7 &	6 ^	5 %	4 $	3 #	2 @	1 !	0 )
 		},
 		{
-			gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_F11, gogame.K_9, gogame.K_8, // ; :	] }	[ {	\ ¦	= +	- _	9 (	8 *
+			gogame.K_SEMICOLON, gogame.K_RBRACKET, gogame.K_LBRACKET, gogame.K_F11, gogame.K_EQUALS, gogame.K_MINUS, gogame.K_9, gogame.K_8, // ; :	] }	[ {	\ ¦	= +	- _	9 (	8 *
 		},
 		{
 			gogame.K_B, gogame.K_A, gogame.K_F11, gogame.K_SLASH, gogame.K_PERIOD, gogame.K_COMMA, gogame.K_F11, gogame.K_F11, // B	A	DEAD	/ ?		. >		, <		` ~		' "
