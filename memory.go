@@ -6,17 +6,20 @@ type Memory struct {
 	data [0x10000]byte
 }
 
-func NewMemory(romFile string) *Memory {
+func NewMemory() *Memory {
 	mem := new(Memory)
+	return mem
+}
+
+func (self *Memory) loadFromFile(romFile string) error {
 	f, err := os.Open(romFile)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	f.Read(mem.data[:32768]) //32k
+	f.Read(self.data[:32768]) //32k
 	f.Close()
-
-	return mem
+	return nil
 }
 
 func (self *Memory) ReadByte(address uint16) byte {

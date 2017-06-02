@@ -19,7 +19,8 @@ func main() {
 	}
 	defer gogame.Quit()
 
-	memory := NewMemory(ROMFILE)
+	memory := NewMemory()
+	memory.loadFromFile(ROMFILE)
 	ports := new(Ports)
 	cpuZ80 := z80.NewZ80(memory, ports)
 	cpuZ80.Reset()
