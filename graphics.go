@@ -81,6 +81,9 @@ func graphics_renderScreen() {
 
 	case vdp_screenMode == SCREEN2:
 		// Render SCREEN2
+		// Name table: 1800H to 1AFFH
+		// Pattern table: 0000H to 17FFH
+		// Color table: 2000H to 37FFH
 		break
 
 	case vdp_screenMode == SCREEN3:
