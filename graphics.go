@@ -141,9 +141,19 @@ func graphics_drawPatternS1(x, y int, pt int, patTable []byte, color byte) {
 
 func graphics_drawPatternS2(x, y int, pt int, patTable []byte, colorTable []byte) {
 	var mask byte
+	var b byte
+	var color byte
 	for i := 0; i < 8; i++ {
-		b := patTable[i+pt]
-		color := colorTable[i+pt]
+		if y < 64 {
+			b = patTable[i+pt]
+			color = colorTable[i+pt]
+		} else if y < 128 {
+			b = patTable[i+pt+2048]
+			color = colorTable[i+pt+2048]
+		} else {
+			b = patTable[i+pt+2048*2]
+			color = colorTable[i+pt+2048*2]
+		}
 		color1 := colors[(color&0xF0)>>4]
 		color2 := colors[color&0x0F]
 		xx := 0

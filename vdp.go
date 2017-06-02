@@ -49,9 +49,6 @@ func vdp_updateRegisters() {
 	case m1 == false && m2 == false && m3 == true && m4 == false && m5 == false:
 		vdp_screenMode = SCREEN2
 		break
-
-	default:
-		log.Println("VDP: m1=%v m2=%v m3=%v m4=%v m5=%v\n", m1, m2, m3, m4, m5)
 	}
 	if scm != vdp_screenMode {
 		graphics_setLogicalResolution()
