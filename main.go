@@ -48,7 +48,6 @@ func main() {
 			}
 
 			graphics_renderScreen()
-			vdp_setFrameFlag()
 			if vdp_enabledInterrupts {
 				cpuZ80.Interrupt()
 			}

@@ -36,7 +36,7 @@ func (self *Memory) Write(address uint16, value byte, protectROM bool) {
 
 // Data returns the memory content.
 func (self *Memory) Data() []byte {
-	return nil
+	panic("Memory.Data not implemented")
 }
 
 func (self *Ports) ReadPortInternal(address uint16, contend bool) byte {

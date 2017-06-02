@@ -73,8 +73,8 @@ func vdp_writePort(ad byte, val byte) {
 			if val&0x80 != 0 {
 				regn := val - 128
 				vdp_registers[regn] = vdp_valueRead
-				log.Printf("vdp[%d] = %02x\n", regn, vdp_valueRead)
-				log.Printf("VDPS: %v\n", vdp_registers)
+				// log.Printf("vdp[%d] = %02x\n", regn, vdp_valueRead)
+				// log.Printf("VDPS: %v\n", vdp_registers)
 				vdp_updateRegisters()
 				return
 			} else {

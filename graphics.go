@@ -29,7 +29,7 @@ func graphics_renderScreen() {
 	if !vdp_screenEnabled {
 		return
 	}
-
+	vdp_setFrameFlag()
 	gogame.RenderClear()
 	switch {
 	case vdp_screenMode == SCREEN0:
