@@ -32,6 +32,7 @@ func vdp_updateRegisters() {
 	m3 := vdp_registers[0]&0x02 != 0
 	m4 := vdp_registers[0]&0x04 != 0
 	m5 := vdp_registers[0]&0x08 != 0
+	scm := vdp_screenMode
 	switch {
 	case m1 == false && m2 == false && m3 == false && m4 == false && m5 == false:
 		vdp_screenMode = SCREEN1
@@ -56,6 +57,9 @@ func vdp_updateRegisters() {
 		println(m4)
 		println(m5)
 		panic("VDP: Screen mode not implemented")
+	}
+	if scm != vdp_screenMode {
+		graphics_setLogicalResolution()
 	}
 }
 

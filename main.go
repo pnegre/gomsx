@@ -9,8 +9,6 @@ const (
 	WINTITLE  = "gomsx"
 	WIN_W     = 800
 	WIN_H     = 600
-	MSX_W     = 320
-	MSX_H     = 192
 	ROMFILE   = "msx1.rom"
 	NANOS_SCR = 20000000 // 50Hz -> Interval de 20Mseg
 )
@@ -19,7 +17,6 @@ func main() {
 	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
 		log.Fatal(err)
 	}
-	gogame.SetLogicalSize(MSX_W, MSX_H)
 	defer gogame.Quit()
 
 	memory := NewMemory(ROMFILE)

@@ -25,6 +25,22 @@ func init() {
 	}
 }
 
+func graphics_setLogicalResolution() {
+	switch vdp_screenMode {
+	case SCREEN0:
+		gogame.SetLogicalSize(320, 192)
+		return
+	case SCREEN2:
+		gogame.SetLogicalSize(320, 192)
+		return
+	case SCREEN1:
+		gogame.SetLogicalSize(256, 192)
+		return
+	}
+	println(vdp_screenMode)
+	panic("setLogicalResolution: mode not supported")
+}
+
 func graphics_renderScreen() {
 	if !vdp_screenEnabled {
 		return
