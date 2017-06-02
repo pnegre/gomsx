@@ -31,7 +31,7 @@ func graphics_setLogicalResolution() {
 		gogame.SetLogicalSize(320, 192)
 		return
 	case SCREEN2:
-		gogame.SetLogicalSize(320, 192)
+		gogame.SetLogicalSize(256, 192)
 		return
 	case SCREEN1:
 		gogame.SetLogicalSize(256, 192)
@@ -81,9 +81,18 @@ func graphics_renderScreen() {
 
 	case vdp_screenMode == SCREEN2:
 		// Render SCREEN2
-		// Name table: 1800H to 1AFFH
 		// Pattern table: 0000H to 17FFH
+		// Name table: 1800H to 1AFFH
 		// Color table: 2000H to 37FFH
+		patTable := vdp_VRAM[0x0000 : 0x17FF+1]
+		nameTable := vdp_VRAM[0x1800 : 0x1AFF+1]
+		colorTable := vdp_VRAM[0x2000 : 0x37FF+1]
+		for y := 0; y < 24; y++ {
+			for x := 0; x < 32; x++ {
+				pat := int(nameTable[x+y*32])
+				graphics_drawPatternS2(x*8, y*8, pat*8, patTable, colorTable)
+			}
+		}
 		break
 
 	case vdp_screenMode == SCREEN3:
@@ -118,6 +127,25 @@ func graphics_drawPatternS1(x, y int, pt int, patTable []byte, color byte) {
 	var mask byte
 	for i := 0; i < 8; i++ {
 		b := patTable[i+pt]
+		xx := 0
+		for mask = 0x80; mask > 0; mask >>= 1 {
+			if mask&b != 0 {
+				gogame.DrawPixel(x+xx, y+i, color1)
+			} else {
+				gogame.DrawPixel(x+xx, y+i, color2)
+			}
+			xx++
+		}
+	}
+}
+
+func graphics_drawPatternS2(x, y int, pt int, patTable []byte, colorTable []byte) {
+	var mask byte
+	for i := 0; i < 8; i++ {
+		b := patTable[i+pt]
+		color := colorTable[i+pt]
+		color1 := colors[(color&0xF0)>>4]
+		color2 := colors[color&0x0F]
 		xx := 0
 		for mask = 0x80; mask > 0; mask >>= 1 {
 			if mask&b != 0 {

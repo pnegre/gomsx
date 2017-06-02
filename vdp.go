@@ -51,12 +51,7 @@ func vdp_updateRegisters() {
 		break
 
 	default:
-		println(m1)
-		println(m2)
-		println(m3)
-		println(m4)
-		println(m5)
-		panic("VDP: Screen mode not implemented")
+		log.Println("VDP: m1=%v m2=%v m3=%v m4=%v m5=%v\n", m1, m2, m3, m4, m5)
 	}
 	if scm != vdp_screenMode {
 		graphics_setLogicalResolution()
