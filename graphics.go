@@ -36,11 +36,13 @@ func graphics_renderScreen() {
 		// Render SCREEN0 (40x24)
 		// Pattern table: 0x0800 - 0x0FFF
 		// Name table: 0x0000 - 0x03BF
+		color1 := colors[(vdp_registers[7]&0xF0)>>4]
+		color2 := colors[(vdp_registers[7] & 0x0F)]
 		patTable := vdp_VRAM[0x800 : 0xFFF+1]
 		nameTable := vdp_VRAM[0x000 : 0x03BF+1]
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 40; x++ {
-				graphics_drawPattern(x*8, y*8, int(nameTable[x+y*40])*8, patTable)
+				graphics_drawPatternS0(x*8, y*8, int(nameTable[x+y*40])*8, patTable, color1, color2)
 			}
 		}
 		break
@@ -53,7 +55,7 @@ func graphics_renderScreen() {
 		nameTable := vdp_VRAM[0x1800 : 0x1AFF+1]
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 32; x++ {
-				graphics_drawPattern(x*8, y*8, int(nameTable[x+y*32])*8, patTable)
+				graphics_drawPatternS1(x*8, y*8, int(nameTable[x+y*32])*8, patTable)
 			}
 		}
 		break
@@ -73,16 +75,31 @@ func graphics_renderScreen() {
 	gogame.RenderPresent()
 }
 
-func graphics_drawPattern(x, y int, pt int, patTable []byte) {
+func graphics_drawPatternS0(x, y int, pt int, patTable []byte, color1, color2 *gogame.Color) {
 	var mask byte
 	for i := 0; i < 8; i++ {
 		b := patTable[i+pt]
 		xx := 0
 		for mask = 0x80; mask > 0; mask >>= 1 {
 			if mask&b != 0 {
-				gogame.DrawPixel(x+xx, y+i, colors[15])
+				gogame.DrawPixel(x+xx, y+i, color1)
 			} else {
-				gogame.DrawPixel(x+xx, y+i, colors[4])
+				gogame.DrawPixel(x+xx, y+i, color2)
+			}
+			xx++
+		}
+	}
+}
+func graphics_drawPatternS1(x, y int, pt int, patTable []byte) {
+	var mask byte
+	for i := 0; i < 8; i++ {
+		b := patTable[i+pt]
+		xx := 0
+		for mask = 0x80; mask > 0; mask >>= 1 {
+			if mask&b != 0 {
+				gogame.DrawPixel(x+xx, y+i, gogame.COLOR_WHITE)
+			} else {
+				gogame.DrawPixel(x+xx, y+i, gogame.COLOR_BLACK)
 			}
 			xx++
 		}
