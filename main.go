@@ -41,6 +41,10 @@ func main() {
 			cpuZ80.DoOpcode()
 		}
 
+		if gogame.IsKeyPressed(gogame.K_ESC) {
+			logAssembler = true
+		}
+
 		delta = time.Now().UnixNano() - lastTm
 		if delta > NANOS_SCR {
 			if quit := gogame.SlurpEvents(); quit == true {
@@ -64,6 +68,13 @@ func loadROMS(memory *Memory) {
 	}
 	memory.load(buffer, 0, 0)
 	memory.load(buffer[0x4000:], 1, 0)
+
+	buffer, err = readFile("caos.rom")
+	if err != nil {
+		log.Fatal(err)
+	}
+	memory.load(buffer, 1, 1)
+	memory.load(buffer[0x4000:], 2, 1)
 }
 
 func readFile(fname string) ([]byte, error) {

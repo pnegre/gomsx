@@ -18,7 +18,7 @@ func (self *Ports) ReadPort(address uint16) byte {
 		return vdp_readPort(ad)
 	}
 
-	log.Fatalf("ReadPort: %02x\n", ad)
+	log.Printf("ReadPort: %02x\n", ad)
 	return 0
 }
 

@@ -6,7 +6,7 @@ var colors []*gogame.Color
 
 func init() {
 	colors = []*gogame.Color{
-		&gogame.Color{255, 255, 255, 0},      // Transparent
+		&gogame.Color{0, 0, 0, 255},          // Transparent
 		&gogame.Color{0, 0, 0, 255},          // Black
 		&gogame.Color{0x20, 0xc8, 0x40, 255}, // Green
 		&gogame.Color{0x58, 0xd8, 0x78, 255}, // Light Green

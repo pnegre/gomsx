@@ -1,10 +1,13 @@
 package main
 
+import "log"
+
 type Memory struct {
 	page0 [4][0x4000]byte
 	page1 [4][0x4000]byte
 	page2 [4][0x4000]byte
 	page3 [4][0x4000]byte
+	ffff  byte
 }
 
 func NewMemory() *Memory {
@@ -17,13 +20,16 @@ func (self *Memory) load(data []byte, page, slot int) {
 	switch page {
 	case 0:
 		copy(self.page0[slot][:], data[:0x4000])
+		return
 	case 1:
 		copy(self.page1[slot][:], data[:0x4000])
+		return
 	case 2:
 		copy(self.page2[slot][:], data[:0x4000])
+		return
 	case 3:
 		copy(self.page3[slot][:], data[:0x4000])
-
+		return
 	}
 }
 
@@ -34,6 +40,9 @@ func (self *Memory) ReadByte(address uint16) byte {
 // ReadByteInternal reads a byte from address without taking
 // into account contention.
 func (self *Memory) ReadByteInternal(address uint16) byte {
+	if address == 0xffff {
+		return self.ffff
+	}
 	pg0Slot := ppi_slots & 0x03
 	pg1Slot := (ppi_slots & 0x0C) >> 2
 	pg2Slot := (ppi_slots & 0x30) >> 4
@@ -61,6 +70,11 @@ func (self *Memory) WriteByte(address uint16, value byte) {
 // WriteByteInternal writes a byte at address without taking
 // into account contention.
 func (self *Memory) WriteByteInternal(address uint16, value byte) {
+	if address == 0xffff {
+		log.Printf("Set secondary memory mapper: %02x\n", value)
+		self.ffff = value
+		return
+	}
 	pg0Slot := ppi_slots & 0x03
 	pg1Slot := (ppi_slots & 0x0C) >> 2
 	pg2Slot := (ppi_slots & 0x30) >> 4
