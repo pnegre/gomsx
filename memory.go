@@ -80,5 +80,5 @@ func (self *Memory) WriteByteInternal(address uint16, value byte) {
 		self.page3[pg3Slot][address-0xC000] = value
 		return
 	}
-	panic("Tried to read impossible memory location")
+	panic("Tried to write impossible memory location")
 }
