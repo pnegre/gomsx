@@ -79,6 +79,7 @@ func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
 		}
 		cpuZ80.DoOpcode()
 	}
+	vdp_setFrameFlag()
 	if vdp_enabledInterrupts {
 		cpuZ80.Interrupt()
 	}
