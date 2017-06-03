@@ -42,14 +42,7 @@ func main() {
 	startTime := millis()
 	for {
 		tme := millis()
-		for i := 0; i < INSTRPERFRAME; i++ {
-			if logAssembler {
-				pc := cpuZ80.PC()
-				instr, _, _ := z80.Disassemble(memory, pc, 0)
-				log.Printf("%04x: %s\n", pc, instr)
-			}
-			cpuZ80.DoOpcode()
-		}
+		cpuFrame(cpuZ80, memory, logAssembler)
 
 		if gogame.IsKeyPressed(gogame.K_ESC) {
 			logAssembler = true
@@ -60,9 +53,6 @@ func main() {
 		}
 
 		graphics_renderScreen()
-		if vdp_enabledInterrupts {
-			cpuZ80.Interrupt()
-		}
 		tme = FRAMETIME - (millis() - tme)
 		if tme > 0 {
 			gogame.Delay(int(tme))
@@ -70,11 +60,22 @@ func main() {
 		nframes++
 	}
 	log.Println(nframes)
-	// log.Println(startTime)
-	// log.Println(millis())
-	// log.Println(millis() - startTime)
 	fps := float64(nframes) / (float64(millis()-startTime) / 1000)
 	log.Printf("Average FPS: %f\n", fps)
+}
+
+func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
+	for i := 0; i < INSTRPERFRAME; i++ {
+		if logAssembler {
+			pc := cpuZ80.PC()
+			instr, _, _ := z80.Disassemble(memory, pc, 0)
+			log.Printf("%04x: %s\n", pc, instr)
+		}
+		cpuZ80.DoOpcode()
+	}
+	if vdp_enabledInterrupts {
+		cpuZ80.Interrupt()
+	}
 }
 
 func millis() int64 {
