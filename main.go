@@ -14,7 +14,8 @@ const (
 	WIN_W         = 800
 	WIN_H         = 600
 	ROMFILE       = "msx1.rom"
-	FRAMETIME     = 20    // 50Hz -> Interval de 20Mseg
+	FRAMETIME     = 20 // 50Hz -> Interval de 20Mseg
+	FPS           = 50
 	INSTRPERFRAME = 11600 // EL z80 executa devers 580000 instr per segon (Un "frame" són 20mseg, per tant executa 11600 instr. per frame)
 )
 
@@ -39,10 +40,9 @@ func main() {
 	log.Println("Beginning simulation...")
 	logAssembler := false
 	var currentTime, elapsedTime, lag int64
-	updateInterval := int64(time.Second) / int64(50)
+	updateInterval := int64(time.Second) / int64(FPS)
 	previousTime := time.Now().UnixNano()
 
-	cpuFrame(cpuZ80, memory, logAssembler)
 	for {
 		currentTime = time.Now().UnixNano()
 		elapsedTime = currentTime - previousTime
