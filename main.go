@@ -19,7 +19,7 @@ const (
 	FPS       = 50
 	// EL z80 executa devers 580000 instr per segon
 	// (Un "frame" són 20mseg, per tant executa 11600 instr. per frame)
-	INSTRPERFRAME = 11600
+	INSTRPERFRAME = 5600
 )
 
 func main() {
@@ -51,6 +51,10 @@ func main() {
 		elapsedTime = currentTime - previousTime
 		previousTime = currentTime
 		lag += elapsedTime
+		for lag >= updateInterval {
+			cpuFrame(cpuZ80, memory, logAssembler)
+			lag -= updateInterval
+		}
 
 		if gogame.IsKeyPressed(gogame.K_ESC) {
 			logAssembler = true
@@ -58,11 +62,6 @@ func main() {
 
 		if quit := gogame.SlurpEvents(); quit == true {
 			break
-		}
-
-		for lag >= updateInterval {
-			cpuFrame(cpuZ80, memory, logAssembler)
-			lag -= updateInterval
 		}
 
 		graphics_renderScreen()
