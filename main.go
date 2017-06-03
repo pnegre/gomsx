@@ -38,11 +38,16 @@ func main() {
 
 	log.Println("Beginning simulation...")
 	logAssembler := false
-	var nframes uint64 = 0
-	startTime := millis()
+	var currentTime, elapsedTime, lag int64
+	updateInterval := int64(time.Second) / int64(50)
+	previousTime := time.Now().UnixNano()
+
+	cpuFrame(cpuZ80, memory, logAssembler)
 	for {
-		tme := millis()
-		cpuFrame(cpuZ80, memory, logAssembler)
+		currentTime = time.Now().UnixNano()
+		elapsedTime = currentTime - previousTime
+		previousTime = currentTime
+		lag += elapsedTime
 
 		if gogame.IsKeyPressed(gogame.K_ESC) {
 			logAssembler = true
@@ -52,16 +57,14 @@ func main() {
 			break
 		}
 
-		graphics_renderScreen()
-		tme = FRAMETIME - (millis() - tme)
-		if tme > 0 {
-			gogame.Delay(int(tme))
+		for lag >= updateInterval {
+			cpuFrame(cpuZ80, memory, logAssembler)
+			lag -= updateInterval
 		}
-		nframes++
+
+		graphics_renderScreen()
+		gogame.Delay(1)
 	}
-	log.Println(nframes)
-	fps := float64(nframes) / (float64(millis()-startTime) / 1000)
-	log.Printf("Average FPS: %f\n", fps)
 }
 
 func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
