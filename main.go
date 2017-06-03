@@ -10,13 +10,16 @@ import "bufio"
 import "flag"
 
 const (
-	WINTITLE      = "gomsx"
-	WIN_W         = 800
-	WIN_H         = 600
-	ROMFILE       = "msx1.rom"
-	FRAMETIME     = 20 // 50Hz -> Interval de 20Mseg
-	FPS           = 50
-	INSTRPERFRAME = 11600 // EL z80 executa devers 580000 instr per segon (Un "frame" són 20mseg, per tant executa 11600 instr. per frame)
+	WINTITLE = "gomsx"
+	WIN_W    = 800
+	WIN_H    = 600
+	ROMFILE  = "msx1.rom"
+	// 50Hz -> Interval de 20Mseg
+	FRAMETIME = 20
+	FPS       = 50
+	// EL z80 executa devers 580000 instr per segon
+	// (Un "frame" són 20mseg, per tant executa 11600 instr. per frame)
+	INSTRPERFRAME = 11600
 )
 
 func main() {
