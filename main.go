@@ -7,6 +7,7 @@ import "log"
 import "time"
 import "os"
 import "bufio"
+import "flag"
 
 const (
 	WINTITLE        = "gomsx"
@@ -18,17 +19,23 @@ const (
 )
 
 func main() {
+	flag.Parse()
+	memory := NewMemory()
+	loadBiosBasic(memory, ROMFILE)
+	if flag.NArg() == 1 {
+		rom := flag.Args()[0]
+		loadRom(memory, rom)
+	}
+	ports := new(Ports)
+	cpuZ80 := z80.NewZ80(memory, ports)
+	cpuZ80.Reset()
+	cpuZ80.SetPC(0)
+
 	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
 		log.Fatal(err)
 	}
 	defer gogame.Quit()
 
-	memory := NewMemory()
-	loadROMS(memory)
-	ports := new(Ports)
-	cpuZ80 := z80.NewZ80(memory, ports)
-	cpuZ80.Reset()
-	cpuZ80.SetPC(0)
 	log.Println("Beginning simulation...")
 	logAssembler := false
 	for {
@@ -67,20 +74,22 @@ func millis() int64 {
 	return time.Now().UnixNano() / (int64(time.Millisecond) / int64(time.Nanosecond))
 }
 
-func loadROMS(memory *Memory) {
-	buffer, err := readFile(ROMFILE)
+func loadBiosBasic(memory *Memory, fname string) {
+	buffer, err := readFile(fname)
 	if err != nil {
 		log.Fatal(err)
 	}
 	memory.load(buffer, 0, 0)
 	memory.load(buffer[0x4000:], 1, 0)
+}
 
-	// buffer, err = readFile("caos.rom")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// memory.load(buffer, 1, 1)
-	// memory.load(buffer[0x4000:], 2, 1)
+func loadRom(memory *Memory, fname string) {
+	buffer, err := readFile(fname)
+	if err != nil {
+		log.Fatal(err)
+	}
+	memory.load(buffer, 1, 1)
+	memory.load(buffer[0x4000:], 2, 1)
 }
 
 func readFile(fname string) ([]byte, error) {
