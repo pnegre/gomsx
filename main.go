@@ -10,12 +10,12 @@ import "bufio"
 import "flag"
 
 const (
-	WINTITLE        = "gomsx"
-	WIN_W           = 800
-	WIN_H           = 600
-	ROMFILE         = "msx1.rom"
-	FRAMETIME       = 20 // 50Hz -> Interval de 20Mseg
-	TSTATESPERFRAME = 71400
+	WINTITLE      = "gomsx"
+	WIN_W         = 800
+	WIN_H         = 600
+	ROMFILE       = "msx1.rom"
+	FRAMETIME     = 20    // 50Hz -> Interval de 20Mseg
+	INSTRPERFRAME = 11600 // EL z80 executa devers 580000 instr per segon (Un "frame" són 20mseg, per tant executa 11600 instr. per frame)
 )
 
 func main() {
@@ -38,11 +38,11 @@ func main() {
 
 	log.Println("Beginning simulation...")
 	logAssembler := false
+	var nframes uint64 = 0
+	startTime := millis()
 	for {
 		tme := millis()
-		// EL z80 executa devers 580000 instr per segon
-		// Un "frame" són 20mseg, per tant executa 11600 instr. per frame
-		for i := 0; i < 11600; i++ {
+		for i := 0; i < INSTRPERFRAME; i++ {
 			if logAssembler {
 				pc := cpuZ80.PC()
 				instr, _, _ := z80.Disassemble(memory, pc, 0)
@@ -67,11 +67,19 @@ func main() {
 		if tme > 0 {
 			gogame.Delay(int(tme))
 		}
+		nframes++
 	}
+	log.Println(nframes)
+	// log.Println(startTime)
+	// log.Println(millis())
+	// log.Println(millis() - startTime)
+	fps := float64(nframes) / (float64(millis()-startTime) / 1000)
+	log.Printf("Average FPS: %f\n", fps)
 }
 
 func millis() int64 {
-	return time.Now().UnixNano() / (int64(time.Millisecond) / int64(time.Nanosecond))
+	return time.Now().UnixNano() / int64(time.Millisecond)
+	// return time.Now().UnixNano() / (int64(time.Millisecond) / int64(time.Nanosecond))
 }
 
 func loadBiosBasic(memory *Memory, fname string) {
