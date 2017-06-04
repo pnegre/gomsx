@@ -103,8 +103,19 @@ func loadRom(memory *Memory, fname string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	memory.load(buffer, 1, 1)
-	memory.load(buffer[0x4000:], 2, 1)
+	npages := len(buffer) / 0x4000
+	switch npages {
+	case 1:
+		// Load ROM to page 1, slot 1
+		memory.load(buffer, 1, 1)
+	case 2:
+		// Load ROM to page 2, slot 1
+		memory.load(buffer, 1, 1)
+		memory.load(buffer[0x4000:], 2, 1)
+	default:
+		panic("ROM size not supported")
+	}
+
 }
 
 func readFile(fname string) ([]byte, error) {
