@@ -1,6 +1,7 @@
 package main
 
 import "github.com/pnegre/gogame"
+import "log"
 
 var colors []*gogame.Color
 
@@ -76,6 +77,7 @@ func graphics_renderScreen() {
 				graphics_drawPatternS1(x*8, y*8, pat*8, patTable, colorTable[pat/8])
 			}
 		}
+		graphics_drawSprites()
 		break
 
 	case vdp_screenMode == SCREEN2:
@@ -92,10 +94,12 @@ func graphics_renderScreen() {
 				graphics_drawPatternS2(x*8, y*8, pat*8, patTable, colorTable)
 			}
 		}
+		graphics_drawSprites()
 		break
 
 	case vdp_screenMode == SCREEN3:
 		// Render SCREEN3
+		log.Println("Drawing in screen3 not implemented yet")
 		break
 
 	default:
@@ -163,6 +167,42 @@ func graphics_drawPatternS2(x, y int, pt int, patTable []byte, colorTable []byte
 				gogame.DrawPixel(x+xx, y+i, color2)
 			}
 			xx++
+		}
+	}
+}
+
+func graphics_drawSprites() {
+	// Sprite name table: 1B00H to 1B7FH
+	// Sprite pattern table: 3800H to 3FFFH
+	sprTable := vdp_VRAM[0x1B00 : 0x1B7F+4]
+	sprPatTable := vdp_VRAM[0x3800 : 0x3FFF+4]
+	magnif := (vdp_registers[1] & 0x01) != 0
+	doubleSize := (vdp_registers[1] & 0x02) != 0
+	for i, j := 0, 0; i < 32; i, j = i+1, j+4 {
+		ypos := int(sprTable[j])
+		xpos := int(sprTable[j+1])
+		patn := sprTable[j+2]
+		ec := (sprTable[j+3] & 0x80) != 0
+		color := sprTable[j+3] & 0x0F
+		patt := sprPatTable[patn*8:]
+		if doubleSize {
+			patt = sprPatTable[(patn&0xFC)*8*4:]
+		}
+		// if i == 0 {
+		// 	log.Printf("Sprite 0: %d %d %d %d\n", ypos, xpos, patn, color)
+		// }
+		drawSpr(magnif, xpos, ypos, patt, ec, colors[color])
+	}
+}
+
+func drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color *gogame.Color) {
+	for y := 0; y < 8; y++ {
+		b := patt[y]
+		for x, mask := 0, byte(0x80); mask > 0; mask >>= 1 {
+			if mask&b != 0 {
+				gogame.DrawPixel(xpos+x, ypos+y, color)
+				x++
+			}
 		}
 	}
 }
