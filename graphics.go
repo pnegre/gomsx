@@ -47,15 +47,14 @@ func graphics_renderScreen() {
 		return
 	}
 	gogame.RenderClear()
+	nameTable := vdp_VRAM[(uint16(vdp_registers[2]) << 10):]
+	patTable := vdp_VRAM[(uint16(vdp_registers[4]) << 11):]
+	colorTable := vdp_VRAM[(uint16(vdp_registers[3]) << 6):]
 	switch {
 	case vdp_screenMode == SCREEN0:
 		// Render SCREEN0 (40x24)
-		// Pattern table: 0x0800 - 0x0FFF
-		// Name table: 0x0000 - 0x03BF
 		color1 := colors[(vdp_registers[7]&0xF0)>>4]
 		color2 := colors[(vdp_registers[7] & 0x0F)]
-		patTable := vdp_VRAM[0x800 : 0xFFF+1]
-		nameTable := vdp_VRAM[0x000 : 0x03BF+1]
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 40; x++ {
 				graphics_drawPatternS0(x*8, y*8, int(nameTable[x+y*40])*8, patTable, color1, color2)
@@ -65,12 +64,6 @@ func graphics_renderScreen() {
 
 	case vdp_screenMode == SCREEN1:
 		// Render SCREEN1 (32x24)
-		// Pattern table: 0x0000 - 0x07FF
-		// Name table: 0x1800 - 0x1AFF
-		// Color table: 0x2000 - 0x201F.
-		patTable := vdp_VRAM[0x0000 : 0x07FF+1]
-		nameTable := vdp_VRAM[0x1800 : 0x1AFF+1]
-		colorTable := vdp_VRAM[0x2000 : 0x201F+1]
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 32; x++ {
 				pat := int(nameTable[x+y*32])
@@ -85,9 +78,8 @@ func graphics_renderScreen() {
 		// Pattern table: 0000H to 17FFH
 		// Name table: 1800H to 1AFFH
 		// Color table: 2000H to 37FFH
-		patTable := vdp_VRAM[0x0000 : 0x17FF+1]
-		nameTable := vdp_VRAM[0x1800 : 0x1AFF+1]
-		colorTable := vdp_VRAM[0x2000 : 0x37FF+1]
+		patTable := vdp_VRAM[(uint16(vdp_registers[4]&0x04) << 11):]
+		colorTable := vdp_VRAM[(uint16(vdp_registers[3]&0x80) << 6):]
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 32; x++ {
 				pat := int(nameTable[x+y*32])
