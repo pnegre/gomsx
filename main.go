@@ -64,6 +64,10 @@ func main() {
 			break
 		}
 
+		// log.Printf("keys bios: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n", memory.ReadByte(0xfbe5), //FBE5-#FBEF)
+		// 	memory.ReadByte(0xfbe6), memory.ReadByte(0xfbe7), memory.ReadByte(0xfbe8), memory.ReadByte(0xfbe9), memory.ReadByte(0xfbea),
+		// 	memory.ReadByte(0xfbeb), memory.ReadByte(0xfbec), memory.ReadByte(0xfbed), memory.ReadByte(0xfbee), memory.ReadByte(0xfbef))
+
 		graphics_renderScreen()
 		gogame.Delay(1)
 	}
