@@ -197,6 +197,7 @@ func graphics_drawSprites() {
 	}
 }
 
+// TODO: sprite magnification not implemented
 func drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color *gogame.Color) {
 	for y := 0; y < 8; y++ {
 		b := patt[y]
