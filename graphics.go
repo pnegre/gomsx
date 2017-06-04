@@ -177,21 +177,23 @@ func graphics_drawSprites() {
 	sprTable := vdp_VRAM[0x1B00 : 0x1B7F+4]
 	sprPatTable := vdp_VRAM[0x3800 : 0x3FFF+4]
 	magnif := (vdp_registers[1] & 0x01) != 0
-	doubleSize := (vdp_registers[1] & 0x02) != 0
+	spr16 := (vdp_registers[1] & 0x02) != 0
 	for i, j := 0, 0; i < 32; i, j = i+1, j+4 {
 		ypos := int(sprTable[j])
 		xpos := int(sprTable[j+1])
 		patn := sprTable[j+2]
 		ec := (sprTable[j+3] & 0x80) != 0
-		color := sprTable[j+3] & 0x0F
+		color := colors[sprTable[j+3]&0x0F]
 		patt := sprPatTable[patn*8:]
-		if doubleSize {
-			patt = sprPatTable[(patn&0xFC)*8*4:]
+		if !spr16 {
+			drawSpr(magnif, xpos, ypos, patt, ec, color)
+		} else {
+			patt = sprPatTable[(patn>>2)*8*4:]
+			drawSpr(magnif, xpos, ypos, patt, ec, color)
+			drawSpr(magnif, xpos, ypos+8, patt[8:], ec, color)
+			drawSpr(magnif, xpos+8, ypos, patt[16:], ec, color)
+			drawSpr(magnif, xpos+8, ypos+8, patt[24:], ec, color)
 		}
-		// if i == 0 {
-		// 	log.Printf("Sprite 0: %d %d %d %d\n", ypos, xpos, patn, color)
-		// }
-		drawSpr(magnif, xpos, ypos, patt, ec, colors[color])
 	}
 }
 
