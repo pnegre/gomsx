@@ -174,21 +174,21 @@ func graphics_drawPatternS2(x, y int, pt int, patTable []byte, colorTable []byte
 func graphics_drawSprites() {
 	// Sprite name table: 1B00H to 1B7FH
 	// Sprite pattern table: 3800H to 3FFFH
-	sprTable := vdp_VRAM[0x1B00 : 0x1B7F+4]
-	sprPatTable := vdp_VRAM[0x3800 : 0x3FFF+4]
+	sprTable := vdp_VRAM[(uint16(vdp_registers[5]) << 7):]
+	sprPatTable := vdp_VRAM[(uint16(vdp_registers[6]) << 11):]
 	magnif := (vdp_registers[1] & 0x01) != 0
-	spr16 := (vdp_registers[1] & 0x02) != 0
+	spr16x16 := (vdp_registers[1] & 0x02) != 0
 	for i, j := 0, 0; i < 32; i, j = i+1, j+4 {
 		ypos := int(sprTable[j])
 		xpos := int(sprTable[j+1])
 		patn := sprTable[j+2]
 		ec := (sprTable[j+3] & 0x80) != 0
 		color := colors[sprTable[j+3]&0x0F]
-		patt := sprPatTable[patn*8:]
-		if !spr16 {
+		if !spr16x16 {
+			patt := sprPatTable[uint16(patn)*8:]
 			drawSpr(magnif, xpos, ypos, patt, ec, color)
 		} else {
-			patt = sprPatTable[(patn>>2)*8*4:]
+			patt := sprPatTable[uint16((patn>>2))*8*4:]
 			drawSpr(magnif, xpos, ypos, patt, ec, color)
 			drawSpr(magnif, xpos, ypos+8, patt[8:], ec, color)
 			drawSpr(magnif, xpos+8, ypos, patt[16:], ec, color)
@@ -203,8 +203,8 @@ func drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color *gogame.Co
 		for x, mask := 0, byte(0x80); mask > 0; mask >>= 1 {
 			if mask&b != 0 {
 				gogame.DrawPixel(xpos+x, ypos+y, color)
-				x++
 			}
+			x++
 		}
 	}
 }
