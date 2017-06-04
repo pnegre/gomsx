@@ -3,11 +3,11 @@ package main
 import "github.com/pnegre/gogame"
 import "log"
 
-var data [][]int
+var keycodesData [][]int
 
 func init() {
 	// Mirar http://map.grauw.nl/articles/keymatrix.php
-	data = [][]int{
+	keycodesData = [][]int{
 		{
 			gogame.K_7, gogame.K_6, gogame.K_5, gogame.K_4, gogame.K_3, gogame.K_2, gogame.K_1, gogame.K_0, // 7 &	6 ^	5 %	4 $	3 #	2 @	1 !	0 )
 		},
@@ -45,10 +45,10 @@ func init() {
 }
 
 func keyMatrix(row byte) (result byte) {
-	result = 0xff
+	result = byte(0xff)
 	if row < 11 {
 		for i := 0; i < 8; i++ {
-			if gogame.IsKeyPressed(data[row][i]) {
+			if gogame.IsKeyPressed(keycodesData[row][i]) {
 				result &= ^byte(1 << byte(7-i))
 				// log.Printf("Pressed key %d %d\n", row, i)
 			}

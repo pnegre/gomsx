@@ -109,7 +109,7 @@ func loadRom(memory *Memory, fname string) {
 		// Load ROM to page 1, slot 1
 		memory.load(buffer, 1, 1)
 	case 2:
-		// Load ROM to page 2, slot 1
+		// Load ROM to page 1 & 2, slot 1
 		memory.load(buffer, 1, 1)
 		memory.load(buffer[0x4000:], 2, 1)
 	default:
