@@ -113,9 +113,11 @@ func loadRom(memory *Memory, fname string) {
 		// Load ROM to page 1, slot 1
 		memory.load(buffer, 1, 1)
 	case 2:
-		// Load ROM to page 1 & 2, slot 1
+		// Load ROM to slot 1. Mirrored pg1&pg2 <=> pg3&pg4
+		memory.load(buffer, 0, 1)
 		memory.load(buffer, 1, 1)
 		memory.load(buffer[0x4000:], 2, 1)
+		memory.load(buffer[0x4000:], 3, 1)
 	default:
 		panic("ROM size not supported")
 	}
