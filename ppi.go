@@ -22,7 +22,6 @@ func ppi_writePort(ad byte, val byte) {
 				ppi_regc &= ^(0x01 << bitn)
 			}
 			return
-			//panic("PPI Write command register")
 		}
 
 	case ad == 0xa8:

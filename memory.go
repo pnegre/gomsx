@@ -41,6 +41,7 @@ func (self *Memory) ReadByte(address uint16) byte {
 // into account contention.
 func (self *Memory) ReadByteInternal(address uint16) byte {
 	if address == 0xffff {
+		log.Printf("Get secondary memory mapper\n")
 		return self.ffff
 	}
 	pg0Slot := ppi_slots & 0x03
