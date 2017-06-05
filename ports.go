@@ -40,7 +40,11 @@ func (self *Ports) WritePort(address uint16, b byte) {
 	case ad >= 0x98 && ad <= 0x9b:
 		vdp_writePort(ad, b)
 		return
+
+	case ad >= 0x00 && ad <= 0x01:
+		// MIDI / Sensor Kid
+		return
 	}
 
-	log.Fatalf("Writeport: %02x -> %02x\n", ad, b)
+	log.Printf("Writeport: %02x -> %02x\n", ad, b)
 }
