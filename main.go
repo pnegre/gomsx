@@ -80,10 +80,9 @@ func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
 			instr, _, _ := z80.Disassemble(memory, pc, 0)
 			log.Printf("%04x: %s\n", pc, instr)
 		}
-		if cpuZ80.Halted {
-			break
+		if !cpuZ80.Halted {
+			cpuZ80.DoOpcode()
 		}
-		cpuZ80.DoOpcode()
 	}
 	if vdp_enabledInterrupts {
 		vdp_setFrameFlag()
