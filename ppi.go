@@ -15,12 +15,11 @@ func ppi_writePort(ad byte, val byte) {
 		} else {
 			// Manipulate directly register C
 			bitn := (val & 0x0F) >> 1
-			vl := val & 0x01
 			//log.Printf("PPI: manipulate regC: Set bit %d to %d\n", bitn, vl)
-			if vl == 1 {
-				ppi_regc |= (0x01 << (bitn + 1))
+			if (val & 0x01) != 0 {
+				ppi_regc |= (0x01 << bitn)
 			} else {
-				ppi_regc &= ^(0x01 << (bitn + 1))
+				ppi_regc &= ^(0x01 << bitn)
 			}
 			return
 			//panic("PPI Write command register")
