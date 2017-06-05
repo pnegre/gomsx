@@ -55,10 +55,10 @@ func main() {
 			cpuFrame(cpuZ80, memory, logAssembler)
 			lag -= updateInterval
 		}
-		//
-		// if gogame.IsKeyPressed(gogame.K_ESC) {
-		// 	logAssembler = true
-		// }
+
+		if gogame.IsKeyPressed(gogame.K_F7) {
+			logAssembler = true
+		}
 
 		if quit := gogame.SlurpEvents(); quit == true {
 			break
