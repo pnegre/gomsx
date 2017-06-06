@@ -50,7 +50,6 @@ func keyMatrix(row byte) (result byte) {
 		for i := 0; i < 8; i++ {
 			if gogame.IsKeyPressed(keycodesData[row][i]) {
 				result &= ^byte(1 << byte(7-i))
-				// log.Printf("Pressed key %d %d\n", row, i)
 			}
 		}
 	} else {

@@ -19,7 +19,7 @@ const (
 	FPS       = 50
 	// EL z80 executa devers 580000 instr per segon
 	// (Un "frame" són 20mseg, per tant executa 11600 instr. per frame)
-	INSTRPERFRAME = 5600
+	INSTRPERFRAME = 8600
 )
 
 func main() {
@@ -64,10 +64,6 @@ func main() {
 			break
 		}
 
-		// log.Printf("keys bios: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n", memory.ReadByte(0xfbe5), //FBE5-#FBEF)
-		// 	memory.ReadByte(0xfbe6), memory.ReadByte(0xfbe7), memory.ReadByte(0xfbe8), memory.ReadByte(0xfbe9), memory.ReadByte(0xfbea),
-		// 	memory.ReadByte(0xfbeb), memory.ReadByte(0xfbec), memory.ReadByte(0xfbed), memory.ReadByte(0xfbee), memory.ReadByte(0xfbef))
-
 		graphics_renderScreen()
 		gogame.Delay(1)
 	}
@@ -75,9 +71,6 @@ func main() {
 
 func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
 	for i := 0; i < INSTRPERFRAME; i++ {
-		// if cpuZ80.PC() == 0x4010 {
-		// 	logAssembler = true
-		// }
 		if logAssembler {
 			pc := cpuZ80.PC()
 			instr, _, _ := z80.Disassemble(memory, pc, 0)
@@ -91,11 +84,6 @@ func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
 		vdp_setFrameFlag()
 		cpuZ80.Interrupt()
 	}
-}
-
-func millis() int64 {
-	return time.Now().UnixNano() / int64(time.Millisecond)
-	// return time.Now().UnixNano() / (int64(time.Millisecond) / int64(time.Nanosecond))
 }
 
 func loadBiosBasic(memory *Memory, fname string) {
@@ -116,6 +104,7 @@ func loadRom(memory *Memory, fname string) {
 	switch npages {
 	case 1:
 		// Load ROM to page 1, slot 1
+		// TODO: mirrored????
 		memory.load(buffer, 1, 1)
 	case 2:
 		// Load ROM to slot 1. Mirrored pg1&pg2 <=> pg3&pg4
