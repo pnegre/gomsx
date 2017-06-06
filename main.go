@@ -46,6 +46,8 @@ func main() {
 	updateInterval := int64(time.Second) / int64(FPS)
 	previousTime := time.Now().UnixNano()
 
+	startTime := time.Now().UnixNano()
+	nframes := 0
 	for {
 		currentTime = time.Now().UnixNano()
 		elapsedTime = currentTime - previousTime
@@ -66,7 +68,10 @@ func main() {
 
 		graphics_renderScreen()
 		gogame.Delay(1)
+		nframes++
 	}
+	delta := (time.Now().UnixNano() - startTime) / 100000000
+	log.Printf("Avg FPS: %f\n", float64(nframes)/float64(delta))
 }
 
 func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
