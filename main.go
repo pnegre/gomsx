@@ -67,7 +67,7 @@ func main() {
 		}
 
 		gogame.RenderClear()
-		graphics_renderScreen()
+		vdp_updateBuffer()
 		gogame.RenderPresent()
 
 		gogame.Delay(1)
