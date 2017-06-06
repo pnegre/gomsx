@@ -4,7 +4,9 @@ import "github.com/pnegre/gogame"
 import "log"
 
 var colors []*gogame.Color
-var graphics_texture *gogame.Texture
+var graphics_tex256 *gogame.Texture
+var graphics_tex320 *gogame.Texture
+var graphics_ActiveTexture *gogame.Texture
 
 func init() {
 	colors = []*gogame.Color{
@@ -31,49 +33,49 @@ func graphics_init() {
 	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
 		log.Fatal(err)
 	}
-	gogame.SetLogicalSize(320, 192)
-	graphics_texture = gogame.NewEmptyTexture(320, 192)
-	graphics_texture.Lock()
-	graphics_texture.Pixel(0, 0, gogame.COLOR_WHITE)
-	graphics_texture.Pixel(5, 0, gogame.COLOR_WHITE)
-	graphics_texture.Pixel(10, 0, gogame.COLOR_WHITE)
-	graphics_texture.Pixel(15, 0, gogame.COLOR_WHITE)
-	graphics_texture.Unlock()
+	// gogame.SetLogicalSize(320, 192)
+	graphics_tex256 = gogame.NewEmptyTexture(256, 192)
+	graphics_tex256.SetDimensions(WIN_W, WIN_H)
+	graphics_tex320 = gogame.NewEmptyTexture(320, 192)
+	graphics_tex320.SetDimensions(WIN_W, WIN_H)
+	graphics_ActiveTexture = graphics_tex256
 }
 
 func graphics_quit() {
+	graphics_tex256.Destroy()
+	graphics_tex320.Destroy()
 	gogame.Quit()
 }
 
 func graphics_loadBuffer() {
-	graphics_texture.Lock()
-	graphics_texture.Clear()
+	graphics_ActiveTexture.Lock()
+	graphics_ActiveTexture.Clear()
 	vdp_updateBuffer()
-	graphics_texture.Unlock()
+	graphics_ActiveTexture.Unlock()
 }
 
 func graphics_render() {
 	gogame.RenderClear()
-	graphics_texture.Blit(0, 0)
+	graphics_ActiveTexture.Blit(0, 0)
 	gogame.RenderPresent()
 }
 
 func graphics_drawPixel(x, y int, color int) {
-	graphics_texture.Pixel(x, y, colors[color])
+	graphics_ActiveTexture.Pixel(x, y, colors[color])
 	//gogame.DrawPixel(x, y, colors[color])
 }
 
 func graphics_setLogicalResolution() {
-	/*switch vdp_screenMode {
+	switch vdp_screenMode {
 	case SCREEN0:
-		gogame.SetLogicalSize(320, 192)
+		graphics_ActiveTexture = graphics_tex320
 		return
 	case SCREEN2:
-		gogame.SetLogicalSize(256, 192)
+		graphics_ActiveTexture = graphics_tex256
 		return
 	case SCREEN1:
-		gogame.SetLogicalSize(256, 192)
+		graphics_ActiveTexture = graphics_tex256
 		return
 	}
-	panic("setLogicalResolution: mode not supported")*/
+	panic("setLogicalResolution: mode not supported")
 }
