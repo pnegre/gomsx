@@ -69,7 +69,6 @@ func main() {
 		graphics_unlock()
 		graphics_render()
 
-		gogame.Delay(1)
 		nframes++
 	}
 	delta := (time.Now().UnixNano() - startTime) / int64(time.Second)
