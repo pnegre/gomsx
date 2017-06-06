@@ -25,8 +25,8 @@ func init() {
 	}
 }
 
-func graphics_drawPixel(x, y int, color *gogame.Color) {
-	gogame.DrawPixel(x, y, color)
+func graphics_drawPixel(x, y int, color int) {
+	gogame.DrawPixel(x, y, colors[color])
 }
 
 func graphics_setLogicalResolution() {

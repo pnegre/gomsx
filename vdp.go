@@ -1,7 +1,6 @@
 package main
 
 import "log"
-import "github.com/pnegre/gogame"
 
 const (
 	SCREEN0 = 0
@@ -127,8 +126,8 @@ func vdp_updateBuffer() {
 	switch {
 	case vdp_screenMode == SCREEN0:
 		// Render SCREEN0 (40x24)
-		color1 := colors[(vdp_registers[7]&0xF0)>>4]
-		color2 := colors[(vdp_registers[7] & 0x0F)]
+		color1 := int((vdp_registers[7] & 0xF0) >> 4)
+		color2 := int((vdp_registers[7] & 0x0F))
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 40; x++ {
 				vdp_drawPatternsS0(x*8, y*8, int(nameTable[x+y*40])*8, patTable, color1, color2)
@@ -172,7 +171,7 @@ func vdp_updateBuffer() {
 	}
 }
 
-func vdp_drawPatternsS0(x, y int, pt int, patTable []byte, color1, color2 *gogame.Color) {
+func vdp_drawPatternsS0(x, y int, pt int, patTable []byte, color1, color2 int) {
 	var mask byte
 	for i := 0; i < 8; i++ {
 		b := patTable[i+pt]
@@ -188,8 +187,8 @@ func vdp_drawPatternsS0(x, y int, pt int, patTable []byte, color1, color2 *gogam
 	}
 }
 func vdp_drawPatternsS1(x, y int, pt int, patTable []byte, color byte) {
-	color1 := colors[(color&0xF0)>>4]
-	color2 := colors[color&0x0F]
+	color1 := int((color & 0xF0) >> 4)
+	color2 := int(color & 0x0F)
 	var mask byte
 	for i := 0; i < 8; i++ {
 		b := patTable[i+pt]
@@ -220,8 +219,8 @@ func vdp_drawPatternsS2(x, y int, pt int, patTable []byte, colorTable []byte) {
 			b = patTable[i+pt+2048*2]
 			color = colorTable[i+pt+2048*2]
 		}
-		color1 := colors[(color&0xF0)>>4]
-		color2 := colors[color&0x0F]
+		color1 := int((color & 0xF0) >> 4)
+		color2 := int(color & 0x0F)
 		xx := 0
 		for mask = 0x80; mask > 0; mask >>= 1 {
 			if mask&b != 0 {
@@ -246,7 +245,7 @@ func vdp_drawSprites() {
 		xpos := int(sprTable[j+1])
 		patn := sprTable[j+2]
 		ec := (sprTable[j+3] & 0x80) != 0
-		color := colors[sprTable[j+3]&0x0F]
+		color := int(sprTable[j+3] & 0x0F)
 		if !spr16x16 {
 			patt := sprPatTable[uint16(patn)*8:]
 			drawSpr(magnif, xpos, ypos, patt, ec, color)
@@ -261,7 +260,7 @@ func vdp_drawSprites() {
 }
 
 // TODO: sprite magnification not implemented
-func drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color *gogame.Color) {
+func drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color int) {
 	for y := 0; y < 8; y++ {
 		b := patt[y]
 		for x, mask := 0, byte(0x80); mask > 0; mask >>= 1 {
