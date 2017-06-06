@@ -4,6 +4,7 @@ import "github.com/pnegre/gogame"
 import "log"
 
 var colors []*gogame.Color
+var graphics_texture *gogame.Texture
 
 func init() {
 	colors = []*gogame.Color{
@@ -30,14 +31,25 @@ func graphics_init() {
 	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
 		log.Fatal(err)
 	}
+	graphics_texture = gogame.NewEmptyTexture(320, 192)
 }
 
 func graphics_quit() {
 	gogame.Quit()
 }
 
+func graphics_render() {
+	gogame.RenderClear()
+	graphics_texture.Lock()
+	graphics_texture.Pixel(100, 100, gogame.COLOR_WHITE)
+	graphics_texture.Unlock()
+	graphics_texture.Blit(0, 0)
+	gogame.RenderPresent()
+}
+
 func graphics_drawPixel(x, y int, color int) {
-	gogame.DrawPixel(x, y, colors[color])
+	//graphics_texture.Pixel(x, y, colors[color])
+	//gogame.DrawPixel(x, y, colors[color])
 }
 
 func graphics_setLogicalResolution() {
