@@ -26,6 +26,10 @@ func init() {
 	}
 }
 
+func graphics_drawPixel(x, y int, color *gogame.Color) {
+	gogame.DrawPixel(x, y, color)
+}
+
 func graphics_setLogicalResolution() {
 	switch vdp_screenMode {
 	case SCREEN0:
@@ -106,9 +110,9 @@ func graphics_drawPatternS0(x, y int, pt int, patTable []byte, color1, color2 *g
 		xx := 0
 		for mask = 0x80; mask > 0; mask >>= 1 {
 			if mask&b != 0 {
-				gogame.DrawPixel(x+xx, y+i, color1)
+				graphics_drawPixel(x+xx, y+i, color1)
 			} else {
-				gogame.DrawPixel(x+xx, y+i, color2)
+				graphics_drawPixel(x+xx, y+i, color2)
 			}
 			xx++
 		}
@@ -123,9 +127,9 @@ func graphics_drawPatternS1(x, y int, pt int, patTable []byte, color byte) {
 		xx := 0
 		for mask = 0x80; mask > 0; mask >>= 1 {
 			if mask&b != 0 {
-				gogame.DrawPixel(x+xx, y+i, color1)
+				graphics_drawPixel(x+xx, y+i, color1)
 			} else {
-				gogame.DrawPixel(x+xx, y+i, color2)
+				graphics_drawPixel(x+xx, y+i, color2)
 			}
 			xx++
 		}
@@ -152,9 +156,9 @@ func graphics_drawPatternS2(x, y int, pt int, patTable []byte, colorTable []byte
 		xx := 0
 		for mask = 0x80; mask > 0; mask >>= 1 {
 			if mask&b != 0 {
-				gogame.DrawPixel(x+xx, y+i, color1)
+				graphics_drawPixel(x+xx, y+i, color1)
 			} else {
-				gogame.DrawPixel(x+xx, y+i, color2)
+				graphics_drawPixel(x+xx, y+i, color2)
 			}
 			xx++
 		}
@@ -193,7 +197,7 @@ func drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color *gogame.Co
 		b := patt[y]
 		for x, mask := 0, byte(0x80); mask > 0; mask >>= 1 {
 			if mask&b != 0 {
-				gogame.DrawPixel(xpos+x, ypos+y, color)
+				graphics_drawPixel(xpos+x, ypos+y, color)
 			}
 			x++
 		}
