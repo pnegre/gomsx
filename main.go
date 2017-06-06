@@ -75,6 +75,9 @@ func main() {
 
 func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
 	for i := 0; i < INSTRPERFRAME; i++ {
+		// if cpuZ80.PC() == 0x4010 {
+		// 	logAssembler = true
+		// }
 		if logAssembler {
 			pc := cpuZ80.PC()
 			instr, _, _ := z80.Disassemble(memory, pc, 0)
