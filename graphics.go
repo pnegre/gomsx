@@ -31,7 +31,14 @@ func graphics_init() {
 	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
 		log.Fatal(err)
 	}
+	gogame.SetLogicalSize(320, 192)
 	graphics_texture = gogame.NewEmptyTexture(320, 192)
+	graphics_texture.Lock()
+	graphics_texture.Pixel(0, 0, gogame.COLOR_WHITE)
+	graphics_texture.Pixel(5, 0, gogame.COLOR_WHITE)
+	graphics_texture.Pixel(10, 0, gogame.COLOR_WHITE)
+	graphics_texture.Pixel(15, 0, gogame.COLOR_WHITE)
+	graphics_texture.Unlock()
 }
 
 func graphics_quit() {
@@ -40,9 +47,6 @@ func graphics_quit() {
 
 func graphics_render() {
 	gogame.RenderClear()
-	graphics_texture.Lock()
-	graphics_texture.Pixel(100, 100, gogame.COLOR_WHITE)
-	graphics_texture.Unlock()
 	graphics_texture.Blit(0, 0)
 	gogame.RenderPresent()
 }
@@ -53,7 +57,7 @@ func graphics_drawPixel(x, y int, color int) {
 }
 
 func graphics_setLogicalResolution() {
-	switch vdp_screenMode {
+	/*switch vdp_screenMode {
 	case SCREEN0:
 		gogame.SetLogicalSize(320, 192)
 		return
@@ -64,5 +68,5 @@ func graphics_setLogicalResolution() {
 		gogame.SetLogicalSize(256, 192)
 		return
 	}
-	panic("setLogicalResolution: mode not supported")
+	panic("setLogicalResolution: mode not supported")*/
 }
