@@ -45,6 +45,13 @@ func graphics_quit() {
 	gogame.Quit()
 }
 
+func graphics_loadBuffer() {
+	graphics_texture.Lock()
+	graphics_texture.Clear()
+	vdp_updateBuffer()
+	graphics_texture.Unlock()
+}
+
 func graphics_render() {
 	gogame.RenderClear()
 	graphics_texture.Blit(0, 0)
@@ -52,7 +59,7 @@ func graphics_render() {
 }
 
 func graphics_drawPixel(x, y int, color int) {
-	//graphics_texture.Pixel(x, y, colors[color])
+	graphics_texture.Pixel(x, y, colors[color])
 	//gogame.DrawPixel(x, y, colors[color])
 }
 

@@ -64,10 +64,8 @@ func main() {
 			break
 		}
 
-		vdp_updateBuffer()
-		gogame.RenderClear()
+		graphics_loadBuffer()
 		graphics_render()
-		gogame.RenderPresent()
 
 		gogame.Delay(1)
 		nframes++
