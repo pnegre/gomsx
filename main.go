@@ -19,7 +19,7 @@ const (
 	FPS       = 50
 	// EL z80 executa devers 580000 instr per segon
 	// (Un "frame" són 20mseg, per tant executa 11600 instr. per frame)
-	INSTRPERFRAME = 8600
+	INSTRPERFRAME = 10600
 )
 
 func main() {
@@ -84,9 +84,7 @@ func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
 			instr, _, _ := z80.Disassemble(memory, pc, 0)
 			log.Printf("%04x: %s\n", pc, instr)
 		}
-		if !cpuZ80.Halted {
-			cpuZ80.DoOpcode()
-		}
+		cpuZ80.DoOpcode()
 	}
 	if vdp_enabledInterrupts {
 		vdp_setFrameFlag()
