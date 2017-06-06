@@ -33,7 +33,7 @@ func graphics_init() {
 	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
 		log.Fatal(err)
 	}
-	// gogame.SetLogicalSize(320, 192)
+	gogame.SetLogicalSize(WIN_W, WIN_H)
 	graphics_tex256 = gogame.NewEmptyTexture(256, 192)
 	graphics_tex256.SetDimensions(WIN_W, WIN_H)
 	graphics_tex320 = gogame.NewEmptyTexture(320, 192)
