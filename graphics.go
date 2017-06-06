@@ -46,7 +46,6 @@ func graphics_renderScreen() {
 	if !vdp_screenEnabled {
 		return
 	}
-	gogame.RenderClear()
 	nameTable := vdp_VRAM[(uint16(vdp_registers[2]) << 10):]
 	patTable := vdp_VRAM[(uint16(vdp_registers[4]) << 11):]
 	colorTable := vdp_VRAM[(uint16(vdp_registers[3]) << 6):]
@@ -98,7 +97,6 @@ func graphics_renderScreen() {
 		panic("RenderScreen: impossible mode")
 
 	}
-	gogame.RenderPresent()
 }
 
 func graphics_drawPatternS0(x, y int, pt int, patTable []byte, color1, color2 *gogame.Color) {

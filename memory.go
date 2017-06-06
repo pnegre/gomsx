@@ -1,7 +1,5 @@
 package main
 
-import "log"
-
 type Memory struct {
 	page0 [4][0x4000]byte
 	page1 [4][0x4000]byte
@@ -41,7 +39,7 @@ func (self *Memory) ReadByte(address uint16) byte {
 // into account contention.
 func (self *Memory) ReadByteInternal(address uint16) byte {
 	if address == 0xffff {
-		log.Printf("Get secondary memory mapper\n")
+		// log.Printf("Get secondary memory mapper\n")
 		return self.ffff
 	}
 	pg0Slot := ppi_slots & 0x03
@@ -72,7 +70,7 @@ func (self *Memory) WriteByte(address uint16, value byte) {
 // into account contention.
 func (self *Memory) WriteByteInternal(address uint16, value byte) {
 	if address == 0xffff {
-		log.Printf("Set secondary memory mapper: %02x\n", value)
+		// log.Printf("Set secondary memory mapper: %02x\n", value)
 		self.ffff = value
 		return
 	}

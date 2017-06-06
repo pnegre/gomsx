@@ -66,12 +66,15 @@ func main() {
 			break
 		}
 
+		gogame.RenderClear()
 		graphics_renderScreen()
+		gogame.RenderPresent()
+
 		gogame.Delay(1)
 		nframes++
 	}
-	delta := (time.Now().UnixNano() - startTime) / 100000000
-	log.Printf("Avg FPS: %f\n", float64(nframes)/float64(delta))
+	delta := (time.Now().UnixNano() - startTime) / int64(time.Second)
+	log.Printf("Avg FPS: %.2f\n", float64(nframes)/float64(delta))
 }
 
 func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
