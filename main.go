@@ -16,10 +16,10 @@ const (
 	ROMFILE  = "msx1.rom"
 	// 50Hz -> Interval de 20Mseg
 	FRAMETIME = 20
-	FPS       = 50
+	FPS       = 60
 	// EL z80 executa devers 580000 instr per segon
-	// (Un "frame" són 20mseg, per tant executa 11600 instr. per frame)
-	INSTRPERFRAME = 10600
+	// (Un "frame" són 16mseg, per tant executa 9280 instr. per frame)
+	INSTRPERFRAME = 9280
 )
 
 func main() {
