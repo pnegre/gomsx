@@ -1,6 +1,7 @@
 package main
 
 import "github.com/pnegre/gogame"
+import "log"
 
 var colors []*gogame.Color
 
@@ -25,6 +26,16 @@ func init() {
 	}
 }
 
+func graphics_init() {
+	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func graphics_quit() {
+	gogame.Quit()
+}
+
 func graphics_drawPixel(x, y int, color int) {
 	gogame.DrawPixel(x, y, colors[color])
 }
@@ -41,6 +52,5 @@ func graphics_setLogicalResolution() {
 		gogame.SetLogicalSize(256, 192)
 		return
 	}
-	println(vdp_screenMode)
 	panic("setLogicalResolution: mode not supported")
 }

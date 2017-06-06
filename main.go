@@ -35,10 +35,8 @@ func main() {
 	cpuZ80.Reset()
 	cpuZ80.SetPC(0)
 
-	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
-		log.Fatal(err)
-	}
-	defer gogame.Quit()
+	graphics_init()
+	defer graphics_quit()
 
 	log.Println("Beginning simulation...")
 	logAssembler := false
