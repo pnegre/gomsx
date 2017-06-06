@@ -47,10 +47,11 @@ func graphics_quit() {
 	gogame.Quit()
 }
 
-func graphics_loadBuffer() {
+func graphics_lock() {
 	graphics_ActiveTexture.Lock()
-	graphics_ActiveTexture.Clear()
-	vdp_updateBuffer()
+}
+
+func graphics_unlock() {
 	graphics_ActiveTexture.Unlock()
 }
 

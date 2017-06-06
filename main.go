@@ -64,7 +64,9 @@ func main() {
 			break
 		}
 
-		graphics_loadBuffer()
+		graphics_lock()
+		vdp_updateBuffer()
+		graphics_unlock()
 		graphics_render()
 
 		gogame.Delay(1)
