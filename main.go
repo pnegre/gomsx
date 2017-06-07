@@ -8,6 +8,7 @@ import "time"
 import "os"
 import "bufio"
 import "flag"
+import "regexp"
 
 const (
 	ROMFILE = "msx1.rom"
@@ -101,7 +102,7 @@ func loadRom(memory *Memory, fname string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if len(buffer) > 0x10000 {
+	if match, _ := regexp.MatchString("nemesis1.rom", fname); match {
 		// ROM MAPPER in slot 1
 		mapper := NewMapperKonami4()
 		mapper.load(buffer)
