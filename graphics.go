@@ -62,6 +62,27 @@ func graphics_render() {
 }
 
 func graphics_drawPixel(x, y int, color int) {
+	if x < 0 {
+		x = 0
+	}
+	if y < 0 {
+		y = 0
+	}
+	if y > 191 {
+		y = 191
+	}
+
+	switch {
+	case vdp_screenMode == SCREEN0:
+		if x > 320 {
+			x = 320
+		}
+	case vdp_screenMode == SCREEN1 || vdp_screenMode == SCREEN2:
+		if x > 255 {
+			x = 255
+		}
+	}
+
 	graphics_ActiveTexture.Pixel(x, y, colors[color])
 	//gogame.DrawPixel(x, y, colors[color])
 }
