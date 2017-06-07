@@ -14,9 +14,6 @@ func sound_writePort(ad byte, val byte) {
 
 	case ad == 0xa1:
 		// Write value to port
-		// if sound_regNext == 0x0e || sound_regNext == 0x0f {
-		// 	log.Printf("Joystick write!!!\n")
-		// }
 		sound_regs[sound_regNext] = val
 		return
 	}
