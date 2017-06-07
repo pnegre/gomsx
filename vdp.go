@@ -261,6 +261,10 @@ func vdp_drawSprites() {
 
 // TODO: sprite magnification not implemented
 func drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color int) {
+	if ypos > 191 {
+		return
+	}
+
 	for y := 0; y < 8; y++ {
 		b := patt[y]
 		for x, mask := 0, byte(0x80); mask > 0; mask >>= 1 {
