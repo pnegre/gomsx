@@ -21,25 +21,8 @@ func (self *MapperKonami4) load(data []byte) {
 func (self *MapperKonami4) readByte(address uint16) byte {
 	address -= 0x4000
 	place := address / 0x2000
-	var delta uint16
-	var realMem []byte
-	switch place {
-	case 0:
-		realMem = self.contents[self.sels[0]*0x2000:]
-		delta = address
-	case 1:
-		realMem = self.contents[self.sels[1]*0x2000:]
-		delta = address - 0x2000
-	case 2:
-		realMem = self.contents[self.sels[2]*0x2000:]
-		delta = address - 0x4000
-	case 3:
-		realMem = self.contents[self.sels[3]*0x2000:]
-		delta = address - 0x6000
-	default:
-		panic("Read mapper: impossible")
-	}
-
+	realMem := self.contents[self.sels[place]*0x2000:]
+	delta := address - 0x2000*place
 	return realMem[delta]
 }
 
