@@ -1,15 +1,21 @@
 package main
 
+import "log"
+
 type Memory struct {
-	page0 [4][0x4000]byte
-	page1 [4][0x4000]byte
-	page2 [4][0x4000]byte
-	page3 [4][0x4000]byte
-	ffff  byte
+	page0      [4][0x4000]byte
+	page1      [4][0x4000]byte
+	page2      [4][0x4000]byte
+	page3      [4][0x4000]byte
+	ffff       byte
+	mapper     *Mapper
+	slotMapper int
 }
 
 func NewMemory() *Memory {
 	mem := new(Memory)
+	mem.mapper = nil
+	mem.slotMapper = -1
 	return mem
 }
 
@@ -31,6 +37,13 @@ func (self *Memory) load(data []byte, page, slot int) {
 	}
 }
 
+func (self *Memory) setMapper(slot int, data []byte) {
+	log.Printf("Loading MegaROM in slot %d\n", slot)
+	self.mapper = NewMapper()
+	self.mapper.load(data)
+	self.slotMapper = slot
+}
+
 func (self *Memory) ReadByte(address uint16) byte {
 	return self.ReadByteInternal(address)
 }
@@ -42,10 +55,21 @@ func (self *Memory) ReadByteInternal(address uint16) byte {
 		// log.Printf("Get secondary memory mapper\n")
 		return self.ffff
 	}
+
 	pg0Slot := ppi_slots & 0x03
 	pg1Slot := (ppi_slots & 0x0C) >> 2
 	pg2Slot := (ppi_slots & 0x30) >> 4
 	pg3Slot := (ppi_slots & 0xC0) >> 6
+
+	if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
+		if address < 0x8000 && self.slotMapper == int(pg1Slot) {
+			return self.mapper.readByte(address)
+		}
+		if address < 0xC000 && self.slotMapper == int(pg2Slot) {
+			return self.mapper.readByte(address)
+		}
+	}
+
 	page := address / 0x4000
 	switch page {
 	case 0:
@@ -78,6 +102,18 @@ func (self *Memory) WriteByteInternal(address uint16, value byte) {
 	pg1Slot := (ppi_slots & 0x0C) >> 2
 	pg2Slot := (ppi_slots & 0x30) >> 4
 	pg3Slot := (ppi_slots & 0xC0) >> 6
+
+	if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
+		if address < 0x8000 && self.slotMapper == int(pg1Slot) {
+			self.mapper.writeByte(address, value)
+			return
+		}
+		if address < 0xC000 && self.slotMapper == int(pg2Slot) {
+			self.mapper.writeByte(address, value)
+			return
+		}
+	}
+
 	page := address / 0x4000
 	switch page {
 	case 0:

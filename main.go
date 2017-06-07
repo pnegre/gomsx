@@ -101,6 +101,11 @@ func loadRom(memory *Memory, fname string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if len(buffer) > 0x10000 {
+		// ROM MAPPER in slot 1
+		memory.setMapper(1, buffer)
+		return
+	}
 	npages := len(buffer) / 0x4000
 	switch npages {
 	case 1:
