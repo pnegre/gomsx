@@ -5,17 +5,13 @@ type MapperKonami4 struct {
 	sels     [4]int
 }
 
-func NewMapperKonami4() Mapper {
+func NewMapperKonami4(data []byte) Mapper {
 	m := new(MapperKonami4)
 	for i := 0; i < 4; i++ {
 		m.sels[i] = i
 	}
+	m.contents = data
 	return m
-}
-
-func (self *MapperKonami4) load(data []byte) {
-	self.contents = make([]byte, len(data))
-	copy(self.contents, data)
 }
 
 func (self *MapperKonami4) readByte(address uint16) byte {

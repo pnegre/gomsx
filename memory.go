@@ -3,7 +3,6 @@ package main
 import "log"
 
 type Mapper interface {
-	load(data []byte)
 	readByte(address uint16) byte
 	writeByte(address uint16, value byte)
 }

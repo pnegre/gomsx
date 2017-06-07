@@ -104,8 +104,7 @@ func loadRom(memory *Memory, fname string) {
 	}
 	if match, _ := regexp.MatchString("nemesis1.rom", fname); match {
 		// ROM MAPPER in slot 1
-		mapper := NewMapperKonami4()
-		mapper.load(buffer)
+		mapper := NewMapperKonami4(buffer)
 		memory.setMapper(mapper, 1)
 		return
 	}
