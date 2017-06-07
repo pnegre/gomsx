@@ -10,10 +10,7 @@ import "bufio"
 import "flag"
 
 const (
-	WINTITLE = "gomsx"
-	WIN_W    = 800
-	WIN_H    = 600
-	ROMFILE  = "msx1.rom"
+	ROMFILE = "msx1.rom"
 	// 50Hz -> Interval de 20Mseg
 	FRAMETIME = 20
 	FPS       = 60

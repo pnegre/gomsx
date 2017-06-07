@@ -3,6 +3,15 @@ package main
 import "github.com/pnegre/gogame"
 import "log"
 
+const (
+	WINTITLE = "gomsx"
+	WIN_W    = 800
+	WIN_H    = 600
+	MSX_W1   = 320
+	MSX_W2   = 256
+	MSX_H    = 192
+)
+
 var colors []*gogame.Color
 var graphics_tex256 *gogame.Texture
 var graphics_tex320 *gogame.Texture
@@ -34,10 +43,10 @@ func graphics_init() {
 		log.Fatal(err)
 	}
 	gogame.SetLogicalSize(WIN_W, WIN_H)
-	graphics_tex256 = gogame.NewEmptyTexture(256, 192)
-	graphics_tex256.SetDimensions(WIN_W, WIN_H)
-	graphics_tex320 = gogame.NewEmptyTexture(320, 192)
+	graphics_tex320 = gogame.NewEmptyTexture(MSX_W1, MSX_H)
 	graphics_tex320.SetDimensions(WIN_W, WIN_H)
+	graphics_tex256 = gogame.NewEmptyTexture(MSX_W2, MSX_H)
+	graphics_tex256.SetDimensions(WIN_W, WIN_H)
 	graphics_ActiveTexture = graphics_tex256
 }
 
@@ -68,23 +77,22 @@ func graphics_drawPixel(x, y int, color int) {
 	if y < 0 {
 		y = 0
 	}
-	if y > 191 {
-		y = 191
+	if y >= MSX_H {
+		y = MSX_H - 1
 	}
 
 	switch {
 	case vdp_screenMode == SCREEN0:
-		if x > 320 {
-			x = 320
+		if x >= MSX_W1 {
+			x = MSX_W1 - 1
 		}
 	case vdp_screenMode == SCREEN1 || vdp_screenMode == SCREEN2:
-		if x > 255 {
-			x = 255
+		if x >= MSX_W2 {
+			x = MSX_W2 - 1
 		}
 	}
 
 	graphics_ActiveTexture.Pixel(x, y, colors[color])
-	//gogame.DrawPixel(x, y, colors[color])
 }
 
 func graphics_setLogicalResolution() {
