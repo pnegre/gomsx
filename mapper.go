@@ -1,6 +1,6 @@
 package main
 
-type Mapper struct {
+type MapperKonami4 struct {
 	contents []byte
 	sel1     int
 	sel2     int
@@ -8,8 +8,8 @@ type Mapper struct {
 	sel4     int
 }
 
-func NewMapper() *Mapper {
-	m := new(Mapper)
+func NewMapperKonami4() Mapper {
+	m := new(MapperKonami4)
 	m.sel1 = 0
 	m.sel2 = 1
 	m.sel3 = 2
@@ -17,12 +17,12 @@ func NewMapper() *Mapper {
 	return m
 }
 
-func (self *Mapper) load(data []byte) {
+func (self *MapperKonami4) load(data []byte) {
 	self.contents = make([]byte, len(data))
 	copy(self.contents, data)
 }
 
-func (self *Mapper) readByte(address uint16) byte {
+func (self *MapperKonami4) readByte(address uint16) byte {
 	address -= 0x4000
 	place := address / 0x2000
 	var delta uint16
@@ -47,7 +47,7 @@ func (self *Mapper) readByte(address uint16) byte {
 	return realMem[delta]
 }
 
-func (self *Mapper) writeByte(address uint16, value byte) {
+func (self *MapperKonami4) writeByte(address uint16, value byte) {
 	address -= 0x4000
 	place := address / 0x2000
 	switch place {

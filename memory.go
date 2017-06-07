@@ -2,13 +2,19 @@ package main
 
 import "log"
 
+type Mapper interface {
+	load(data []byte)
+	readByte(address uint16) byte
+	writeByte(address uint16, value byte)
+}
+
 type Memory struct {
 	page0      [4][0x4000]byte
 	page1      [4][0x4000]byte
 	page2      [4][0x4000]byte
 	page3      [4][0x4000]byte
 	ffff       byte
-	mapper     *Mapper
+	mapper     Mapper
 	slotMapper int
 }
 
@@ -37,10 +43,9 @@ func (self *Memory) load(data []byte, page, slot int) {
 	}
 }
 
-func (self *Memory) setMapper(slot int, data []byte) {
+func (self *Memory) setMapper(mapper Mapper, slot int) {
 	log.Printf("Loading MegaROM in slot %d\n", slot)
-	self.mapper = NewMapper()
-	self.mapper.load(data)
+	self.mapper = mapper
 	self.slotMapper = slot
 }
 

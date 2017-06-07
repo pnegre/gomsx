@@ -103,7 +103,9 @@ func loadRom(memory *Memory, fname string) {
 	}
 	if len(buffer) > 0x10000 {
 		// ROM MAPPER in slot 1
-		memory.setMapper(1, buffer)
+		mapper := NewMapperKonami4()
+		mapper.load(buffer)
+		memory.setMapper(mapper, 1)
 		return
 	}
 	npages := len(buffer) / 0x4000
