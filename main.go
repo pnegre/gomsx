@@ -107,6 +107,12 @@ func loadRom(memory *Memory, fname string) {
 		mapper := NewMapperKonami4(buffer)
 		memory.setMapper(mapper, 1)
 		return
+
+	case KONAMI5:
+		log.Printf("Loading ROM %s to slot 1 as type KONAMI5\n", fname)
+		mapper := NewMapperKonami5(buffer)
+		memory.setMapper(mapper, 1)
+		return
 	}
 
 	npages := len(buffer) / 0x4000
