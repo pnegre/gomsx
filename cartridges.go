@@ -1,7 +1,8 @@
 package main
 
 import "regexp"
-import "log"
+
+//import "log"
 
 const (
 	UNKNOWN = iota
@@ -72,12 +73,12 @@ func NewMapperKonami5(data []byte) Mapper {
 }
 
 func (self *MapperKonami5) readByte(address uint16) byte {
-	if self.sccActive && address >= 0x9800 && address <= 0x9fff {
-		return self.sccContents[address-0x9800]
-	}
-	if false {
-		log.Printf("Konami5 read: %04x sels: %v\n", address, self.sels)
-	}
+	// if self.sccActive && address >= 0x9800 && address <= 0x9fff {
+	// 	return self.sccContents[address-0x9800]
+	// }
+	// if false {
+	// 	log.Printf("Konami5 read: %04x sels: %v\n", address, self.sels)
+	// }
 	address -= 0x4000
 	place := address / 0x2000
 	realMem := self.contents[self.sels[place]*0x2000:]
@@ -86,9 +87,9 @@ func (self *MapperKonami5) readByte(address uint16) byte {
 }
 
 func (self *MapperKonami5) writeByte(address uint16, value byte) {
-	if self.sccActive && address >= 0x9800 && address <= 0x9fff {
-		self.sccContents[address-0x9800] = value
-	}
+	// if self.sccActive && address >= 0x9800 && address <= 0x9fff {
+	// 	self.sccContents[address-0x9800] = value
+	// }
 	switch {
 	case address >= 0x5000 && address <= 0x57ff:
 		self.sels[0] = int(value % 16)
@@ -97,10 +98,10 @@ func (self *MapperKonami5) writeByte(address uint16, value byte) {
 		self.sels[1] = int(value % 16)
 		return
 	case address >= 0x9000 && address <= 0x97ff:
-		if (value & 0x3f) == 0x3f {
-			self.sccActive = true
-			return
-		}
+		// if (value & 0x3f) == 0x3f {
+		// 	self.sccActive = true
+		// 	return
+		// }
 		self.sels[2] = int(value % 16)
 		return
 	case address >= 0xb000 && address <= 0xb7ff:
