@@ -5,6 +5,15 @@ import "log"
 var ppi_slots uint8
 var ppi_regc uint8
 
+func ppi_getSlots() []byte {
+	return []byte{
+		ppi_slots & 0x03,
+		(ppi_slots & 0x0C) >> 2,
+		(ppi_slots & 0x30) >> 4,
+		(ppi_slots & 0xC0) >> 6,
+	}
+}
+
 func ppi_writePort(ad byte, val byte) {
 	switch {
 	case ad == 0xab:

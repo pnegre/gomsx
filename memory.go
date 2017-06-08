@@ -7,6 +7,7 @@ type Mapper interface {
 	writeByte(address uint16, value byte)
 }
 
+// TODO: Secondary mapper (0xFFFF)
 type Memory struct {
 	contents   [4][4][0x4000]byte
 	mapper     Mapper
@@ -38,22 +39,7 @@ func (self *Memory) ReadByte(address uint16) byte {
 // ReadByteInternal reads a byte from address without taking
 // into account contention.
 func (self *Memory) ReadByteInternal(address uint16) byte {
-	// if address == 0xffff {
-	// 	// log.Printf("Get secondary memory mapper\n")
-	// 	return self.ffff
-	// }
-
-	pgSlots := []byte{
-		ppi_slots & 0x03,
-		(ppi_slots & 0x0C) >> 2,
-		(ppi_slots & 0x30) >> 4,
-		(ppi_slots & 0xC0) >> 6,
-	}
-	// pg0Slot := ppi_slots & 0x03
-	// pg1Slot := (ppi_slots & 0x0C) >> 2
-	// pg2Slot := (ppi_slots & 0x30) >> 4
-	// pg3Slot := (ppi_slots & 0xC0) >> 6
-
+	pgSlots := ppi_getSlots()
 	if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
 		if address < 0x8000 && self.slotMapper == int(pgSlots[1]) {
 			return self.mapper.readByte(address)
@@ -66,17 +52,6 @@ func (self *Memory) ReadByteInternal(address uint16) byte {
 	page := address / 0x4000
 	delta := address - page*0x4000
 	return self.contents[page][pgSlots[page]][delta]
-	// switch page {
-	// case 0:
-	// 	return self.contents[0][pg0Slot][address]
-	// case 1:
-	// 	return self.contents[1][pg1Slot][address-0x4000]
-	// case 2:
-	// 	return self.contents[2][pg2Slot][address-0x8000]
-	// case 3:
-	// 	return self.contents[3][pg3Slot][address-0xC000]
-	// }
-	// panic("Tried to read impossible memory location")
 }
 
 // WriteByte writes a byte at address taking into account
@@ -88,11 +63,6 @@ func (self *Memory) WriteByte(address uint16, value byte) {
 // WriteByteInternal writes a byte at address without taking
 // into account contention.
 func (self *Memory) WriteByteInternal(address uint16, value byte) {
-	// if address == 0xffff {
-	// 	// log.Printf("Set secondary memory mapper: %02x\n", value)
-	// 	self.ffff = value
-	// 	return
-	// }
 	pg0Slot := ppi_slots & 0x03
 	pg1Slot := (ppi_slots & 0x0C) >> 2
 	pg2Slot := (ppi_slots & 0x30) >> 4
