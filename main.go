@@ -8,7 +8,6 @@ import "time"
 import "os"
 import "bufio"
 import "flag"
-import "regexp"
 
 const (
 	ROMFILE = "msx1.rom"
@@ -102,20 +101,24 @@ func loadRom(memory *Memory, fname string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if match, _ := regexp.MatchString("nemesis1.rom", fname); match {
-		// ROM MAPPER in slot 1
+	switch getCartType(fname, buffer) {
+	case KONAMI4:
+		log.Printf("Loading ROM %s to slot 1 as type KONAMI4\n", fname)
 		mapper := NewMapperKonami4(buffer)
 		memory.setMapper(mapper, 1)
 		return
 	}
+
 	npages := len(buffer) / 0x4000
 	switch npages {
 	case 1:
 		// Load ROM to page 1, slot 1
 		// TODO: mirrored????
+		log.Printf("Loading ROM %s to slot 1 (16KB)\n", fname)
 		memory.load(buffer, 1, 1)
 	case 2:
 		// Load ROM to slot 1. Mirrored pg1&pg2 <=> pg3&pg4
+		log.Printf("Loading ROM %s to slot 1 (32KB)\n", fname)
 		memory.load(buffer, 0, 1)
 		memory.load(buffer, 1, 1)
 		memory.load(buffer[0x4000:], 2, 1)
