@@ -13,8 +13,7 @@ const (
 	RTYPE
 )
 
-// TODO: implementar bé aquesta rutina...
-func getCartType(fname string, data []byte) int {
+func getCartType(data []byte) int {
 	hash := fmt.Sprintf("%x", sha1.Sum(data))
 	log.Printf("Hash: %s\n", hash)
 	switch hash {

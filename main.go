@@ -101,7 +101,7 @@ func loadRom(memory *Memory, fname string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	switch getCartType(fname, buffer) {
+	switch getCartType(buffer) {
 	case KONAMI4:
 		log.Printf("Loading ROM %s to slot 1 as type KONAMI4\n", fname)
 		mapper := NewMapperKonami4(buffer)
