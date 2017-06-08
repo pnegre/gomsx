@@ -63,36 +63,36 @@ func (self *Memory) WriteByte(address uint16, value byte) {
 // WriteByteInternal writes a byte at address without taking
 // into account contention.
 func (self *Memory) WriteByteInternal(address uint16, value byte) {
-	pg0Slot := ppi_slots & 0x03
-	pg1Slot := (ppi_slots & 0x0C) >> 2
-	pg2Slot := (ppi_slots & 0x30) >> 4
-	pg3Slot := (ppi_slots & 0xC0) >> 6
-
+	pgSlots := ppi_getSlots()
 	if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
-		if address < 0x8000 && self.slotMapper == int(pg1Slot) {
+		if address < 0x8000 && self.slotMapper == int(pgSlots[1]) {
 			self.mapper.writeByte(address, value)
 			return
 		}
-		if address < 0xC000 && self.slotMapper == int(pg2Slot) {
+		if address < 0xC000 && self.slotMapper == int(pgSlots[2]) {
 			self.mapper.writeByte(address, value)
 			return
 		}
 	}
 
 	page := address / 0x4000
-	switch page {
-	case 0:
-		self.contents[0][pg0Slot][address] = value
-		return
-	case 1:
-		self.contents[1][pg1Slot][address-0x4000] = value
-		return
-	case 2:
-		self.contents[2][pg2Slot][address-0x8000] = value
-		return
-	case 3:
-		self.contents[3][pg3Slot][address-0xC000] = value
-		return
-	}
-	panic("Tried to write impossible memory location")
+	delta := address - page*0x4000
+	self.contents[page][pgSlots[page]][delta] = value
+	//
+	// page := address / 0x4000
+	// switch page {
+	// case 0:
+	// 	self.contents[0][pg0Slot][address] = value
+	// 	return
+	// case 1:
+	// 	self.contents[1][pg1Slot][address-0x4000] = value
+	// 	return
+	// case 2:
+	// 	self.contents[2][pg2Slot][address-0x8000] = value
+	// 	return
+	// case 3:
+	// 	self.contents[3][pg3Slot][address-0xC000] = value
+	// 	return
+	// }
+	// panic("Tried to write impossible memory location")
 }
