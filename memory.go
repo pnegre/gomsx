@@ -78,21 +78,4 @@ func (self *Memory) WriteByteInternal(address uint16, value byte) {
 	page := address / 0x4000
 	delta := address - page*0x4000
 	self.contents[page][pgSlots[page]][delta] = value
-	//
-	// page := address / 0x4000
-	// switch page {
-	// case 0:
-	// 	self.contents[0][pg0Slot][address] = value
-	// 	return
-	// case 1:
-	// 	self.contents[1][pg1Slot][address-0x4000] = value
-	// 	return
-	// case 2:
-	// 	self.contents[2][pg2Slot][address-0x8000] = value
-	// 	return
-	// case 3:
-	// 	self.contents[3][pg3Slot][address-0xC000] = value
-	// 	return
-	// }
-	// panic("Tried to write impossible memory location")
 }
