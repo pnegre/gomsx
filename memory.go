@@ -41,10 +41,10 @@ func (self *Memory) ReadByte(address uint16) byte {
 func (self *Memory) ReadByteInternal(address uint16) byte {
 	pgSlots := ppi_getSlots()
 	if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
-		if address < 0x8000 && self.slotMapper == int(pgSlots[1]) {
+		if address < 0x8000 && self.slotMapper == pgSlots[1] {
 			return self.mapper.readByte(address)
 		}
-		if address < 0xC000 && self.slotMapper == int(pgSlots[2]) {
+		if address < 0xC000 && self.slotMapper == pgSlots[2] {
 			return self.mapper.readByte(address)
 		}
 	}
@@ -65,11 +65,11 @@ func (self *Memory) WriteByte(address uint16, value byte) {
 func (self *Memory) WriteByteInternal(address uint16, value byte) {
 	pgSlots := ppi_getSlots()
 	if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
-		if address < 0x8000 && self.slotMapper == int(pgSlots[1]) {
+		if address < 0x8000 && self.slotMapper == pgSlots[1] {
 			self.mapper.writeByte(address, value)
 			return
 		}
-		if address < 0xC000 && self.slotMapper == int(pgSlots[2]) {
+		if address < 0xC000 && self.slotMapper == pgSlots[2] {
 			self.mapper.writeByte(address, value)
 			return
 		}

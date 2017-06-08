@@ -4,14 +4,17 @@ import "log"
 
 var ppi_slots uint8
 var ppi_regc uint8
+var ppi_slotsValues [4]int
 
-func ppi_getSlots() []byte {
-	return []byte{
-		ppi_slots & 0x03,
-		(ppi_slots & 0x0C) >> 2,
-		(ppi_slots & 0x30) >> 4,
-		(ppi_slots & 0xC0) >> 6,
-	}
+func ppi_getSlots() [4]int {
+	return ppi_slotsValues
+}
+
+func ppi_refreshSlotsValues() {
+	ppi_slotsValues[0] = int(ppi_slots & 0x03)
+	ppi_slotsValues[1] = int((ppi_slots & 0x0C) >> 2)
+	ppi_slotsValues[2] = int((ppi_slots & 0x30) >> 4)
+	ppi_slotsValues[3] = int((ppi_slots & 0xC0) >> 6)
 }
 
 func ppi_writePort(ad byte, val byte) {
@@ -34,11 +37,11 @@ func ppi_writePort(ad byte, val byte) {
 		}
 
 	case ad == 0xa8:
-		// TODO: manage slots
 		if val != ppi_slots {
 			log.Printf("Set slots: %02x\n", val)
 		}
 		ppi_slots = val
+		ppi_refreshSlotsValues()
 		return
 
 	case ad == 0xaa:
