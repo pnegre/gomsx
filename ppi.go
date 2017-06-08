@@ -27,7 +27,7 @@ func ppi_writePort(ad byte, val byte) {
 	case ad == 0xa8:
 		// TODO: manage slots
 		if val != ppi_slots {
-			// log.Printf("Set slots: %02x\n", val)
+			log.Printf("Set slots: %02x\n", val)
 		}
 		ppi_slots = val
 		return
