@@ -57,6 +57,7 @@ func (self *MapperKonami4) writeByte(address uint16, value byte) {
 
 type MapperKonami5 struct {
 	contents    []byte
+	numBanks    byte
 	sels        [4]int
 	sccActive   bool
 	sccContents [0x800]byte
@@ -68,6 +69,7 @@ func NewMapperKonami5(data []byte) Mapper {
 		m.sels[i] = i
 	}
 	m.contents = data
+	m.numBanks = byte(len(data) / 8192)
 	m.sccActive = false
 	return m
 }
@@ -92,17 +94,17 @@ func (self *MapperKonami5) writeByte(address uint16, value byte) {
 	// }
 	switch {
 	case address >= 0x5000 && address <= 0x57ff:
-		self.sels[0] = int(value % 16)
+		self.sels[0] = int(value % self.numBanks)
 		return
 	case address >= 0x7000 && address <= 0x77ff:
-		self.sels[1] = int(value % 16)
+		self.sels[1] = int(value % self.numBanks)
 		return
 	case address >= 0x9000 && address <= 0x97ff:
 		// if (value & 0x3f) == 0x3f {
 		// 	self.sccActive = true
 		// 	return
 		// }
-		self.sels[2] = int(value % 16)
+		self.sels[2] = int(value % self.numBanks)
 		return
 	case address >= 0xb000 && address <= 0xb7ff:
 		self.sels[3] = int(value % 16)
