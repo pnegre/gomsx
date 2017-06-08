@@ -71,28 +71,6 @@ func graphics_render() {
 }
 
 func graphics_drawPixel(x, y int, color int) {
-	if x < 0 {
-		x = 0
-	}
-	if y < 0 {
-		y = 0
-	}
-	if y >= MSX_H {
-		y = MSX_H - 1
-	}
-
-	switch {
-	case vdp_screenMode == SCREEN0:
-		if x >= MSX_W1 {
-			x = MSX_W1 - 1
-		}
-	case vdp_screenMode == SCREEN1 || vdp_screenMode == SCREEN2:
-		if x >= MSX_W2 {
-			x = MSX_W2 - 1
-		}
-	}
-
-	// TODO: fer la comprovació de límits de x i y dins "Pixel" a gogame
 	graphics_ActiveTexture.Pixel(x, y, colors[color])
 }
 
