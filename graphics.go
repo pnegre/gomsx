@@ -92,6 +92,7 @@ func graphics_drawPixel(x, y int, color int) {
 		}
 	}
 
+	// TODO: fer la comprovació de límits de x i y dins "Pixel" a gogame
 	graphics_ActiveTexture.Pixel(x, y, colors[color])
 }
 
