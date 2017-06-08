@@ -19,22 +19,22 @@ var graphics_ActiveTexture *gogame.Texture
 
 func init() {
 	colors = []*gogame.Color{
-		&gogame.Color{0, 0, 0, 255},          // Transparent
-		&gogame.Color{0, 0, 0, 255},          // Black
-		&gogame.Color{0x20, 0xc8, 0x40, 255}, // Green
-		&gogame.Color{0x58, 0xd8, 0x78, 255}, // Light Green
-		&gogame.Color{0x50, 0x50, 0xe8, 255}, // Dark Blue
-		&gogame.Color{0x78, 0x70, 0xf7, 255}, // Light Blue
-		&gogame.Color{0xd0, 0x50, 0x48, 255}, // Dark Red
-		&gogame.Color{0x40, 0xe8, 0xf0, 255}, // Cyan
-		&gogame.Color{0xf7, 0x50, 0x50, 255}, // Red
-		&gogame.Color{0xf7, 0x78, 0x78, 255}, // Bright Red
-		&gogame.Color{0xd0, 0xc0, 0x50, 255}, // Yellow
-		&gogame.Color{0xe0, 0xc8, 0x80, 255}, // Light Yellow
-		&gogame.Color{0x20, 0xb0, 0x38, 255}, // Dark Green
-		&gogame.Color{0xc8, 0x58, 0xb8, 255}, // Purple
-		&gogame.Color{0xc8, 0xc8, 0xc8, 255}, // Gray
-		&gogame.Color{0xf7, 0xf7, 0xf7, 255}, // White
+		&gogame.Color{R: 0x00, G: 0x00, B: 0x00, A: 255}, // Transparent
+		&gogame.Color{R: 0x00, G: 0x00, B: 0x00, A: 255}, // Black
+		&gogame.Color{R: 0x20, G: 0xc8, B: 0x40, A: 255}, // Green
+		&gogame.Color{R: 0x58, G: 0xd8, B: 0x78, A: 255}, // Light Green
+		&gogame.Color{R: 0x50, G: 0x50, B: 0xe8, A: 255}, // Dark Blue
+		&gogame.Color{R: 0x78, G: 0x70, B: 0xf7, A: 255}, // Light Blue
+		&gogame.Color{R: 0xd0, G: 0x50, B: 0x48, A: 255}, // Dark Red
+		&gogame.Color{R: 0x40, G: 0xe8, B: 0xf0, A: 255}, // Cyan
+		&gogame.Color{R: 0xf7, G: 0x50, B: 0x50, A: 255}, // Red
+		&gogame.Color{R: 0xf7, G: 0x78, B: 0x78, A: 255}, // Bright Red
+		&gogame.Color{R: 0xd0, G: 0xc0, B: 0x50, A: 255}, // Yellow
+		&gogame.Color{R: 0xe0, G: 0xc8, B: 0x80, A: 255}, // Light Yellow
+		&gogame.Color{R: 0x20, G: 0xb0, B: 0x38, A: 255}, // Dark Green
+		&gogame.Color{R: 0xc8, G: 0x58, B: 0xb8, A: 255}, // Purple
+		&gogame.Color{R: 0xc8, G: 0xc8, B: 0xc8, A: 255}, // Gray
+		&gogame.Color{R: 0xf7, G: 0xf7, B: 0xf7, A: 255}, // White
 	}
 }
 
