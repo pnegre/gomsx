@@ -1,8 +1,8 @@
 package main
 
-import "regexp"
-
-//import "log"
+import "crypto/sha1"
+import "log"
+import "fmt"
 
 const (
 	UNKNOWN = iota
@@ -15,12 +15,17 @@ const (
 
 // TODO: implementar bé aquesta rutina...
 func getCartType(fname string, data []byte) int {
-	if match, _ := regexp.MatchString("nemesis1.rom", fname); match {
+	hash := fmt.Sprintf("%x", sha1.Sum(data))
+	log.Printf("Hash: %s\n", hash)
+	switch hash {
+	case "e31ac6520e912c27ce96431a1dfb112bf71cb7b9":
+		// Nemesis 1
 		return KONAMI4
-	}
-	if match, _ := regexp.MatchString("nemesis2.rom", fname); match {
+	case "ab30cdeaacbdf14e6366d43d881338178fc665cb":
+		// Nemesis 2
 		return KONAMI5
 	}
+
 	return UNKNOWN
 }
 
