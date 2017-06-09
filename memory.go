@@ -57,8 +57,9 @@ func (self *Memory) ReadByteInternal(address uint16) byte {
 	}
 
 	page := address / 0x4000
+	slot := pgSlots[page]
 	delta := address - page*0x4000
-	return self.contents[page][pgSlots[page]][delta]
+	return self.contents[page][slot][delta]
 }
 
 // WriteByte writes a byte at address taking into account
