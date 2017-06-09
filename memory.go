@@ -47,17 +47,23 @@ func (self *Memory) ReadByte(address uint16) byte {
 // into account contention.
 func (self *Memory) ReadByteInternal(address uint16) byte {
 	pgSlots := ppi_getSlots()
-	if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
-		if address < 0x8000 && self.slotMapper == pgSlots[1] {
-			return self.mapper.readByte(address)
-		}
-		if address >= 0x8000 && address < 0xC000 && self.slotMapper == pgSlots[2] {
-			return self.mapper.readByte(address)
-		}
-	}
-
 	page := address / 0x4000
 	slot := pgSlots[page]
+
+	if self.mapper != nil && self.slotMapper == slot && (page == 1 || page == 2) {
+		return self.mapper.readByte(address)
+	}
+
+	// pgSlots := ppi_getSlots()
+	// if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
+	// 	if address < 0x8000 && self.slotMapper == pgSlots[1] {
+	// 		return self.mapper.readByte(address)
+	// 	}
+	// 	if address >= 0x8000 && address < 0xC000 && self.slotMapper == pgSlots[2] {
+	// 		return self.mapper.readByte(address)
+	// 	}
+	// }
+
 	delta := address - page*0x4000
 	return self.contents[page][slot][delta]
 }
@@ -72,19 +78,25 @@ func (self *Memory) WriteByte(address uint16, value byte) {
 // into account contention.
 func (self *Memory) WriteByteInternal(address uint16, value byte) {
 	pgSlots := ppi_getSlots()
-	if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
-		if address < 0x8000 && self.slotMapper == pgSlots[1] {
-			self.mapper.writeByte(address, value)
-			return
-		}
-		if address >= 0x8000 && address < 0xC000 && self.slotMapper == pgSlots[2] {
-			self.mapper.writeByte(address, value)
-			return
-		}
-	}
-
 	page := address / 0x4000
 	slot := pgSlots[page]
+
+	if self.mapper != nil && self.slotMapper == slot && (page == 1 || page == 2) {
+		self.mapper.writeByte(address, value)
+		return
+	}
+
+	// if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
+	// 	if address < 0x8000 && self.slotMapper == pgSlots[1] {
+	// 		self.mapper.writeByte(address, value)
+	// 		return
+	// 	}
+	// 	if address >= 0x8000 && address < 0xC000 && self.slotMapper == pgSlots[2] {
+	// 		self.mapper.writeByte(address, value)
+	// 		return
+	// 	}
+	// }
+
 	if self.canWrite[page][slot] {
 		delta := address - page*0x4000
 		self.contents[page][slot][delta] = value
