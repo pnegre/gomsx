@@ -54,16 +54,6 @@ func (self *Memory) ReadByteInternal(address uint16) byte {
 		return self.mapper.readByte(address)
 	}
 
-	// pgSlots := ppi_getSlots()
-	// if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
-	// 	if address < 0x8000 && self.slotMapper == pgSlots[1] {
-	// 		return self.mapper.readByte(address)
-	// 	}
-	// 	if address >= 0x8000 && address < 0xC000 && self.slotMapper == pgSlots[2] {
-	// 		return self.mapper.readByte(address)
-	// 	}
-	// }
-
 	delta := address - page*0x4000
 	return self.contents[page][slot][delta]
 }
@@ -85,17 +75,6 @@ func (self *Memory) WriteByteInternal(address uint16, value byte) {
 		self.mapper.writeByte(address, value)
 		return
 	}
-
-	// if self.mapper != nil && address >= 0x4000 && address <= 0xBFFF {
-	// 	if address < 0x8000 && self.slotMapper == pgSlots[1] {
-	// 		self.mapper.writeByte(address, value)
-	// 		return
-	// 	}
-	// 	if address >= 0x8000 && address < 0xC000 && self.slotMapper == pgSlots[2] {
-	// 		self.mapper.writeByte(address, value)
-	// 		return
-	// 	}
-	// }
 
 	if self.canWrite[page][slot] {
 		delta := address - page*0x4000
