@@ -5,7 +5,8 @@ import "log"
 import "fmt"
 
 const (
-	UNKNOWN = iota
+	NORMAL = iota
+	UNKNOWN
 	KONAMI4
 	KONAMI5
 	ASCII8KB
@@ -16,19 +17,24 @@ const (
 func getCartType(data []byte) int {
 	hash := fmt.Sprintf("%x", sha1.Sum(data))
 	log.Printf("Hash: %s\n", hash)
-	switch hash {
-	case "e31ac6520e912c27ce96431a1dfb112bf71cb7b9":
-		// Nemesis 1
-		return KONAMI4
-	case "ab30cdeaacbdf14e6366d43d881338178fc665cb":
-		// Nemesis 2
-		return KONAMI5
-	case "709fb35338f21897e275237cc4c5615d0a5c2753":
-		// Batman
-		return ASCII8KB
+	if str, err := lookForRom(hash); err == nil {
+		switch str {
+		case "NORMAL":
+			return NORMAL
+		case "Konami":
+			return KONAMI4
+		case "KonamiSCC":
+			return KONAMI5
+		case "ASCII8":
+			return ASCII8KB
+		default:
+			log.Printf("Rom %s not supported\n", str)
+		}
+		return UNKNOWN
+	} else {
+		log.Println(err)
+		return UNKNOWN
 	}
-
-	return UNKNOWN
 }
 
 type MapperKonami4 struct {
