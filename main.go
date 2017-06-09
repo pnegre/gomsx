@@ -121,6 +121,8 @@ func loadRom(memory *Memory, fname string) {
 		return
 	}
 
+	log.Printf("Failed to identify cartridge as MegaROM. Trying to load as a standard cartridge...\n")
+
 	npages := len(buffer) / 0x4000
 	switch npages {
 	case 1:

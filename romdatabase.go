@@ -1,6 +1,5 @@
 package main
 
-// import "fmt"
 import "encoding/xml"
 import "os"
 import "io/ioutil"
