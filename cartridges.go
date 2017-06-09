@@ -17,7 +17,7 @@ const (
 func getCartType(data []byte) int {
 	hash := fmt.Sprintf("%x", sha1.Sum(data))
 	log.Printf("Hash: %s\n", hash)
-	if str, err := lookForRom(hash); err == nil {
+	if str, err := searchInRomDatabase(hash); err == nil {
 		switch str {
 		case "NORMAL":
 			return NORMAL
