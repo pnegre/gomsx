@@ -113,6 +113,12 @@ func loadRom(memory *Memory, fname string) {
 		mapper := NewMapperKonami5(buffer)
 		memory.setMapper(mapper, 1)
 		return
+
+	case ASCII8KB:
+		log.Printf("Loading ROM %s to slot 1 as type ASCII8KB\n", fname)
+		mapper := NewMapperASCII8(buffer)
+		memory.setMapper(mapper, 1)
+		return
 	}
 
 	npages := len(buffer) / 0x4000
@@ -129,6 +135,12 @@ func loadRom(memory *Memory, fname string) {
 		memory.load(buffer, 1, 1)
 		memory.load(buffer[0x4000:], 2, 1)
 		memory.load(buffer[0x4000:], 3, 1)
+	case 4:
+		log.Printf("Loading ROM %s to slot 1 (64KB)\n", fname)
+		memory.load(buffer, 0, 1)
+		memory.load(buffer[0x4000:], 1, 1)
+		memory.load(buffer[0x8000:], 2, 1)
+		memory.load(buffer[0xC000:], 3, 1)
 	default:
 		panic("ROM size not supported")
 	}

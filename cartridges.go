@@ -23,6 +23,9 @@ func getCartType(data []byte) int {
 	case "ab30cdeaacbdf14e6366d43d881338178fc665cb":
 		// Nemesis 2
 		return KONAMI5
+	case "709fb35338f21897e275237cc4c5615d0a5c2753":
+		// Batman
+		return ASCII8KB
 	}
 
 	return UNKNOWN
@@ -95,7 +98,7 @@ func (self *MapperKonami5) writeByte(address uint16, value byte) {
 		self.sels[2] = int(value % self.numBanks)
 		return
 	case address >= 0xb000 && address <= 0xb7ff:
-		self.sels[3] = int(value % 16)
+		self.sels[3] = int(value % self.numBanks)
 		return
 	}
 
@@ -104,4 +107,45 @@ func (self *MapperKonami5) writeByte(address uint16, value byte) {
 	// realMem := self.contents[self.sels[place]*0x2000:]
 	// delta := address - 0x2000*place
 	// realMem[delta] = value
+}
+
+type MapperASCII8 struct {
+	contents []byte
+	numBanks byte
+	sels     [4]int
+}
+
+func NewMapperASCII8(data []byte) Mapper {
+	m := new(MapperASCII8)
+	for i := 0; i < 4; i++ {
+		m.sels[i] = i
+	}
+	m.contents = data
+	m.numBanks = byte(len(data) / 8192)
+	return m
+}
+
+func (self *MapperASCII8) readByte(address uint16) byte {
+	address -= 0x4000
+	place := address / 0x2000
+	realMem := self.contents[self.sels[place]*0x2000:]
+	delta := address - 0x2000*place
+	return realMem[delta]
+}
+
+func (self *MapperASCII8) writeByte(address uint16, value byte) {
+	switch {
+	case address >= 0x6000 && address <= 0x67ff:
+		self.sels[0] = int(value % self.numBanks)
+		return
+	case address >= 0x6800 && address <= 0x6fff:
+		self.sels[1] = int(value % self.numBanks)
+		return
+	case address >= 0x7000 && address <= 0x77ff:
+		self.sels[2] = int(value % self.numBanks)
+		return
+	case address >= 0x7800 && address <= 0x7fff:
+		self.sels[3] = int(value % self.numBanks)
+		return
+	}
 }
