@@ -99,9 +99,9 @@ func (self *MapperKonami5) writeByte(address uint16, value byte) {
 		return
 	}
 
-	address -= 0x4000
-	place := address / 0x2000
-	realMem := self.contents[self.sels[place]*0x2000:]
-	delta := address - 0x2000*place
-	realMem[delta] = value
+	// address -= 0x4000
+	// place := address / 0x2000
+	// realMem := self.contents[self.sels[place]*0x2000:]
+	// delta := address - 0x2000*place
+	// realMem[delta] = value
 }
