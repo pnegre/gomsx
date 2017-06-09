@@ -75,6 +75,12 @@ func (self *Memory) WriteByteInternal(address uint16, value byte) {
 		}
 	}
 
+	// TODO: arreglar això. NOMÉS PER CARTUTXOS!!!!
+	// Don't allow memory write in ROM / BASIC
+	if address < 0xC000 {
+		return
+	}
+
 	page := address / 0x4000
 	delta := address - page*0x4000
 	self.contents[page][pgSlots[page]][delta] = value
