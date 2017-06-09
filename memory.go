@@ -10,6 +10,7 @@ type Mapper interface {
 // TODO: Secondary mapper (0xFFFF)
 type Memory struct {
 	contents   [4][4][0x4000]byte
+	canWrite   [4][4]bool
 	mapper     Mapper
 	slotMapper int
 }
@@ -18,12 +19,18 @@ func NewMemory() *Memory {
 	mem := new(Memory)
 	mem.mapper = nil
 	mem.slotMapper = -1
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			mem.canWrite[i][j] = true
+		}
+	}
 	return mem
 }
 
 // Loads 16k (one page)
 func (self *Memory) load(data []byte, page, slot int) {
 	copy(self.contents[page][slot][:], data[:0x4000])
+	self.canWrite[page][slot] = false
 }
 
 func (self *Memory) setMapper(mapper Mapper, slot int) {
@@ -75,13 +82,10 @@ func (self *Memory) WriteByteInternal(address uint16, value byte) {
 		}
 	}
 
-	// TODO: arreglar això. NOMÉS PER CARTUTXOS!!!!
-	// Don't allow memory write in ROM / BASIC
-	if address < 0xC000 {
-		return
-	}
-
 	page := address / 0x4000
-	delta := address - page*0x4000
-	self.contents[page][pgSlots[page]][delta] = value
+	slot := pgSlots[page]
+	if self.canWrite[page][slot] {
+		delta := address - page*0x4000
+		self.contents[page][slot][delta] = value
+	}
 }
