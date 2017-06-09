@@ -4,17 +4,13 @@ import "log"
 
 var ppi_slots uint8
 var ppi_regc uint8
-var ppi_slotsValues [4]int
-
-func ppi_getSlots() [4]int {
-	return ppi_slotsValues
-}
+var ppi_pgSlots [4]int
 
 func ppi_refreshSlotsValues() {
-	ppi_slotsValues[0] = int(ppi_slots & 0x03)
-	ppi_slotsValues[1] = int((ppi_slots & 0x0C) >> 2)
-	ppi_slotsValues[2] = int((ppi_slots & 0x30) >> 4)
-	ppi_slotsValues[3] = int((ppi_slots & 0xC0) >> 6)
+	ppi_pgSlots[0] = int(ppi_slots & 0x03)
+	ppi_pgSlots[1] = int((ppi_slots & 0x0C) >> 2)
+	ppi_pgSlots[2] = int((ppi_slots & 0x30) >> 4)
+	ppi_pgSlots[3] = int((ppi_slots & 0xC0) >> 6)
 }
 
 func ppi_writePort(ad byte, val byte) {

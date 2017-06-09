@@ -1,5 +1,6 @@
 package main
 
+import "log"
 import "testing"
 import "math/rand"
 
@@ -7,6 +8,8 @@ func TestMem001(t *testing.T) {
 	r := rand.New(rand.NewSource(99))
 	memory := NewMemory()
 	ppi_slots = 0x14
+	ppi_refreshSlotsValues()
+
 	data := make([]byte, 0x10000)
 	for i := 0; i < len(data); i++ {
 		data[i] = byte(r.Uint32() % 255)
@@ -24,6 +27,7 @@ func TestMem002(t *testing.T) {
 	loadBiosBasic(memory, ROMFILE)
 	loadRom(memory, "games/loderunner.rom")
 	ppi_slots = 0x14
+	ppi_refreshSlotsValues()
 
 	check := func(address uint16, val byte) {
 		if memory.ReadByte(address) != val {
@@ -31,6 +35,7 @@ func TestMem002(t *testing.T) {
 		}
 	}
 
+	log.Println("Tests----")
 	check(0x3ffe, 0x09)
 	check(0x3fff, 0x18)
 	check(0x4000, 0x41)

@@ -46,9 +46,8 @@ func (self *Memory) ReadByte(address uint16) byte {
 // ReadByteInternal reads a byte from address without taking
 // into account contention.
 func (self *Memory) ReadByteInternal(address uint16) byte {
-	pgSlots := ppi_getSlots()
 	page := address / 0x4000
-	slot := pgSlots[page]
+	slot := ppi_pgSlots[page]
 
 	if self.mapper != nil && self.slotMapper == slot && (page == 1 || page == 2) {
 		return self.mapper.readByte(address)
@@ -67,9 +66,8 @@ func (self *Memory) WriteByte(address uint16, value byte) {
 // WriteByteInternal writes a byte at address without taking
 // into account contention.
 func (self *Memory) WriteByteInternal(address uint16, value byte) {
-	pgSlots := ppi_getSlots()
 	page := address / 0x4000
-	slot := pgSlots[page]
+	slot := ppi_pgSlots[page]
 
 	if self.mapper != nil && self.slotMapper == slot && (page == 1 || page == 2) {
 		self.mapper.writeByte(address, value)
