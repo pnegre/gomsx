@@ -24,6 +24,7 @@ type SoundDevice struct {
 	dev    *gogame.SoundDevice
 	volume int
 	freq   int
+	active bool
 }
 
 var sound_devices [3]*SoundDevice
@@ -31,7 +32,7 @@ var sound_devices [3]*SoundDevice
 func NewSoundDevice() *SoundDevice {
 	sd := new(SoundDevice)
 	sd.dev, _ = gogame.NewSoundDevice()
-	sd.dev.Start()
+	sd.active = false
 	return sd
 }
 
@@ -41,6 +42,17 @@ func (self *SoundDevice) setParameters(freq int, vol int) {
 		self.freq = freq
 		self.dev.SetAmplitude(vol)
 		self.dev.SetFreq(freq)
+	}
+}
+
+func (self *SoundDevice) activate(act bool) {
+	if self.active != act {
+		self.active = act
+		if act {
+			self.dev.Start()
+		} else {
+			self.dev.Stop()
+		}
 	}
 }
 
@@ -96,4 +108,5 @@ func sound_work() {
 		realFreqA := 111861 / fa
 		sound_devices[0].setParameters(realFreqA, va)
 	}
+	sound_devices[0].activate((sound_regs[7] & 0x01) == 0)
 }
