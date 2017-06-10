@@ -113,8 +113,24 @@ func sound_work() {
 	fa := (int(sound_regs[1]&0x0f) << 8) | int(sound_regs[0])
 	va := int(sound_regs[8] & 0x0F)
 	if fa > 0 {
-		realFreqA := 111861 / fa
-		sound_devices[0].setParameters(realFreqA, va)
+		realFreq := 111861 / fa
+		sound_devices[0].setParameters(realFreq, va)
 	}
 	sound_devices[0].activate((sound_regs[7] & 0x01) == 0)
+
+	fa = (int(sound_regs[3]&0x0f) << 8) | int(sound_regs[2])
+	va = int(sound_regs[9] & 0x0F)
+	if fa > 0 {
+		realFreq := 111861 / fa
+		sound_devices[1].setParameters(realFreq, va)
+	}
+	sound_devices[1].activate((sound_regs[7] & 0x02) == 0)
+
+	fa = (int(sound_regs[5]&0x0f) << 8) | int(sound_regs[4])
+	va = int(sound_regs[10] & 0x0F)
+	if fa > 0 {
+		realFreq := 111861 / fa
+		sound_devices[2].setParameters(realFreq, va)
+	}
+	sound_devices[2].activate((sound_regs[7] & 0x04) == 0)
 }
