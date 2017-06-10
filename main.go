@@ -33,6 +33,7 @@ func main() {
 	cpuZ80.SetPC(0)
 
 	graphics_init()
+	sound_init()
 	defer graphics_quit()
 
 	log.Println("Beginning simulation...")

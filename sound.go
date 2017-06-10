@@ -1,12 +1,15 @@
 package main
 
+import "github.com/pnegre/gogame"
 import "log"
 
 var sound_regs [16]byte
 var sound_regNext byte
 
-var sound_freqA uint
-var sound_volA uint
+var sound_freqA int
+var sound_volA int
+
+var sound_device *gogame.SoundDevice
 
 /*
 
@@ -18,6 +21,11 @@ var sound_volA uint
 	sound 8, &B00001111 // Set amplitude for channel A
 
 */
+
+func sound_init() {
+	sound_device, _ = gogame.NewSoundDevice()
+	sound_device.Start()
+}
 
 func sound_writePort(ad byte, val byte) {
 	switch {
@@ -61,12 +69,13 @@ func sound_readPort(ad byte) byte {
 
 func sound_work() {
 	// log.Println(sound_regs)
-	fa := (uint(sound_regs[1]&0x0f) << 8) | uint(sound_regs[0])
-	va := uint(sound_regs[8] & 0x0F)
+	fa := (int(sound_regs[1]&0x0f) << 8) | int(sound_regs[0])
+	va := int(sound_regs[8] & 0x0F)
 	if fa > 0 && fa != sound_freqA {
 		sound_freqA = fa
 		sound_volA = va
 		realFreqA := 111861 / fa
 		log.Printf("Freq A: %d, real: %d, volume: %d\n", fa, realFreqA, sound_volA)
+		sound_device.SetFreq(realFreqA)
 	}
 }
