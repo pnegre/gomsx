@@ -5,6 +5,9 @@ import "log"
 var sound_regs [16]byte
 var sound_regNext byte
 
+var sound_freqA uint
+var sound_volA uint
+
 /*
 
 	Exemple en msx basic:
@@ -57,10 +60,13 @@ func sound_readPort(ad byte) byte {
 }
 
 func sound_work() {
-	log.Println(sound_regs)
-	freqA := (uint(sound_regs[1]&0x0f) << 8) | uint(sound_regs[0])
-	if freqA > 0 {
-		realFreqA := 111861 / freqA
-		log.Printf("Freq A: %d, real: %d\n", freqA, realFreqA)
+	// log.Println(sound_regs)
+	fa := (uint(sound_regs[1]&0x0f) << 8) | uint(sound_regs[0])
+	va := uint(sound_regs[8] & 0x0F)
+	if fa > 0 && fa != sound_freqA {
+		sound_freqA = fa
+		sound_volA = va
+		realFreqA := 111861 / fa
+		log.Printf("Freq A: %d, real: %d, volume: %d\n", fa, realFreqA, sound_volA)
 	}
 }
