@@ -35,6 +35,7 @@ func main() {
 	graphics_init()
 	sound_init()
 	defer graphics_quit()
+	defer sound_quit()
 
 	log.Println("Beginning simulation...")
 	logAssembler := false

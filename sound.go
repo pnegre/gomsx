@@ -58,6 +58,14 @@ func (self *SoundDevice) activate(act bool) {
 
 func sound_init() {
 	sound_devices[0] = NewSoundDevice()
+	sound_devices[1] = NewSoundDevice()
+	sound_devices[2] = NewSoundDevice()
+}
+
+func sound_quit() {
+	for i := 0; i < 3; i++ {
+		sound_devices[i].dev.Close()
+	}
 }
 
 func sound_writePort(ad byte, val byte) {
