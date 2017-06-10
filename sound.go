@@ -1,16 +1,5 @@
 package main
 
-import "github.com/pnegre/gogame"
-import "log"
-
-var sound_regs [16]byte
-var sound_regNext byte
-
-var sound_freqA int
-var sound_volA int
-
-var sound_device *gogame.SoundDevice
-
 /*
 
 	Exemple en msx basic:
@@ -22,9 +11,41 @@ var sound_device *gogame.SoundDevice
 
 */
 
+import "github.com/pnegre/gogame"
+import "log"
+
+var sound_regs [16]byte
+var sound_regNext byte
+
+var sound_freqA int
+var sound_volA int
+
+type SoundDevice struct {
+	dev    *gogame.SoundDevice
+	volume int
+	freq   int
+}
+
+var sound_devices [3]*SoundDevice
+
+func NewSoundDevice() *SoundDevice {
+	sd := new(SoundDevice)
+	sd.dev, _ = gogame.NewSoundDevice()
+	sd.dev.Start()
+	return sd
+}
+
+func (self *SoundDevice) setParameters(freq int, vol int) {
+	if self.volume != vol || self.freq != freq {
+		self.volume = vol
+		self.freq = freq
+		self.dev.SetAmplitude(vol)
+		self.dev.SetFreq(freq)
+	}
+}
+
 func sound_init() {
-	sound_device, _ = gogame.NewSoundDevice()
-	sound_device.Start()
+	sound_devices[0] = NewSoundDevice()
 }
 
 func sound_writePort(ad byte, val byte) {
@@ -71,11 +92,8 @@ func sound_work() {
 	// log.Println(sound_regs)
 	fa := (int(sound_regs[1]&0x0f) << 8) | int(sound_regs[0])
 	va := int(sound_regs[8] & 0x0F)
-	if fa > 0 && fa != sound_freqA {
-		sound_freqA = fa
-		sound_volA = va
+	if fa > 0 {
 		realFreqA := 111861 / fa
-		log.Printf("Freq A: %d, real: %d, volume: %d\n", fa, realFreqA, sound_volA)
-		sound_device.SetFreq(realFreqA)
+		sound_devices[0].setParameters(realFreqA, va)
 	}
 }
