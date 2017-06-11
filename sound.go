@@ -75,7 +75,7 @@ func sound_readPort(ad byte) byte {
 }
 
 type SoundDevice struct {
-	dev    *gogame.SoundDevice
+	dev    *gogame.ToneGenerator
 	volume int
 	freq   int
 	active bool
@@ -83,7 +83,7 @@ type SoundDevice struct {
 
 func NewSoundDevice() *SoundDevice {
 	sd := new(SoundDevice)
-	sd.dev, _ = gogame.NewSoundDevice()
+	sd.dev, _ = gogame.NewToneGenerator()
 	sd.active = false
 	return sd
 }
