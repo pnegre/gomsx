@@ -83,7 +83,11 @@ type SoundDevice struct {
 
 func NewSoundDevice() *SoundDevice {
 	sd := new(SoundDevice)
-	sd.dev, _ = gogame.NewToneGenerator()
+	var err error
+	if sd.dev, err = gogame.NewToneGenerator(); err != nil {
+		panic("Error creating tone generator!")
+	}
+
 	sd.active = false
 	return sd
 }
