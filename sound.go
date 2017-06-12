@@ -84,19 +84,51 @@ func sound_readPort(ad byte) byte {
 func sound_work() {
 	// log.Println(sound_regs)
 	for i := 0; i < 3; i++ {
-		sound_workChannel(i)
+		sound_doTones(i)
 	}
 
+	sound_doNoises()
+}
+
+func sound_doNoises() {
 	if (sound_regs[7] & 0x38) == 0x38 {
 		sound_noise.activate(false)
 	} else {
-		sound_noise.setParameters(100, 1.5)
-		sound_noise.activate(true)
+		freq := int(sound_regs[6] & 0x1F)
+
+		if freq > 0 {
+			realFreq := 111861 / freq
+
+			var vol float32 = 0
+			if (sound_regs[7] & 0x20) == 0 {
+				v := float32(sound_regs[8] & 0x0F)
+				if v > vol {
+					vol = v
+				}
+			}
+
+			if (sound_regs[7] & 0x10) == 0 {
+				v := float32(sound_regs[9] & 0x0F)
+				if v > vol {
+					vol = v
+				}
+			}
+
+			if (sound_regs[7] & 0x04) == 0 {
+				v := float32(sound_regs[10] & 0x0F)
+				if v > vol {
+					vol = v
+				}
+			}
+
+			sound_noise.setParameters(realFreq, vol)
+			sound_noise.activate(true)
+		}
 	}
 }
 
 // TODO: envelopes
-func sound_workChannel(chn int) {
+func sound_doTones(chn int) {
 	freq := (int(sound_regs[chn*2+1]&0x0f) << 8) | int(sound_regs[chn*2])
 	envelopeEnabled := (sound_regs[8+chn] & 0x10) != 0
 	if freq > 0 {
