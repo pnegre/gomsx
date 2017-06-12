@@ -81,10 +81,12 @@ func sound_readPort(ad byte) byte {
 }
 
 type SoundDevice struct {
-	dev    *gogame.ToneGenerator
-	volume int
-	freq   int
-	active bool
+	dev      *gogame.ToneGenerator
+	volume   int
+	freq     int
+	active   bool
+	envFreq  uint16
+	envShape byte
 }
 
 func NewSoundDevice() *SoundDevice {
@@ -104,6 +106,15 @@ func (self *SoundDevice) setParameters(freq int, vol int) {
 		self.freq = freq
 		self.dev.SetAmplitude(vol)
 		self.dev.SetFreq(freq)
+	}
+}
+
+func (self *SoundDevice) setEnvelope(envFreq uint16, envShape byte) {
+	// TODO: implementar...
+	if envFreq != self.envFreq || envShape != self.envShape {
+		log.Printf("Set envelope: %d %d\n", envFreq, envShape)
+		self.envShape = envShape
+		self.envFreq = envFreq
 	}
 }
 
@@ -127,11 +138,18 @@ func sound_work() {
 
 // TODO: envelopes
 func sound_workChannel(chn int) {
-	fa := (int(sound_regs[chn*2+1]&0x0f) << 8) | int(sound_regs[chn*2])
-	va := int(sound_regs[8+chn] & 0x0F)
-	if fa > 0 {
-		realFreq := 111861 / fa
-		sound_devices[chn].setParameters(realFreq, va)
+	freq := (int(sound_regs[chn*2+1]&0x0f) << 8) | int(sound_regs[chn*2])
+	envelopeEnabled := (sound_regs[8+chn] & 0x10) != 0
+	if freq > 0 {
+		realFreq := 111861 / freq
+		if envelopeEnabled {
+			envFreq := (uint16(sound_regs[12]) << 8) | uint16(sound_regs[11])
+			envShape := sound_regs[13] & 0x0F
+			sound_devices[chn].setEnvelope(envFreq, envShape)
+		} else {
+			volume := int(sound_regs[8+chn] & 0x0F)
+			sound_devices[chn].setParameters(realFreq, volume)
+		}
 	}
 	sound_devices[chn].activate((sound_regs[7] & (0x01 << uint(chn))) == 0)
 }
