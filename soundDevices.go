@@ -62,10 +62,30 @@ type Noise struct {
 func NewNoise() *Noise {
 	sd := new(Noise)
 	var err error
-	if sd.dev, err = gogame.NewToneGenerator(gogame.GENERATOR_TYPE_TONE); err != nil {
+	if sd.dev, err = gogame.NewToneGenerator(gogame.GENERATOR_TYPE_NOISE); err != nil {
 		panic("Error creating tone generator!")
 	}
 
 	sd.active = false
 	return sd
+}
+
+func (self *Noise) activate(act bool) {
+	if self.active != act {
+		self.active = act
+		if act {
+			self.dev.Start()
+		} else {
+			self.dev.Stop()
+		}
+	}
+}
+
+func (self *Noise) setParameters(freq int, vol float32) {
+	if self.volume != vol || self.freq != freq {
+		self.volume = vol
+		self.freq = freq
+		self.dev.SetAmplitude(vol)
+		self.dev.SetFreq(freq)
+	}
 }

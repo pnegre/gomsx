@@ -86,6 +86,13 @@ func sound_work() {
 	for i := 0; i < 3; i++ {
 		sound_workChannel(i)
 	}
+
+	if (sound_regs[7] & 0x38) == 0x38 {
+		sound_noise.activate(false)
+	} else {
+		sound_noise.setParameters(100, 1.5)
+		sound_noise.activate(true)
+	}
 }
 
 // TODO: envelopes
