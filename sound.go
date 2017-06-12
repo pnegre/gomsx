@@ -4,10 +4,16 @@ package main
 
 	Exemple en msx basic:
 
-	sound 0,105         // Set tone A frequency
+	sound 0,105          // Set tone A frequency
 	sound 1,0
-	sound 7, &B10111110 // enable tone generator A
-	sound 8, &B00001111 // Set amplitude for channel A
+	sound 7, &B10111110  // enable tone generator A
+	sound 8, &B00010000  // Set amplitude for channel A (envelope)
+
+	sound 11, 0          // Frequency for envelope
+	sound 12, 20
+
+	sound 13, &B00001000 // Select envelope "1000"
+
 
 */
 
