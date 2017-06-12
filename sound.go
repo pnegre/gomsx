@@ -17,7 +17,6 @@ package main
 
 */
 
-import "github.com/pnegre/gogame"
 import "log"
 
 var sound_regs [16]byte
@@ -26,17 +25,19 @@ var sound_regNext byte
 var sound_freqA int
 var sound_volA int
 
-var sound_devices [3]*SoundDevice
+var sound_tones [3]*Tone
+var sound_noise *Noise
 
 func sound_init() {
-	sound_devices[0] = NewSoundDevice()
-	sound_devices[1] = NewSoundDevice()
-	sound_devices[2] = NewSoundDevice()
+	sound_tones[0] = NewTone()
+	sound_tones[1] = NewTone()
+	sound_tones[2] = NewTone()
+	sound_noise = NewNoise()
 }
 
 func sound_quit() {
 	for i := 0; i < 3; i++ {
-		sound_devices[i].dev.Close()
+		sound_tones[i].dev.Close()
 	}
 }
 
@@ -80,55 +81,6 @@ func sound_readPort(ad byte) byte {
 	return 0
 }
 
-type SoundDevice struct {
-	dev      *gogame.ToneGenerator
-	volume   int
-	freq     int
-	active   bool
-	envFreq  uint16
-	envShape byte
-}
-
-func NewSoundDevice() *SoundDevice {
-	sd := new(SoundDevice)
-	var err error
-	if sd.dev, err = gogame.NewToneGenerator(); err != nil {
-		panic("Error creating tone generator!")
-	}
-
-	sd.active = false
-	return sd
-}
-
-func (self *SoundDevice) setParameters(freq int, vol int) {
-	if self.volume != vol || self.freq != freq {
-		self.volume = vol
-		self.freq = freq
-		self.dev.SetAmplitude(vol)
-		self.dev.SetFreq(freq)
-	}
-}
-
-func (self *SoundDevice) setEnvelope(envFreq uint16, envShape byte) {
-	// TODO: implementar...
-	if envFreq != self.envFreq || envShape != self.envShape {
-		log.Printf("Set envelope: %d %d\n", envFreq, envShape)
-		self.envShape = envShape
-		self.envFreq = envFreq
-	}
-}
-
-func (self *SoundDevice) activate(act bool) {
-	if self.active != act {
-		self.active = act
-		if act {
-			self.dev.Start()
-		} else {
-			self.dev.Stop()
-		}
-	}
-}
-
 func sound_work() {
 	// log.Println(sound_regs)
 	for i := 0; i < 3; i++ {
@@ -145,11 +97,13 @@ func sound_workChannel(chn int) {
 		if envelopeEnabled {
 			envFreq := (uint16(sound_regs[12]) << 8) | uint16(sound_regs[11])
 			envShape := sound_regs[13] & 0x0F
-			sound_devices[chn].setEnvelope(envFreq, envShape)
+			sound_tones[chn].setEnvelope(envFreq, envShape)
 		} else {
-			volume := int(sound_regs[8+chn] & 0x0F)
-			sound_devices[chn].setParameters(realFreq, volume)
+			volume := float32(sound_regs[8+chn] & 0x0F)
+			volume /= 16
+			volume *= 4
+			sound_tones[chn].setParameters(realFreq, volume)
 		}
 	}
-	sound_devices[chn].activate((sound_regs[7] & (0x01 << uint(chn))) == 0)
+	sound_tones[chn].activate((sound_regs[7] & (0x01 << uint(chn))) == 0)
 }
