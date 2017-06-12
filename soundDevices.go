@@ -6,7 +6,7 @@ import "log"
 type Tone struct {
 	dev      *gogame.ToneGenerator
 	volume   float32
-	freq     int
+	freq     float32
 	active   bool
 	envFreq  uint16
 	envShape byte
@@ -23,7 +23,7 @@ func NewTone() *Tone {
 	return sd
 }
 
-func (self *Tone) setParameters(freq int, vol float32) {
+func (self *Tone) setParameters(freq float32, vol float32) {
 	if self.volume != vol || self.freq != freq {
 		self.volume = vol
 		self.freq = freq
@@ -55,7 +55,7 @@ func (self *Tone) activate(act bool) {
 type Noise struct {
 	dev    *gogame.ToneGenerator
 	volume float32
-	freq   int
+	freq   float32
 	active bool
 }
 
@@ -81,7 +81,7 @@ func (self *Noise) activate(act bool) {
 	}
 }
 
-func (self *Noise) setParameters(freq int, vol float32) {
+func (self *Noise) setParameters(freq float32, vol float32) {
 	if self.volume != vol || self.freq != freq {
 		self.volume = vol
 		self.freq = freq

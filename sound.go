@@ -87,7 +87,7 @@ func sound_work() {
 		sound_doTones(i)
 	}
 
-	sound_doNoises()
+	// sound_doNoises()
 }
 
 func sound_doNoises() {
@@ -97,7 +97,7 @@ func sound_doNoises() {
 		freq := int(sound_regs[6] & 0x1F)
 
 		if freq > 0 {
-			realFreq := 111861 / freq
+			realFreq := float32(111861) / float32(freq)
 
 			var vol float32 = 0
 			if (sound_regs[7] & 0x20) == 0 {
@@ -132,7 +132,7 @@ func sound_doTones(chn int) {
 	freq := (int(sound_regs[chn*2+1]&0x0f) << 8) | int(sound_regs[chn*2])
 	envelopeEnabled := (sound_regs[8+chn] & 0x10) != 0
 	if freq > 0 {
-		realFreq := 111861 / freq
+		realFreq := float32(111861) / float32(freq)
 		if envelopeEnabled {
 			envFreq := (uint16(sound_regs[12]) << 8) | uint16(sound_regs[11])
 			envShape := sound_regs[13] & 0x0F
@@ -140,7 +140,6 @@ func sound_doTones(chn int) {
 		} else {
 			volume := float32(sound_regs[8+chn] & 0x0F)
 			volume /= 16
-			volume *= 4
 			sound_tones[chn].setParameters(realFreq, volume)
 		}
 	}
