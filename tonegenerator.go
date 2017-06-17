@@ -59,7 +59,7 @@ func (self *ToneGenerator) feedSamples(data []float32) {
 		if (L1^L2)&0x8000 != 0 {
 			A1 = A1 * (0x8000 - (L1 & 0x7FFF) - (L2 & 0x7FFF)) / K
 		}
-		data[i] = float32(A1) * self.amp
+		data[i] += float32(A1) * self.amp
 
 		// data[i] = self.amp * float32(math.Sin(float64(self.v*2*math.Pi*self.freq)))
 		// self.v += INVFREQUENCY

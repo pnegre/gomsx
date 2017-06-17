@@ -45,7 +45,13 @@ func sound_init() {
 }
 
 func sound_callback(data []float32) {
+	for i := 0; i < len(data); i++ {
+		data[i] = 0
+	}
 	sound_tones[0].feedSamples(data)
+	sound_tones[1].feedSamples(data)
+	sound_tones[2].feedSamples(data)
+	// TODO: mesclar...
 }
 
 func sound_quit() {
