@@ -5,25 +5,25 @@ import "os"
 import "io/ioutil"
 import "errors"
 
-type Softwaredb struct {
-	XMLName xml.Name   `xml:"softwaredb"`
-	Soft    []Software `xml:"software"`
-}
-
-type Software struct {
-	XMLName xml.Name `xml:"software"`
-	Title   string   `xml:"title"`
-	RomDump []Dump   `xml:"dump"`
-}
-
-type Dump struct {
-	XMLName     xml.Name `xml:"dump"`
-	Hash        string   `xml:"rom>hash"`
-	HashMegaROM string   `xml:"megarom>hash"`
-	TypeMegaROM string   `xml:"megarom>type"`
-}
-
 func searchInRomDatabase(romToSearch string) (string, error) {
+	type Dump struct {
+		XMLName     xml.Name `xml:"dump"`
+		Hash        string   `xml:"rom>hash"`
+		HashMegaROM string   `xml:"megarom>hash"`
+		TypeMegaROM string   `xml:"megarom>type"`
+	}
+
+	type Software struct {
+		XMLName xml.Name `xml:"software"`
+		Title   string   `xml:"title"`
+		RomDump []Dump   `xml:"dump"`
+	}
+
+	type Softwaredb struct {
+		XMLName xml.Name   `xml:"softwaredb"`
+		Soft    []Software `xml:"software"`
+	}
+
 	f, err := os.Open("softwaredb.xml")
 	if err != nil {
 		return "", err
