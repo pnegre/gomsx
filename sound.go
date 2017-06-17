@@ -18,6 +18,9 @@ package main
 */
 
 import "log"
+import "github.com/pnegre/gogame"
+
+const FREQUENCY = 44100
 
 var sound_regs [16]byte
 var sound_regNext byte
@@ -25,20 +28,29 @@ var sound_regNext byte
 var sound_freqA int
 var sound_volA int
 
-var sound_tones [3]*Tone
-var sound_noise *Noise
+var sound_tones [3]*ToneGenerator
+
+var sound_device *gogame.AudioDevice
+
+// var sound_noise *Noise
 
 func sound_init() {
-	sound_tones[0] = NewTone()
-	sound_tones[1] = NewTone()
-	sound_tones[2] = NewTone()
-	sound_noise = NewNoise()
+	sound_device, _ = gogame.NewAudioDevice(FREQUENCY)
+	sound_tones[0] = NewToneGenerator()
+	sound_tones[1] = NewToneGenerator()
+	sound_tones[2] = NewToneGenerator()
+	// sound_noise = NewNoise()
+	gogame.RegisterSoundCallback(sound_callback)
+	sound_device.Start()
+}
+
+func sound_callback(data []float32) {
+	sound_tones[0].feedSamples(data)
 }
 
 func sound_quit() {
-	for i := 0; i < 3; i++ {
-		sound_tones[i].dev.Close()
-	}
+	sound_device.Stop()
+	sound_device.Close()
 }
 
 func sound_writePort(ad byte, val byte) {
@@ -91,40 +103,40 @@ func sound_work() {
 }
 
 func sound_doNoises() {
-	if (sound_regs[7] & 0x38) == 0x38 {
-		sound_noise.activate(false)
-	} else {
-		freq := int(sound_regs[6] & 0x1F)
-
-		if freq > 0 {
-			realFreq := float32(111861) / float32(freq)
-
-			var vol float32 = 0
-			if (sound_regs[7] & 0x20) == 0 {
-				v := float32(sound_regs[8] & 0x0F)
-				if v > vol {
-					vol = v
-				}
-			}
-
-			if (sound_regs[7] & 0x10) == 0 {
-				v := float32(sound_regs[9] & 0x0F)
-				if v > vol {
-					vol = v
-				}
-			}
-
-			if (sound_regs[7] & 0x04) == 0 {
-				v := float32(sound_regs[10] & 0x0F)
-				if v > vol {
-					vol = v
-				}
-			}
-
-			sound_noise.setParameters(realFreq, vol)
-			sound_noise.activate(true)
-		}
-	}
+	// if (sound_regs[7] & 0x38) == 0x38 {
+	// 	// sound_noise.activate(false)
+	// } else {
+	// 	freq := int(sound_regs[6] & 0x1F)
+	//
+	// 	if freq > 0 {
+	// 		realFreq := float32(111861) / float32(freq)
+	//
+	// 		var vol float32 = 0
+	// 		if (sound_regs[7] & 0x20) == 0 {
+	// 			v := float32(sound_regs[8] & 0x0F)
+	// 			if v > vol {
+	// 				vol = v
+	// 			}
+	// 		}
+	//
+	// 		if (sound_regs[7] & 0x10) == 0 {
+	// 			v := float32(sound_regs[9] & 0x0F)
+	// 			if v > vol {
+	// 				vol = v
+	// 			}
+	// 		}
+	//
+	// 		if (sound_regs[7] & 0x04) == 0 {
+	// 			v := float32(sound_regs[10] & 0x0F)
+	// 			if v > vol {
+	// 				vol = v
+	// 			}
+	// 		}
+	//
+	// 		// sound_noise.setParameters(realFreq, vol)
+	// 		// sound_noise.activate(true)
+	// 	}
+	// }
 }
 
 // TODO: envelopes
@@ -134,9 +146,9 @@ func sound_doTones(chn int) {
 	if freq > 0 {
 		realFreq := float32(111861) / float32(freq)
 		if envelopeEnabled {
-			envFreq := (uint16(sound_regs[12]) << 8) | uint16(sound_regs[11])
-			envShape := sound_regs[13] & 0x0F
-			sound_tones[chn].setEnvelope(envFreq, envShape)
+			// envFreq := (uint16(sound_regs[12]) << 8) | uint16(sound_regs[11])
+			// envShape := sound_regs[13] & 0x0F
+			// sound_tones[chn].setEnvelope(envFreq, envShape)
 		} else {
 			volume := float32(sound_regs[8+chn] & 0x0F)
 			volume /= 16

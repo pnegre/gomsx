@@ -1,8 +1,9 @@
 package main
 
-import "github.com/pnegre/gogame"
-import "log"
+// import "github.com/pnegre/gogame"
+// import "log"
 
+/*
 type Tone struct {
 	dev      *gogame.ToneGenerator
 	volume   float32
@@ -89,3 +90,4 @@ func (self *Noise) setParameters(freq float32, vol float32) {
 		self.dev.SetFreq(freq)
 	}
 }
+*/
