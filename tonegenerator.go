@@ -22,7 +22,11 @@ func (self *ToneGenerator) activate(par bool) {
 }
 
 func (self *ToneGenerator) feedSamples(data []float32) {
-	if !self.active {
+	if !self.active || self.freq == 0 || self.amp == 0 {
+		return
+	}
+
+	if self.freq > FREQUENCY/2 {
 		return
 	}
 	/*
@@ -48,7 +52,7 @@ func (self *ToneGenerator) feedSamples(data []float32) {
 
 	K := int(0x10000 * self.freq / FREQUENCY)
 	L1 := self.count
-	var A1 int
+	var A1 float32
 	for i := 0; i < len(data); i, L1 = i+1, L1+K {
 		L2 := L1 + K
 		if L1&0x8000 != 0 {
@@ -57,9 +61,9 @@ func (self *ToneGenerator) feedSamples(data []float32) {
 			A1 = -128
 		}
 		if (L1^L2)&0x8000 != 0 {
-			A1 = A1 * (0x8000 - (L1 & 0x7FFF) - (L2 & 0x7FFF)) / K
+			A1 = A1 * (0x8000 - float32(L1&0x7FFF) - float32(L2&0x7FFF)) / float32(K)
 		}
-		data[i] += float32(A1) * self.amp
+		data[i] += A1 * self.amp * 0.0005
 
 		// data[i] = self.amp * float32(math.Sin(float64(self.v*2*math.Pi*self.freq)))
 		// self.v += INVFREQUENCY
