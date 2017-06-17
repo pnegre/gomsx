@@ -36,7 +36,11 @@ func main() {
 	sound_init()
 	defer graphics_quit()
 	defer sound_quit()
+	avgFPS := mainLoop(memory, cpuZ80)
+	log.Printf("Avg FPS: %.2f\n", avgFPS)
+}
 
+func mainLoop(memory *Memory, cpuZ80 *z80.Z80) float64 {
 	log.Println("Beginning simulation...")
 	logAssembler := false
 	var currentTime, elapsedTime, lag int64
@@ -71,7 +75,7 @@ func main() {
 		nframes++
 	}
 	delta := (time.Now().UnixNano() - startTime) / int64(time.Second)
-	log.Printf("Avg FPS: %.2f\n", float64(nframes)/float64(delta))
+	return float64(nframes) / float64(delta)
 }
 
 func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
