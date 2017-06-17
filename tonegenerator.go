@@ -64,15 +64,6 @@ func (self *ToneGenerator) feedSamples(data []float32) {
 			A1 = A1 * (0x8000 - float32(L1&0x7FFF) - float32(L2&0x7FFF)) / float32(K)
 		}
 		data[i] += A1 * self.amp * 0.0005
-
-		// data[i] = self.amp * float32(math.Sin(float64(self.v*2*math.Pi*self.freq)))
-		// self.v += INVFREQUENCY
-		// if self.j > self.period {
-		// 	self.v -= float32(self.j) * INVFREQUENCY
-		// 	self.j = 0
-		// } else {
-		// 	self.j++
-		// }
 	}
 	self.count = L1 & 0xFFFF
 

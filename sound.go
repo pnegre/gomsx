@@ -108,7 +108,6 @@ func sound_readPort(ad byte) byte {
 }
 
 func sound_work() {
-	// log.Println(sound_regs)
 	for i := 0; i < 3; i++ {
 		sound_doTones(i)
 	}
