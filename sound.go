@@ -20,7 +20,7 @@ package main
 import "log"
 import "github.com/pnegre/gogame"
 
-const FREQUENCY = 44100
+const FREQUENCY = 22000
 
 var sound_regs [16]byte
 var sound_regNext byte
