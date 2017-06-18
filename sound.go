@@ -44,7 +44,7 @@ func sound_init() {
 	sound_device.Start()
 }
 
-func sound_callback(data []float32) {
+func sound_callback(data []int16) {
 	for i := 0; i < len(data); i++ {
 		data[i] = 0
 	}
@@ -53,11 +53,11 @@ func sound_callback(data []float32) {
 	sound_tones[2].feedSamples(data)
 
 	for i := 0; i < len(data); i++ {
-		if data[i] > 127 {
-			data[i] = 127
+		if data[i] > 32760 {
+			data[i] = 32760
 		}
-		if data[i] < -127 {
-			data[i] = -127
+		if data[i] < -32760 {
+			data[i] = -32760
 		}
 	}
 }
@@ -164,7 +164,6 @@ func sound_doTones(chn int) {
 			// sound_tones[chn].setEnvelope(envFreq, envShape)
 		} else {
 			volume := float32(sound_regs[8+chn] & 0x0F)
-			volume /= 16
 			sound_tones[chn].setParameters(realFreq, volume)
 		}
 	}
