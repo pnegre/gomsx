@@ -25,7 +25,7 @@ func main() {
 	loadBiosBasic(memory, ROMFILE)
 	if flag.NArg() == 1 {
 		rom := flag.Args()[0]
-		loadRom(memory, rom)
+		loadRom(memory, rom, 1) // Load to slot 1
 	}
 	ports := new(Ports)
 	cpuZ80 := z80.NewZ80(memory, ports)
@@ -102,7 +102,7 @@ func loadBiosBasic(memory *Memory, fname string) {
 	memory.load(buffer[0x4000:], 1, 0)
 }
 
-func loadRom(memory *Memory, fname string) {
+func loadRom(memory *Memory, fname string, slot int) {
 	buffer, err := readFile(fname)
 	if err != nil {
 		log.Fatal(err)
@@ -111,19 +111,19 @@ func loadRom(memory *Memory, fname string) {
 	case KONAMI4:
 		log.Printf("Loading ROM %s to slot 1 as type KONAMI4\n", fname)
 		mapper := NewMapperKonami4(buffer)
-		memory.setMapper(mapper, 1)
+		memory.setMapper(mapper, slot)
 		return
 
 	case KONAMI5:
 		log.Printf("Loading ROM %s to slot 1 as type KONAMI5\n", fname)
 		mapper := NewMapperKonami5(buffer)
-		memory.setMapper(mapper, 1)
+		memory.setMapper(mapper, slot)
 		return
 
 	case ASCII8KB:
 		log.Printf("Loading ROM %s to slot 1 as type ASCII8KB\n", fname)
 		mapper := NewMapperASCII8(buffer)
-		memory.setMapper(mapper, 1)
+		memory.setMapper(mapper, slot)
 		return
 	}
 
@@ -135,20 +135,20 @@ func loadRom(memory *Memory, fname string) {
 		// Load ROM to page 1, slot 1
 		// TODO: mirrored????
 		log.Printf("Loading ROM %s to slot 1 (16KB)\n", fname)
-		memory.load(buffer, 1, 1)
+		memory.load(buffer, 1, slot)
 	case 2:
 		// Load ROM to slot 1. Mirrored pg1&pg2 <=> pg3&pg4
 		log.Printf("Loading ROM %s to slot 1 (32KB)\n", fname)
-		memory.load(buffer, 0, 1)
-		memory.load(buffer, 1, 1)
-		memory.load(buffer[0x4000:], 2, 1)
-		memory.load(buffer[0x4000:], 3, 1)
+		memory.load(buffer, 0, slot)
+		memory.load(buffer, 1, slot)
+		memory.load(buffer[0x4000:], 2, slot)
+		memory.load(buffer[0x4000:], 3, slot)
 	case 4:
 		log.Printf("Loading ROM %s to slot 1 (64KB)\n", fname)
-		memory.load(buffer, 0, 1)
-		memory.load(buffer[0x4000:], 1, 1)
-		memory.load(buffer[0x8000:], 2, 1)
-		memory.load(buffer[0xC000:], 3, 1)
+		memory.load(buffer, 0, slot)
+		memory.load(buffer[0x4000:], 1, slot)
+		memory.load(buffer[0x8000:], 2, slot)
+		memory.load(buffer[0xC000:], 3, slot)
 	default:
 		panic("ROM size not supported")
 	}
