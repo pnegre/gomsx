@@ -14,7 +14,7 @@ func NewToneGenerator() *ToneGenerator {
 
 func (self *ToneGenerator) setParameters(freq float32, volume float32) {
 	self.freq = freq
-	self.amp = volume
+	self.amp = volume / 2
 }
 
 func (self *ToneGenerator) activate(par bool) {
@@ -29,26 +29,8 @@ func (self *ToneGenerator) feedSamples(data []int16) {
 	if self.freq > FREQUENCY/2 {
 		return
 	}
-	/*
 
-				Tret de EMULIB
-
-
-				if(WaveCH[J].Freq>=SndRate/2) break;
-		          K=0x10000*WaveCH[J].Freq/SndRate;
-		          L1=WaveCH[J].Count;
-
-				  for(I=0;I<Samples;I++,L1+=K)
-		          {
-		            L2 = L1+K;
-		            A1 = L1&0x8000? 127:-128;
-		            if((L1^L2)&0x8000)
-		              A1=A1*(0x8000-(L1&0x7FFF)-(L2&0x7FFF))/K;
-		            Wave[I]+=A1*V;
-		          }
-		          WaveCH[J].Count=L1&0xFFFF;
-
-	*/
+	// Based on code from EMULIB, Sound.c, function RenderAudio()
 
 	K := int(0x10000 * self.freq / FREQUENCY)
 	L1 := self.count

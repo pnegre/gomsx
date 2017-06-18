@@ -78,7 +78,11 @@ func sound_writePort(ad byte, val byte) {
 		// Write value to port
 		sound_regs[sound_regNext] = val
 		if sound_regNext < 14 {
-			sound_work()
+			for i := 0; i < 3; i++ {
+				sound_doTones(i)
+			}
+
+			// TODO: sound_doNoises()
 		}
 		return
 	}
@@ -107,12 +111,22 @@ func sound_readPort(ad byte) byte {
 	return 0
 }
 
-func sound_work() {
-	for i := 0; i < 3; i++ {
-		sound_doTones(i)
+// TODO: envelopes
+func sound_doTones(chn int) {
+	freq := (int(sound_regs[chn*2+1]&0x0f) << 8) | int(sound_regs[chn*2])
+	envelopeEnabled := (sound_regs[8+chn] & 0x10) != 0
+	if freq > 0 {
+		realFreq := float32(111861) / float32(freq)
+		if envelopeEnabled {
+			// envFreq := (uint16(sound_regs[12]) << 8) | uint16(sound_regs[11])
+			// envShape := sound_regs[13] & 0x0F
+			// sound_tones[chn].setEnvelope(envFreq, envShape)
+		} else {
+			volume := float32(sound_regs[8+chn] & 0x0F)
+			sound_tones[chn].setParameters(realFreq, volume)
+		}
 	}
-
-	// sound_doNoises()
+	sound_tones[chn].activate((sound_regs[7] & (0x01 << uint(chn))) == 0)
 }
 
 func sound_doNoises() {
@@ -150,22 +164,4 @@ func sound_doNoises() {
 	// 		// sound_noise.activate(true)
 	// 	}
 	// }
-}
-
-// TODO: envelopes
-func sound_doTones(chn int) {
-	freq := (int(sound_regs[chn*2+1]&0x0f) << 8) | int(sound_regs[chn*2])
-	envelopeEnabled := (sound_regs[8+chn] & 0x10) != 0
-	if freq > 0 {
-		realFreq := float32(111861) / float32(freq)
-		if envelopeEnabled {
-			// envFreq := (uint16(sound_regs[12]) << 8) | uint16(sound_regs[11])
-			// envShape := sound_regs[13] & 0x0F
-			// sound_tones[chn].setEnvelope(envFreq, envShape)
-		} else {
-			volume := float32(sound_regs[8+chn] & 0x0F)
-			sound_tones[chn].setParameters(realFreq, volume)
-		}
-	}
-	sound_tones[chn].activate((sound_regs[7] & (0x01 << uint(chn))) == 0)
 }
