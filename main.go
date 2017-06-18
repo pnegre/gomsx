@@ -12,10 +12,9 @@ import "flag"
 const (
 	ROMFILE = "msx1.rom"
 	// 60Hz -> Interval de 16Mseg
-	FRAMETIME = 16
-	FPS       = 60
+	FPS = 60
 	// EL z80 executa devers 580000 instr per segon
-	// (Un "frame" són 16mseg, per tant executa 9280 instr. per frame)
+	// (Un "frame" a 60Hz són 16mseg, per tant executa 9280 instr. per frame)
 	INSTRPERFRAME = 6280
 )
 
