@@ -22,8 +22,8 @@ import "github.com/pnegre/gogame"
 
 const FREQUENCY = 22000
 
-var sound_regs [16]byte
-var sound_regNext byte
+var psg_regs [16]byte
+var psg_regNext byte
 
 var sound_tones [3]*ToneGenerator
 var sound_device *gogame.AudioDevice
@@ -68,13 +68,13 @@ func sound_writePort(ad byte, val byte) {
 	switch {
 	case ad == 0xa0:
 		// Register write port
-		sound_regNext = val
+		psg_regNext = val
 		return
 
 	case ad == 0xa1:
 		// Write value to port
-		sound_regs[sound_regNext] = val
-		if sound_regNext < 14 {
+		psg_regs[psg_regNext] = val
+		if psg_regNext < 14 {
 			for i := 0; i < 3; i++ {
 				sound_doTones(i)
 			}
@@ -91,17 +91,17 @@ func sound_readPort(ad byte) byte {
 	switch {
 	case ad == 0xa2:
 		// Read value from port
-		if sound_regNext == 0x0e {
+		if psg_regNext == 0x0e {
 			// joystick triggers.
 			// Per ara ho posem a 1 (no moviment de joystick)
 			return 0x3f
 		}
-		if sound_regNext == 0x0f {
+		if psg_regNext == 0x0f {
 			// PSG port 15 (joystick select)
 			// TODO: millorar
 			return 0
 		}
-		return sound_regs[sound_regNext]
+		return psg_regs[psg_regNext]
 	}
 
 	log.Fatalf("Sound, not implemented: in(%02x)", ad)
@@ -110,48 +110,48 @@ func sound_readPort(ad byte) byte {
 
 // TODO: envelopes
 func sound_doTones(chn int) {
-	freq := (int(sound_regs[chn*2+1]&0x0f) << 8) | int(sound_regs[chn*2])
-	envelopeEnabled := (sound_regs[8+chn] & 0x10) != 0
+	freq := (int(psg_regs[chn*2+1]&0x0f) << 8) | int(psg_regs[chn*2])
+	envelopeEnabled := (psg_regs[8+chn] & 0x10) != 0
 	if freq > 0 {
 		realFreq := float32(111861) / float32(freq)
 		if envelopeEnabled {
-			// envFreq := (uint16(sound_regs[12]) << 8) | uint16(sound_regs[11])
-			// envShape := sound_regs[13] & 0x0F
+			// envFreq := (uint16(psg_regs[12]) << 8) | uint16(psg_regs[11])
+			// envShape := psg_regs[13] & 0x0F
 			// sound_tones[chn].setEnvelope(envFreq, envShape)
 		} else {
-			volume := float32(sound_regs[8+chn] & 0x0F)
+			volume := float32(psg_regs[8+chn] & 0x0F)
 			sound_tones[chn].setParameters(realFreq, volume)
 		}
 	}
-	sound_tones[chn].activate((sound_regs[7] & (0x01 << uint(chn))) == 0)
+	sound_tones[chn].activate((psg_regs[7] & (0x01 << uint(chn))) == 0)
 }
 
 func sound_doNoises() {
-	// if (sound_regs[7] & 0x38) == 0x38 {
+	// if (psg_regs[7] & 0x38) == 0x38 {
 	// 	// sound_noise.activate(false)
 	// } else {
-	// 	freq := int(sound_regs[6] & 0x1F)
+	// 	freq := int(psg_regs[6] & 0x1F)
 	//
 	// 	if freq > 0 {
 	// 		realFreq := float32(111861) / float32(freq)
 	//
 	// 		var vol float32 = 0
-	// 		if (sound_regs[7] & 0x20) == 0 {
-	// 			v := float32(sound_regs[8] & 0x0F)
+	// 		if (psg_regs[7] & 0x20) == 0 {
+	// 			v := float32(psg_regs[8] & 0x0F)
 	// 			if v > vol {
 	// 				vol = v
 	// 			}
 	// 		}
 	//
-	// 		if (sound_regs[7] & 0x10) == 0 {
-	// 			v := float32(sound_regs[9] & 0x0F)
+	// 		if (psg_regs[7] & 0x10) == 0 {
+	// 			v := float32(psg_regs[9] & 0x0F)
 	// 			if v > vol {
 	// 				vol = v
 	// 			}
 	// 		}
 	//
-	// 		if (sound_regs[7] & 0x04) == 0 {
-	// 			v := float32(sound_regs[10] & 0x0F)
+	// 		if (psg_regs[7] & 0x04) == 0 {
+	// 			v := float32(psg_regs[10] & 0x0F)
 	// 			if v > vol {
 	// 				vol = v
 	// 			}
