@@ -36,7 +36,8 @@ func sound_init() {
 	sound_tones[1] = NewToneGenerator()
 	sound_tones[2] = NewToneGenerator()
 	// sound_noise = NewNoise()
-	gogame.RegisterSoundCallback(sound_callback)
+	sound_device.SetCallback(sound_callback)
+	// gogame.RegisterSoundCallback(sound_callback)
 	sound_device.Start()
 }
 
