@@ -25,11 +25,7 @@ const FREQUENCY = 22000
 var sound_regs [16]byte
 var sound_regNext byte
 
-var sound_freqA int
-var sound_volA int
-
 var sound_tones [3]*ToneGenerator
-
 var sound_device *gogame.AudioDevice
 
 // var sound_noise *Noise
