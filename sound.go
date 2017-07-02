@@ -92,9 +92,10 @@ func sound_readPort(ad byte) byte {
 	case ad == 0xa2:
 		// Read value from port
 		if psg_regNext == 0x0e {
-			// joystick triggers.
+			// joystick triggers i cassete input
+			bitCass := cassete_getNextBit() << 7
 			// Per ara ho posem a 1 (no moviment de joystick)
-			return 0x3f
+			return 0x3f | bitCass
 		}
 		if psg_regNext == 0x0f {
 			// PSG port 15 (joystick select)
@@ -105,6 +106,11 @@ func sound_readPort(ad byte) byte {
 	}
 
 	log.Fatalf("Sound, not implemented: in(%02x)", ad)
+	return 0
+}
+
+func cassete_getNextBit() byte {
+	// log.Println("NextByte")
 	return 0
 }
 
