@@ -10,7 +10,7 @@ import "bufio"
 import "flag"
 
 const (
-	ROMFILE = "msx1.rom"
+	SYSTEMROMFILE = "msx1.rom"
 	// 60Hz -> Interval de 16Mseg
 	FPS = 60
 	// EL z80 executa devers 580000 instr per segon
@@ -21,7 +21,7 @@ const (
 func main() {
 	flag.Parse()
 	memory := NewMemory()
-	loadBiosBasic(memory, ROMFILE)
+	loadBiosBasic(memory, SYSTEMROMFILE)
 	if flag.NArg() == 1 {
 		rom := flag.Args()[0]
 		loadRom(memory, rom, 1) // Load to slot 1
