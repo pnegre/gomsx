@@ -19,13 +19,26 @@ const (
 )
 
 func main() {
+	var cart string
+	var cassFile string
+	flag.StringVar(&cart, "cart", "", "ROM in SLOT 1")
+	flag.StringVar(&cassFile, "cas", "", "cassette file")
 	flag.Parse()
 	memory := NewMemory()
 	loadBiosBasic(memory, SYSTEMROMFILE)
-	if flag.NArg() == 1 {
-		rom := flag.Args()[0]
-		loadRom(memory, rom, 1) // Load to slot 1
+
+	if cart != "" {
+		loadRom(memory, cart, 1)
 	}
+
+	if cassFile != "" {
+		log.Println("Loading cassette file", cassFile)
+	}
+
+	// if flag.NArg() == 1 {
+	// 	rom := flag.Args()[0]
+	// 	loadRom(memory, rom, 1) // Load to slot 1
+	// }
 	ports := new(Ports)
 	cpuZ80 := z80.NewZ80(memory, ports)
 	cpuZ80.Reset()
