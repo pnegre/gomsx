@@ -19,11 +19,13 @@ package main
 
 import "log"
 import "github.com/pnegre/gogame"
+import "io/ioutil"
 
 const FREQUENCY = 22000
 
 var psg_regs [16]byte
 var psg_regNext byte
+var psg_bytesCass []byte
 
 var sound_tones [3]*ToneGenerator
 var sound_device *gogame.AudioDevice
@@ -65,7 +67,13 @@ func psg_quit() {
 }
 
 func psg_loadCassette(fileName string) {
-	log.Println("PSG: Loading Cassette file:", fileName)
+	var err error
+	psg_bytesCass, err = ioutil.ReadFile(fileName)
+	if err != nil {
+		log.Println(err)
+		psg_bytesCass = nil
+	}
+	log.Println("PSG: Loaded cassete:", fileName)
 }
 
 func psg_writePort(ad byte, val byte) {
