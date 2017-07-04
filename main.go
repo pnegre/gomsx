@@ -32,7 +32,7 @@ func main() {
 	}
 
 	if cassFile != "" {
-		log.Println("Loading cassette file", cassFile)
+		psg_loadCassette(cassFile)
 	}
 
 	// if flag.NArg() == 1 {

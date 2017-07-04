@@ -64,6 +64,10 @@ func psg_quit() {
 	sound_device.Close()
 }
 
+func psg_loadCassette(fileName string) {
+	log.Println("PSG: Loading Cassette file:", fileName)
+}
+
 func psg_writePort(ad byte, val byte) {
 	switch {
 	case ad == 0xa0:
