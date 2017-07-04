@@ -32,9 +32,9 @@ func main() {
 	cpuZ80.SetPC(0)
 
 	graphics_init()
-	sound_init()
+	psg_init()
 	defer graphics_quit()
-	defer sound_quit()
+	defer psg_quit()
 	avgFPS := mainLoop(memory, cpuZ80)
 	log.Printf("Avg FPS: %.2f\n", avgFPS)
 }

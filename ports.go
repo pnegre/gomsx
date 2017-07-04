@@ -12,7 +12,7 @@ func (self *Ports) ReadPort(address uint16) byte {
 		return ppi_readPort(ad)
 
 	case ad >= 0xa0 && ad <= 0xa2:
-		return sound_readPort(ad)
+		return psg_readPort(ad)
 
 	case ad >= 0x98 && ad <= 0x9b:
 		return vdp_readPort(ad)
@@ -30,7 +30,7 @@ func (self *Ports) WritePort(address uint16, b byte) {
 		return
 
 	case ad >= 0xa0 && ad <= 0xa2:
-		sound_writePort(ad, b)
+		psg_writePort(ad, b)
 		return
 
 	case ad >= 0x90 && ad <= 0x91:

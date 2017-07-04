@@ -30,7 +30,7 @@ var sound_device *gogame.AudioDevice
 
 // var sound_noise *Noise
 
-func sound_init() {
+func psg_init() {
 	sound_device, _ = gogame.NewAudioDevice(FREQUENCY)
 	sound_tones[0] = NewToneGenerator()
 	sound_tones[1] = NewToneGenerator()
@@ -59,12 +59,12 @@ func sound_callback(data []int16) {
 	}
 }
 
-func sound_quit() {
+func psg_quit() {
 	sound_device.Stop()
 	sound_device.Close()
 }
 
-func sound_writePort(ad byte, val byte) {
+func psg_writePort(ad byte, val byte) {
 	switch {
 	case ad == 0xa0:
 		// Register write port
@@ -87,7 +87,7 @@ func sound_writePort(ad byte, val byte) {
 	log.Fatalf("Sound, not implemented: out(%02x,%02x)", ad, val)
 }
 
-func sound_readPort(ad byte) byte {
+func psg_readPort(ad byte) byte {
 	switch {
 	case ad == 0xa2:
 		// Read value from port
