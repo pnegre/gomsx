@@ -15,7 +15,7 @@ const (
 	FPS = 60
 	// EL z80 executa devers 580000 instr per segon
 	// (Un "frame" a 60Hz són 16mseg, per tant executa 9280 instr. per frame)
-	INSTRPERFRAME = 6280
+	INSTRPERFRAME = 5280
 )
 
 func main() {
