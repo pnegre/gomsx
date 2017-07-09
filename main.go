@@ -8,6 +8,7 @@ import "time"
 import "os"
 import "bufio"
 import "flag"
+import "runtime"
 
 const (
 	SYSTEMROMFILE = "msx1.rom"
@@ -19,6 +20,7 @@ const (
 )
 
 func main() {
+	runtime.LockOSThread(); // Assure SDL works...
 	var cart string
 	var cassFile string
 	flag.StringVar(&cart, "cart", "", "ROM in SLOT 1")
