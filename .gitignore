@@ -2,3 +2,4 @@ gomsx
 *.rom
 *.ROM
 games/
+.vscode
