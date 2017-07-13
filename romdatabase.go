@@ -1,7 +1,7 @@
 package main
 
 import "encoding/xml"
-import "os"
+
 import "io/ioutil"
 import "errors"
 
@@ -20,12 +20,10 @@ func searchInRomDatabase(romToSearch string) (string, error) {
 		} `xml:"software"`
 	}
 
-	f, err := os.Open("softwaredb.xml")
+	bytes, err := ioutil.ReadFile("softwaredb.xml")
 	if err != nil {
 		return "", err
 	}
-	defer f.Close()
-	bytes, _ := ioutil.ReadAll(f)
 	var swdb Softwaredb
 	xml.Unmarshal(bytes, &swdb)
 
