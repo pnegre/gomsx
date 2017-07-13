@@ -5,6 +5,8 @@ import "encoding/xml"
 import "io/ioutil"
 import "errors"
 
+const XMLDATABASE = "softwaredb.xml"
+
 func searchInRomDatabase(romToSearch string) (string, error) {
 	type Softwaredb struct {
 		XMLName xml.Name `xml:"softwaredb"`
@@ -20,7 +22,7 @@ func searchInRomDatabase(romToSearch string) (string, error) {
 		} `xml:"software"`
 	}
 
-	bytes, err := ioutil.ReadFile("softwaredb.xml")
+	bytes, err := ioutil.ReadFile(XMLDATABASE)
 	if err != nil {
 		return "", err
 	}
