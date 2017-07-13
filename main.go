@@ -1,14 +1,16 @@
 package main
 
-import "github.com/remogatto/z80"
-import "github.com/pnegre/gogame"
-import "log"
+import (
+	"flag"
+	"io/ioutil"
+	"log"
+	"os"
+	"runtime"
+	"time"
 
-import "time"
-import "os"
-import "bufio"
-import "flag"
-import "runtime"
+	"github.com/pnegre/gogame"
+	"github.com/remogatto/z80"
+)
 
 const (
 	SYSTEMROMFILE = "msx1.rom"
@@ -109,7 +111,7 @@ func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
 }
 
 func loadBiosBasic(memory *Memory, fname string) {
-	buffer, err := readFile(fname)
+	buffer, err := ioutil.ReadFile(fname)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -118,7 +120,7 @@ func loadBiosBasic(memory *Memory, fname string) {
 }
 
 func loadRom(memory *Memory, fname string, slot int) {
-	buffer, err := readFile(fname)
+	buffer, err := ioutil.ReadFile(fname)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -174,25 +176,4 @@ func loadRom(memory *Memory, fname string, slot int) {
 		panic("ROM size not supported")
 	}
 
-}
-
-func readFile(fname string) ([]byte, error) {
-	f, err := os.Open(fname)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	stats, statsErr := f.Stat()
-	if statsErr != nil {
-		return nil, statsErr
-	}
-
-	var size int64 = stats.Size()
-	bytes := make([]byte, size)
-
-	bufr := bufio.NewReader(f)
-	_, err = bufr.Read(bytes)
-
-	return bytes, err
 }
