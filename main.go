@@ -20,7 +20,7 @@ const (
 )
 
 func main() {
-	runtime.LockOSThread(); // Assure SDL works...
+	runtime.LockOSThread() // Assure SDL works...
 	var cart string
 	var cassFile string
 	flag.StringVar(&cart, "cart", "", "ROM in SLOT 1")
