@@ -26,21 +26,22 @@ func main() {
 	flag.StringVar(&cart, "cart", "", "ROM in SLOT 1")
 	flag.StringVar(&cassFile, "cas", "", "cassette file")
 	flag.Parse()
+
+	if flag.NArg() > 0 {
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	memory := NewMemory()
 	loadBiosBasic(memory, SYSTEMROMFILE)
 
 	if cart != "" {
 		loadRom(memory, cart, 1)
 	}
-
 	if cassFile != "" {
 		psg_loadCassette(cassFile)
 	}
 
-	// if flag.NArg() == 1 {
-	// 	rom := flag.Args()[0]
-	// 	loadRom(memory, rom, 1) // Load to slot 1
-	// }
 	ports := new(Ports)
 	cpuZ80 := z80.NewZ80(memory, ports)
 	cpuZ80.Reset()
@@ -139,9 +140,15 @@ func loadRom(memory *Memory, fname string, slot int) {
 		mapper := NewMapperASCII8(buffer)
 		memory.setMapper(mapper, slot)
 		return
+
+	case NORMAL:
+		log.Println("Cartridge is type NORMAL")
+
+	case UNKNOWN:
+		log.Println("Cartridge is type UNKNOWN")
 	}
 
-	log.Printf("Failed to identify cartridge as MegaROM. Trying to load as a standard cartridge...\n")
+	log.Printf("Trying to load as a standard cartridge...\n")
 
 	npages := len(buffer) / 0x4000
 	switch npages {
