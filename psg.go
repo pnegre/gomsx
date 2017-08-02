@@ -47,10 +47,9 @@ func sound_callback(data []int16) {
 	for i := 0; i < len(data); i++ {
 		data[i] = 0
 	}
-	sound_tones[0].feedSamples(data)
-	sound_tones[1].feedSamples(data)
-	sound_tones[2].feedSamples(data)
+	psg_feedSamples(data)
 
+	// Limit maximum
 	for i := 0; i < len(data); i++ {
 		if data[i] > 32760 {
 			data[i] = 32760
@@ -64,6 +63,12 @@ func sound_callback(data []int16) {
 func psg_quit() {
 	sound_device.Stop()
 	sound_device.Close()
+}
+
+func psg_feedSamples(data []int16) {
+	sound_tones[0].feedSamples(data)
+	sound_tones[1].feedSamples(data)
+	sound_tones[2].feedSamples(data)
 }
 
 func psg_loadCassette(fileName string) {
