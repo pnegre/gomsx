@@ -101,7 +101,8 @@ func (self *MapperKonami5) writeByte(address uint16, value byte) {
 	switch {
 	case (self.sels[3]&0x3f == 0x3f) && address >= 0x9800 && address <= 0x9fff:
 		// SCC AREA
-		self.scc[address-0x9800] = value
+		scc_write(address-0x9800, value)
+		// self.scc[address-0x9800] = value
 		return
 
 	case address >= 0x5000 && address <= 0x57ff:
