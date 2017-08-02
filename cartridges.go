@@ -86,7 +86,7 @@ func NewMapperKonami5(data []byte) Mapper {
 }
 
 func (self *MapperKonami5) readByte(address uint16) byte {
-	if (self.sels[3]&0x3f == 0x3f) && address >= 0x9800 && address <= 0x9fff {
+	if (self.sels[2]&0x3f == 0x3f) && address >= 0x9800 && address <= 0x9fff {
 		// SCC Area
 		return self.scc[address-0x9800]
 	}
@@ -99,7 +99,7 @@ func (self *MapperKonami5) readByte(address uint16) byte {
 
 func (self *MapperKonami5) writeByte(address uint16, value byte) {
 	switch {
-	case (self.sels[3]&0x3f == 0x3f) && address >= 0x9800 && address <= 0x9fff:
+	case (self.sels[2]&0x3f == 0x3f) && address >= 0x9800 && address <= 0x9fff:
 		// SCC AREA
 		scc_write(address-0x9800, value)
 		// self.scc[address-0x9800] = value
