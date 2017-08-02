@@ -2,8 +2,36 @@ package main
 
 import "log"
 
-func scc_feedSamples(data []int16) {
+type SCCChannel struct {
+	waveform  []int
+	volume    int
+	frequency int
+	on        bool
+}
 
+var scc_channels []*SCCChannel
+
+func init() {
+	scc_channels = make([]*SCCChannel, 5)
+	for i := 0; i < len(scc_channels); i++ {
+		scc_channels[i] = NewSCCChannel()
+	}
+}
+
+func NewSCCChannel() *SCCChannel {
+	return &SCCChannel{}
+}
+
+func (self *SCCChannel) feedSamples(data []int16) {
+	if !self.on {
+		return
+	}
+}
+
+func scc_feedSamples(data []int16) {
+	for _, c := range scc_channels {
+		c.feedSamples(data)
+	}
 }
 
 func scc_write(n uint16, b byte) {
