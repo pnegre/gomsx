@@ -48,6 +48,7 @@ func sound_callback(data []int16) {
 		data[i] = 0
 	}
 	psg_feedSamples(data)
+	scc_feedSamples(data)
 
 	// Limit maximum
 	for i := 0; i < len(data); i++ {
