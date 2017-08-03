@@ -52,7 +52,7 @@ func vdp_updateRegisters() {
 	}
 	if scm != vdp_screenMode {
 		log.Printf("Change screen mode: %d\n", vdp_screenMode)
-		graphics_setLogicalResolution()
+		graphics_setLogicalResolution(vdp_screenMode)
 	}
 }
 

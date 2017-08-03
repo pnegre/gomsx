@@ -74,8 +74,8 @@ func graphics_drawPixel(x, y int, color int) {
 	graphics_ActiveTexture.Pixel(x, y, colors[color])
 }
 
-func graphics_setLogicalResolution() {
-	switch vdp_screenMode {
+func graphics_setLogicalResolution(scrMode int) {
+	switch scrMode {
 	case SCREEN0:
 		graphics_ActiveTexture = graphics_tex320
 		return
