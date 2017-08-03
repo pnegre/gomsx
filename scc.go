@@ -2,6 +2,10 @@ package main
 
 import "log"
 
+const (
+	SCC_NCHANNELS = 5
+)
+
 type SCCChannel struct {
 	waveform  []int
 	volume    int
@@ -12,9 +16,8 @@ type SCCChannel struct {
 var scc_channels []*SCCChannel
 
 func init() {
-	scc_channels = make([]*SCCChannel, 5)
-	for i := 0; i < len(scc_channels); i++ {
-		scc_channels[i] = NewSCCChannel()
+	for i := 0; i < SCC_NCHANNELS; i++ {
+		scc_channels = append(scc_channels, NewSCCChannel())
 	}
 }
 
