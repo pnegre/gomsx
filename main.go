@@ -112,8 +112,12 @@ func loadBiosBasic(memory *Memory, fname string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// Load BIOS
 	memory.load(buffer, 0, 0)
-	memory.load(buffer[0x4000:], 1, 0)
+	if len(buffer) > 0x4000 {
+		// Load BASIC, if present
+		memory.load(buffer[0x4000:], 1, 0)
+	}
 }
 
 func loadRom(memory *Memory, fname string, slot int) {

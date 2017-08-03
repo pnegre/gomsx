@@ -14,7 +14,7 @@ var vdp_screenMode int
 var vdp_valueRead byte
 var vdp_writeState = 0
 var vdp_enabledInterrupts = false
-var vdp_registers [8]byte
+var vdp_registers [9]byte
 var vdp_writeToVRAM bool
 var vdp_VRAM [0x10000]byte
 var vdp_pointerVRAM uint16
@@ -69,8 +69,8 @@ func vdp_writePort(ad byte, val byte) {
 			// Bit 7 must be 1 for write
 			if val&0x80 != 0 {
 				regn := val - 128
-				vdp_registers[regn] = vdp_valueRead
 				// log.Printf("vdp[%d] = %02x\n", regn, vdp_valueRead)
+				vdp_registers[regn] = vdp_valueRead
 				// log.Printf("VDPS: %v\n", vdp_registers)
 				vdp_updateRegisters()
 				return
