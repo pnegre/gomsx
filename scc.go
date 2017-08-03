@@ -8,7 +8,7 @@ const (
 
 type SCCChannel struct {
 	waveform  []int
-	volume    int
+	volume    byte
 	frequency int
 	on        bool
 }
@@ -57,19 +57,23 @@ func scc_write(n uint16, b byte) {
 		// Frequency channel 4
 	case n >= 0x88 && n < 0x8a:
 		// Frequency channel 5
-	case n == 0x8a:
-		// Volume channel 1
-	case n == 0x8b:
-		// Volume channel 2
-	case n == 0x8c:
-		// Volume channel 3
-	case n == 0x8d:
-		// Volume channel 4
-	case n == 0x8e:
-		// Volume channel 5
+
+	case n >= 0x8a && n < 0x8f:
+		// Volume
+		nch := n - 0x8a
+		scc_channels[nch].volume = b
+
 	case n == 0x8f:
 		// ON/OFF switch channel 1 to 5
+		for i := 0; i < 5; i++ {
+			var m byte = 0x01 << uint(i)
+			if m&b != 0 {
+				scc_channels[i].on = true
+			} else {
+				scc_channels[i].on = false
+			}
+		}
 	default:
-		log.Printf("SCC: %d -> %d\n", n, b)
+		log.Printf("SCC: %x -> %d\n", n, b)
 	}
 }
