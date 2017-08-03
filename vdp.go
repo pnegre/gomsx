@@ -14,7 +14,7 @@ var vdp_screenMode int
 var vdp_valueRead byte
 var vdp_writeState = 0
 var vdp_enabledInterrupts = false
-var vdp_registers [9]byte
+var vdp_registers [10]byte
 var vdp_writeToVRAM bool
 var vdp_VRAM [0x10000]byte
 var vdp_pointerVRAM uint16
