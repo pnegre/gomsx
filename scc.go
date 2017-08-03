@@ -7,10 +7,11 @@ const (
 )
 
 type SCCChannel struct {
-	waveform  []int
-	volume    byte
-	frequency int
-	on        bool
+	waveform   []int
+	volume     byte
+	frequency  float32
+	sccRegFreq [2]byte
+	on         bool
 }
 
 var scc_channels []*SCCChannel
@@ -47,16 +48,14 @@ func scc_write(n uint16, b byte) {
 		// Wafeform channel 3
 	case n >= 0x60 && n < 0x80:
 		// Wafeform channel 4 & 5
-	case n >= 0x80 && n < 0x82:
-		// Frequency channel 1
-	case n >= 0x82 && n < 0x84:
-		// Frequency channel 2
-	case n >= 0x84 && n < 0x86:
-		// Frequency channel 3
-	case n >= 0x86 && n < 0x88:
-		// Frequency channel 4
-	case n >= 0x88 && n < 0x8a:
-		// Frequency channel 5
+	case n >= 0x80 && n < 0x8a:
+		// Frequency
+		nch := (n - 0x80) / 2
+		scc_channels[nch].sccRegFreq[n%2] = b
+		freq := int(scc_channels[nch].sccRegFreq[0]) | (int(scc_channels[nch].sccRegFreq[1]&0x0f) << 8)
+		if freq > 0 {
+			scc_channels[nch].frequency = float32(111861) / float32(freq)
+		}
 
 	case n >= 0x8a && n < 0x8f:
 		// Volume
