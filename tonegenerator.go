@@ -12,9 +12,12 @@ func NewToneGenerator() *ToneGenerator {
 	return sd
 }
 
-func (self *ToneGenerator) setParameters(freq float32, volume float32) {
-	self.freq = freq
+func (self *ToneGenerator) setVolume(volume float32) {
 	self.amp = volume / 2
+}
+
+func (self *ToneGenerator) setFrequency(freq float32) {
+	self.freq = freq
 }
 
 func (self *ToneGenerator) activate(par bool) {

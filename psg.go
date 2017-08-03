@@ -144,7 +144,8 @@ func sound_doTones(chn int) {
 			// sound_tones[chn].setEnvelope(envFreq, envShape)
 		} else {
 			volume := float32(psg_regs[8+chn] & 0x0F)
-			sound_tones[chn].setParameters(realFreq, volume)
+			sound_tones[chn].setVolume(volume)
+			sound_tones[chn].setFrequency(realFreq)
 		}
 	}
 	sound_tones[chn].activate((psg_regs[7] & (0x01 << uint(chn))) == 0)
