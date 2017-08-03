@@ -24,9 +24,9 @@ const (
 func main() {
 	runtime.LockOSThread() // Assure SDL works...
 	var cart string
-	var cassFile string
+	var systemRom string
 	flag.StringVar(&cart, "cart", "", "ROM in SLOT 1")
-	flag.StringVar(&cassFile, "cas", "", "cassette file")
+	flag.StringVar(&systemRom, "sys", "msx1.rom", "System file")
 	flag.Parse()
 
 	if flag.NArg() > 0 {
@@ -35,13 +35,10 @@ func main() {
 	}
 
 	memory := NewMemory()
-	loadBiosBasic(memory, SYSTEMROMFILE)
+	loadBiosBasic(memory, systemRom)
 
 	if cart != "" {
 		loadRom(memory, cart, 1)
-	}
-	if cassFile != "" {
-		psg_loadCassette(cassFile)
 	}
 
 	ports := new(Ports)
