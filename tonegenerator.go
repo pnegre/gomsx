@@ -7,6 +7,15 @@ type ToneGenerator struct {
 	active bool
 }
 
+var SQWAVE []byte
+
+func init() {
+	SQWAVE = []byte{255, 255, 255, 255, 255, 255, 255, 255,
+		255, 255, 255, 255, 255, 255, 255, 255,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+	}
+}
 func NewToneGenerator() *ToneGenerator {
 	sd := new(ToneGenerator)
 	return sd
