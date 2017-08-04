@@ -8,7 +8,7 @@ const (
 
 type SCCChannel struct {
 	tonegenerator *ToneGenerator
-	waveform      []int
+	waveform      [32]byte
 	sccRegFreq    [2]byte
 }
 
@@ -28,6 +28,11 @@ func (self *SCCChannel) feedSamples(data []int16) {
 	self.tonegenerator.feedSamples(data)
 }
 
+func (self *SCCChannel) setWaveform(k uint16, b byte) {
+	self.waveform[k] = b
+	self.tonegenerator.updateWaveform(self.waveform[:])
+}
+
 func scc_feedSamples(data []int16) {
 	for _, c := range scc_channels {
 		c.feedSamples(data)
@@ -36,12 +41,16 @@ func scc_feedSamples(data []int16) {
 
 func scc_write(n uint16, b byte) {
 	switch {
-	case n < 0x20:
-		// Waveform channel 1
-	case n >= 0x20 && n < 0x40:
-		// Wafeform channel 2
-	case n >= 0x40 && n < 0x60:
-		// Wafeform channel 3
+	case n >= 0x00 && n < 0x80:
+		// Waveform (32 bits)
+		nch := n / 0x20
+		k := n % 0x20
+		scc_channels[nch].setWaveform(k, b)
+		// Waveform is shared for ch4 and ch5
+		if nch == 3 {
+			scc_channels[4].setWaveform(k, b)
+		}
+
 	case n >= 0x60 && n < 0x80:
 		// Wafeform channel 4 & 5
 	case n >= 0x80 && n < 0x8a:

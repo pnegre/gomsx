@@ -12,6 +12,11 @@ func NewToneGenerator() *ToneGenerator {
 	return sd
 }
 
+func (self *ToneGenerator) updateWaveform(data []byte) {
+	// Set waveform of tone generator
+	// TODO: implementar
+}
+
 func (self *ToneGenerator) setVolume(volume float32) {
 	self.amp = volume / 2
 }
