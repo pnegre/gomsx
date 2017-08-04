@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	SYSTEMROMFILE = "msx1.rom"
+	SYSTEMROMFILE = "cbios_main_msx1.rom"
 	// 60Hz -> Interval de 16Mseg
 	INTERVAL = 16
 	// EL z80 executa devers 580000 instr per segon
@@ -26,7 +26,7 @@ func main() {
 	var cart string
 	var systemRom string
 	flag.StringVar(&cart, "cart", "", "ROM in SLOT 1")
-	flag.StringVar(&systemRom, "sys", "msx1.rom", "System file")
+	flag.StringVar(&systemRom, "sys", SYSTEMROMFILE, "System file")
 	flag.Parse()
 
 	if flag.NArg() > 0 {
