@@ -5,25 +5,32 @@ type ToneGenerator struct {
 	freq   float32
 	count  int
 	active bool
+	wform  [32]int16
+	index  float32
 }
 
 var SQWAVE []byte
 
 func init() {
-	SQWAVE = []byte{255, 255, 255, 255, 255, 255, 255, 255,
+	SQWAVE = []byte{
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
 		255, 255, 255, 255, 255, 255, 255, 255,
-		0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0,
+		255, 255, 255, 255, 255, 255, 255, 255,
 	}
 }
 func NewToneGenerator() *ToneGenerator {
 	sd := new(ToneGenerator)
+	sd.updateWaveform(SQWAVE)
 	return sd
 }
 
 func (self *ToneGenerator) updateWaveform(data []byte) {
 	// Set waveform of tone generator
 	// TODO: implementar
+	for i := 0; i < len(data); i++ {
+		self.wform[i] = int16(data[i]) - 127
+	}
 }
 
 func (self *ToneGenerator) setVolume(volume float32) {
@@ -47,23 +54,14 @@ func (self *ToneGenerator) feedSamples(data []int16) {
 		return
 	}
 
-	// Based on code from EMULIB, Sound.c, function RenderAudio()
-
-	K := int(0x10000 * self.freq / FREQUENCY)
-	L1 := self.count
-	var A1 int16
-	for i := 0; i < len(data); i, L1 = i+1, L1+K {
-		L2 := L1 + K
-		if L1&0x8000 != 0 {
-			A1 = 127
-		} else {
-			A1 = -128
+	nsamples := FREQUENCY / (self.freq)
+	delta := float32(32) / nsamples
+	for i := 0; i < len(data); i++ {
+		data[i] += int16(float32(self.wform[int(self.index)]) * self.amp)
+		self.index += delta
+		for self.index >= 32 {
+			self.index -= 32
 		}
-		if (L1^L2)&0x8000 != 0 {
-			A1 = A1 * int16((0x8000-(L1&0x7FFF)-(L2&0x7FFF))/K)
-		}
-		data[i] += int16(float32(A1) * self.amp)
 	}
-	self.count = L1 & 0xFFFF
 
 }

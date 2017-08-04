@@ -51,8 +51,6 @@ func scc_write(n uint16, b byte) {
 			scc_channels[4].setWaveform(k, b)
 		}
 
-	case n >= 0x60 && n < 0x80:
-		// Wafeform channel 4 & 5
 	case n >= 0x80 && n < 0x8a:
 		// Frequency
 		nch := (n - 0x80) / 2
@@ -66,7 +64,7 @@ func scc_write(n uint16, b byte) {
 	case n >= 0x8a && n < 0x8f:
 		// Volume
 		nch := n - 0x8a
-		scc_channels[nch].tonegenerator.setVolume(float32(b) / 2)
+		scc_channels[nch].tonegenerator.setVolume(float32(b))
 
 	case n == 0x8f:
 		// ON/OFF switch channel 1 to 5
