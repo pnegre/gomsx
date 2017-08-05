@@ -25,8 +25,10 @@ func main() {
 	runtime.LockOSThread() // Assure SDL works...
 	var cart string
 	var systemRom string
+	var quality bool
 	flag.StringVar(&cart, "cart", "", "ROM in SLOT 1")
 	flag.StringVar(&systemRom, "sys", SYSTEMROMFILE, "System file")
+	flag.BoolVar(&quality, "quality", true, "Best quality rendering")
 	flag.Parse()
 
 	if flag.NArg() > 0 {
@@ -46,7 +48,7 @@ func main() {
 	cpuZ80.Reset()
 	cpuZ80.SetPC(0)
 
-	graphics_init()
+	graphics_init(quality)
 	psg_init()
 	defer graphics_quit()
 	defer psg_quit()

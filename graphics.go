@@ -38,11 +38,14 @@ func init() {
 	}
 }
 
-func graphics_init() {
+func graphics_init(quality bool) {
 	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
 		log.Fatal(err)
 	}
 	gogame.SetLogicalSize(WIN_W, WIN_H)
+	if quality {
+		gogame.SetScaleQuality(1)
+	}
 	graphics_tex320 = gogame.NewEmptyTexture(MSX_W1, MSX_H)
 	graphics_tex320.SetDimensions(WIN_W, WIN_H)
 	graphics_tex256 = gogame.NewEmptyTexture(MSX_W2, MSX_H)
