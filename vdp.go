@@ -249,6 +249,9 @@ func vdp_drawSprites() {
 		xpos := int(sprTable[j+1])
 		patn := sprTable[j+2]
 		ec := (sprTable[j+3] & 0x80) != 0
+		if ec {
+			xpos -= 32
+		}
 		color := int(sprTable[j+3] & 0x0F)
 		if !spr16x16 {
 			patt := sprPatTable[uint16(patn)*8:]
