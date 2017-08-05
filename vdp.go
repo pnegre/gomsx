@@ -242,6 +242,10 @@ func vdp_drawSprites() {
 	spr16x16 := (vdp_registers[1] & 0x02) != 0
 	for i, j := 0, 0; i < 32; i, j = i+1, j+4 {
 		ypos := int(sprTable[j])
+		if ypos == 0xd0 {
+			// Ignore all sprites
+			return
+		}
 		xpos := int(sprTable[j+1])
 		patn := sprTable[j+2]
 		ec := (sprTable[j+3] & 0x80) != 0
