@@ -26,11 +26,16 @@ BIOS routines of the MSX. No BASIC.
 If you want to run BASIC, you can find a MSX1.ROM system file elsewhere.
 
 The file "softwaredb.xml" is useful in aiding the emulator to apply the correct memory mapper
-for the MSX cartridge games. It's not required, but usually you can't play gammes without it.
+for the MSX cartridge games. It's not required, but usually you can't play games without it.
 
 To run it:
 
-    $ ./gomsx -cart nameoffile.rom
+    $ chmod +x gomsx
+    $ ./gomsx -cart game.rom
+
+Help:
+
+    $ ./gomsx -h
 
 Compilation
 -----------
