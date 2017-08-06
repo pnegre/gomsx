@@ -75,10 +75,6 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80) float64 {
 			lag -= updateInterval
 		}
 
-		if gogame.IsKeyPressed(gogame.K_F7) {
-			logAssembler = true
-		}
-
 		if quit := gogame.SlurpEvents(); quit == true {
 			break
 		}
@@ -96,11 +92,6 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80) float64 {
 
 func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
 	for i := 0; i < INSTRPERFRAME; i++ {
-		if logAssembler {
-			pc := cpuZ80.PC()
-			instr, _, _ := z80.Disassemble(memory, pc, 0)
-			log.Printf("%04x: %s\n", pc, instr)
-		}
 		cpuZ80.DoOpcode()
 	}
 	if vdp_enabledInterrupts {
