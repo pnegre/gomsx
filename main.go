@@ -58,7 +58,6 @@ func main() {
 
 func mainLoop(memory *Memory, cpuZ80 *z80.Z80) float64 {
 	log.Println("Beginning simulation...")
-	logAssembler := false
 	var currentTime, elapsedTime, lag int64
 	updateInterval := int64(time.Millisecond) * INTERVAL
 	previousTime := time.Now().UnixNano()
@@ -71,7 +70,7 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80) float64 {
 		previousTime = currentTime
 		lag += elapsedTime
 		for lag >= updateInterval {
-			cpuFrame(cpuZ80, memory, logAssembler)
+			cpuFrame(cpuZ80, memory)
 			lag -= updateInterval
 		}
 
@@ -90,7 +89,7 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80) float64 {
 	return float64(nframes) / float64(delta)
 }
 
-func cpuFrame(cpuZ80 *z80.Z80, memory *Memory, logAssembler bool) {
+func cpuFrame(cpuZ80 *z80.Z80, memory *Memory) {
 	for i := 0; i < INSTRPERFRAME; i++ {
 		cpuZ80.DoOpcode()
 	}
