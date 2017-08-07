@@ -26,9 +26,11 @@ func main() {
 	var cart string
 	var systemRom string
 	var quality bool
+	var frameInterval int
 	flag.StringVar(&cart, "cart", "", "ROM in SLOT 1")
 	flag.StringVar(&systemRom, "sys", SYSTEMROMFILE, "System file")
 	flag.BoolVar(&quality, "quality", true, "Best quality rendering")
+	flag.IntVar(&frameInterval, "fint", INTERVAL, "Frame interval in milliseconds")
 	flag.Parse()
 
 	if flag.NArg() > 0 {
@@ -52,14 +54,14 @@ func main() {
 	psg_init()
 	defer graphics_quit()
 	defer psg_quit()
-	avgFPS := mainLoop(memory, cpuZ80)
+	avgFPS := mainLoop(memory, cpuZ80, frameInterval)
 	log.Printf("Avg FPS: %.2f\n", avgFPS)
 }
 
-func mainLoop(memory *Memory, cpuZ80 *z80.Z80) float64 {
+func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 	log.Println("Beginning simulation...")
 	var currentTime, elapsedTime, lag int64
-	updateInterval := int64(time.Millisecond) * INTERVAL
+	updateInterval := int64(time.Millisecond) * int64(frameInterval)
 	previousTime := time.Now().UnixNano()
 
 	startTime := time.Now().UnixNano()
