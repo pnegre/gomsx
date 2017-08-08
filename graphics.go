@@ -47,8 +47,14 @@ func graphics_init(quality bool) {
 		gogame.SetScaleQuality(1)
 	}
 	graphics_tex320 = gogame.NewEmptyTexture(MSX_W1, MSX_H)
+	if graphics_tex320 == nil {
+		log.Fatal("Error creating texture")
+	}
 	graphics_tex320.SetDimensions(WIN_W, WIN_H)
 	graphics_tex256 = gogame.NewEmptyTexture(MSX_W2, MSX_H)
+	if graphics_tex256 == nil {
+		log.Fatal("Error creating texture")
+	}
 	graphics_tex256.SetDimensions(WIN_W, WIN_H)
 	graphics_ActiveTexture = graphics_tex256
 }
