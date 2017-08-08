@@ -50,12 +50,16 @@ func main() {
 	cpuZ80.Reset()
 	cpuZ80.SetPC(0)
 
-	graphics_init(quality)
-	psg_init()
-	defer graphics_quit()
-	defer psg_quit()
-	avgFPS := mainLoop(memory, cpuZ80, frameInterval)
-	log.Printf("Avg FPS: %.2f\n", avgFPS)
+	errg := graphics_init(quality)
+	if errg == nil {
+		psg_init()
+		defer graphics_quit()
+		defer psg_quit()
+		avgFPS := mainLoop(memory, cpuZ80, frameInterval)
+		log.Printf("Avg FPS: %.2f\n", avgFPS)
+	} else {
+		log.Printf("Error initalizing graphics: %v", errg)
+	}
 }
 
 func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {

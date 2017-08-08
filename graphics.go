@@ -1,7 +1,6 @@
 package main
 
 import "github.com/pnegre/gogame"
-import "log"
 
 const (
 	WINTITLE = "gomsx"
@@ -38,25 +37,27 @@ func init() {
 	}
 }
 
-func graphics_init(quality bool) {
-	if err := gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
-		log.Fatal(err)
+func graphics_init(quality bool) error {
+	var err error
+	if err = gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
+		return err
 	}
 	gogame.SetLogicalSize(WIN_W, WIN_H)
 	if quality {
 		gogame.SetScaleQuality(1)
 	}
-	graphics_tex320 = gogame.NewEmptyTexture(MSX_W1, MSX_H)
-	if graphics_tex320 == nil {
-		log.Fatal("Error creating texture")
+	graphics_tex320, err = gogame.NewEmptyTexture(MSX_W1, MSX_H)
+	if err != nil {
+		return err
 	}
 	graphics_tex320.SetDimensions(WIN_W, WIN_H)
-	graphics_tex256 = gogame.NewEmptyTexture(MSX_W2, MSX_H)
-	if graphics_tex256 == nil {
-		log.Fatal("Error creating texture")
+	graphics_tex256, err = gogame.NewEmptyTexture(MSX_W2, MSX_H)
+	if err != nil {
+		return err
 	}
 	graphics_tex256.SetDimensions(WIN_W, WIN_H)
 	graphics_ActiveTexture = graphics_tex256
+	return nil
 }
 
 func graphics_quit() {
