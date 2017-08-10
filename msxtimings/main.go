@@ -29,10 +29,10 @@ func main() {
 var tplText = `
 package z80
 
-func InitMSXTimings {
+func InitMSXTimings() {
 	{{ range .}}
 	/* {{.Instr}} */
-	TimingsMSX[{{.Opc}}] = {{.Tim}}
+	timingsMSX[{{.Opc}}] = {{.Tim}}
 	{{ end }}
 }
 `
@@ -59,14 +59,29 @@ func work(lines [][]string) {
 }
 
 func getOpcode(s string) string {
+	s = strings.ToLower(s)
 	ar := strings.Split(s, " ")
 	switch len(ar) {
 	case 1:
-		return "0x0000" + ar[0]
+		return "0x" + ar[0]
 	case 2:
-		return "0x00" + ar[0] + ar[1]
+		if ar[0] == "cb" {
+			return "SHIFT_0xCB+" + "0x" + ar[1]
+		} else if ar[0] == "ed" {
+			return "SHIFT_0xED+" + "0x" + ar[1]
+		} else if ar[0] == "dd" {
+			return "SHIFT_0xDD+" + "0x" + ar[1]
+		} else if ar[0] == "fd" {
+			return "SHIFT_0xFD+" + "0x" + ar[1]
+		}
+		panic("Opcode 2byte not valid")
 	case 3:
-		return "0x" + ar[0] + ar[1] + ar[2]
+		if ar[0] == "dd" {
+			return "SHIFT_0xDDCB+" + "0x" + ar[2]
+		} else if ar[0] == "fd" {
+			return "SHIFT_0xDDCB+" + "0x" + ar[2]
+		}
+		panic("Opcode 3byte not valid")
 	default:
 		log.Fatalf("Error getOpcode: %v", ar)
 	}
