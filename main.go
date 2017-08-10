@@ -14,11 +14,10 @@ import (
 
 const (
 	SYSTEMROMFILE = "cbios_main_msx1.rom"
-	// 60Hz -> Interval de 16Mseg
+	// 60Hz -> Interval de 16mseg
 	INTERVAL = 16
-	// EL z80 executa devers 580000 instr per segon
-	// (Un "frame" a 60Hz són 16mseg, per tant executa 9280 instr. per frame)
-	INSTRPERFRAME = 6280
+	// EL z80 va a 3.58 Mhz. Cada 16mseg passen 57280 cicles
+	CYCLESPERFRAME = 57280
 )
 
 func main() {
@@ -96,9 +95,11 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 }
 
 func cpuFrame(cpuZ80 *z80.Z80, memory *Memory) {
-	for i := 0; i < INSTRPERFRAME; i++ {
+	cpuZ80.Cycles %= CYCLESPERFRAME
+	for cpuZ80.Cycles < CYCLESPERFRAME {
 		cpuZ80.DoOpcode()
 	}
+
 	if vdp_enabledInterrupts {
 		vdp_setFrameFlag()
 		cpuZ80.Interrupt()

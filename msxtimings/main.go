@@ -29,7 +29,7 @@ func main() {
 var tplText = `
 package z80
 
-func InitMSXTimings() {
+func initMSXTimings() {
 	{{ range .}}
 	/* {{.Instr}} */
 	timingsMSX[{{.Opc}}] = {{.Tim}}
