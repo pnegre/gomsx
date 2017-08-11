@@ -12,7 +12,7 @@ What's the best way of learning how something works? by building it, of course!!
 How to RUN it
 -------------
 
-If you want to try the emulator for youlself, you can download binaries here (only Linux AMD64): 
+If you want to try the emulator for youlself, you can download binaries here (only Linux AMD64):
 https://drive.google.com/open?id=0B8__MZ9xDS79SkRpQzFneDVoOTA
 
 Make sure you have the following libraries installed:
@@ -53,7 +53,6 @@ Next, clone the source:
 Get the dependencies:
 
     $ go get github.com/pnegre/gogame
-    $ go get github.com/remogatto/z80
 
 And, you just build the program:
 

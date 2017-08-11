@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/pnegre/gogame"
-	"github.com/remogatto/z80"
+	"github.com/pnegre/z80"
 )
 
 const (
