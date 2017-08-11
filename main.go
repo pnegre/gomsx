@@ -17,7 +17,7 @@ const (
 	// 60Hz -> Interval de 16mseg
 	INTERVAL = 16
 	// EL z80 va a 3.58 Mhz. Cada 16mseg passen 57280 cicles
-	CYCLESPERFRAME = 57280
+	CYCLESPERFRAME = 60000
 )
 
 func main() {
