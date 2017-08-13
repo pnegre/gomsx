@@ -49,11 +49,11 @@ Go needs to have its workspace set up. Look for the documentation in https://gol
 Next, clone the source:
 
     $ git clone https://github.com/pnegre/gomsx.git
-    $ git clone https://github.com/pnegre/z80
 
 Get the dependencies:
 
     $ go get github.com/pnegre/gogame
+    $ git clone https://github.com/pnegre/z80
 
 And, you just build the program:
 
