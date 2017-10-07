@@ -46,17 +46,14 @@ So, you want to check the source, eh? First, you'll need a golang installation. 
 
 Go needs to have its workspace set up. Look for the documentation in https://golang.org/doc/
 
-Next, clone the source:
-
-    $ git clone https://github.com/pnegre/gomsx.git
-
-Get the dependencies:
+Next, get the source and the dependencies:
 
     $ go get github.com/pnegre/gogame
-    $ git clone https://github.com/pnegre/z80
+    $ go get github.com/pnegre/gomsx
 
 And, you just build the program:
 
+    $ cd yourgoworkspace/src/github.com/pnegre/gomsx
     $ go build
 
 Happy hacking!!!
