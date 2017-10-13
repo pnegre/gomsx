@@ -2133,8 +2133,10 @@ func instr__DJNZ_OFFSET(z80 *Z80) {
 	z80.B--
 	if z80.B != 0 {
 		z80.jr()
+		z80.Cycles += 14
 	} else {
 		z80.memory.ContendRead(z80.PC(), 3)
+		z80.Cycles += 9
 	}
 	z80.IncPC(1)
 }

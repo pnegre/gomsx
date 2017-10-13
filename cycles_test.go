@@ -7,11 +7,34 @@ import (
 )
 
 func Test1(t *testing.T) {
-	// LD A, 0
-	// HALT
+	// LD A, 0 (8 cicles)
+	// HALT    (5 cicles)
 	ar := []byte{0x3e, 0x00, 0x76}
 	nc := checkCycles(ar)
 	if nc != 13 {
+		t.Errorf("ncycles: %d", nc)
+	}
+}
+
+func Test2(t *testing.T) {
+	// LD A, 0  (8 cicles)
+	// JP Z, 1  (11 cicles)
+	// HALT     (5 cicles)
+	ar := []byte{0x3e, 0x00, 0xca, 0x00, 0x00, 0x76}
+	nc := checkCycles(ar)
+	if nc != 24 {
+		t.Errorf("ncycles: %d", nc)
+	}
+}
+
+func Test3(t *testing.T) {
+	//     LD B, 5  (8 cicles)
+	// xx: INC A    (5 cicles)
+	//     DJNZ xx  (14/9 cicles)
+	//     HALT     (5 cicles)
+	ar := []byte{0x06, 0x05, 0x3c, 0x10, 0xfd, 0x76}
+	nc := checkCycles(ar)
+	if nc != 103 {
 		t.Errorf("ncycles: %d", nc)
 	}
 }

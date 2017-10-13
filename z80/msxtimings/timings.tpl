@@ -75,6 +75,7 @@ func initMSXTimings() {
         return 11
     }
 
+/*
     // DJNZ o
     timingsMSX[0x10] = func(z80 *Z80) uint64 {
         if (z80.B != 0) {
@@ -82,6 +83,7 @@ func initMSXTimings() {
         }
         return 9
     }
+*/
 
     // JR C, nn
     timingsMSX[0x38] = func(z80 *Z80) uint64 {
