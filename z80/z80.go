@@ -131,6 +131,56 @@ func NewZ80(memory MemoryAccessor, ports PortAccessor) *Z80 {
 	return z80
 }
 
+func (z80 *Z80) SaveState(backup *Z80) {
+	backup.A, backup.F, backup.B, backup.C, backup.D, backup.E, backup.H, backup.L =
+		z80.A, z80.F, z80.B, z80.C, z80.D, z80.E, z80.H, z80.L
+
+	backup.A_, backup.F_, backup.B_, backup.C_, backup.D_, backup.E_, backup.H_, backup.L_ =
+		z80.A_, z80.F_, z80.B_, z80.C_, z80.D_, z80.E_, z80.H_, z80.L_
+
+	backup.IXH, backup.IXL, backup.IYH, backup.IYL =
+		z80.IXH, z80.IXL, z80.IYH, z80.IYL
+
+	backup.sp, backup.I, backup.R, backup.R7, backup.pc, backup.IFF1, backup.IFF2, backup.IM =
+		z80.sp, z80.I, z80.R, z80.R7, z80.pc, z80.IFF1, z80.IFF2, z80.IM
+
+	backup.Tstates = z80.Tstates
+
+	backup.Halted = z80.Halted
+	backup.interruptsEnabledAt = z80.interruptsEnabledAt
+
+	backup.EventNextEvent = z80.EventNextEvent
+	backup.Tstates = z80.Tstates
+	backup.tempaddr = z80.tempaddr
+	backup.rzxInstructionsOffset = z80.rzxInstructionsOffset
+	backup.Cycles = z80.Cycles
+}
+
+func (z80 *Z80) RestoreState(backup *Z80) {
+	z80.A, z80.F, z80.B, z80.C, z80.D, z80.E, z80.H, z80.L =
+		backup.A, backup.F, backup.B, backup.C, backup.D, backup.E, backup.H, backup.L
+
+	z80.A_, z80.F_, z80.B_, z80.C_, z80.D_, z80.E_, z80.H_, z80.L_ =
+		backup.A_, backup.F_, backup.B_, backup.C_, backup.D_, backup.E_, backup.H_, backup.L_
+
+	z80.IXH, z80.IXL, z80.IYH, z80.IYL =
+		backup.IXH, backup.IXL, backup.IYH, backup.IYL
+
+	z80.sp, z80.I, z80.R, z80.R7, z80.pc, z80.IFF1, z80.IFF2, z80.IM =
+		backup.sp, backup.I, backup.R, backup.R7, backup.pc, backup.IFF1, backup.IFF2, backup.IM
+
+	z80.Tstates = backup.Tstates
+
+	z80.Halted = backup.Halted
+	z80.interruptsEnabledAt = backup.interruptsEnabledAt
+
+	z80.EventNextEvent = backup.EventNextEvent
+	z80.Tstates = backup.Tstates
+	z80.tempaddr = backup.tempaddr
+	z80.rzxInstructionsOffset = backup.rzxInstructionsOffset
+	z80.Cycles = backup.Cycles
+}
+
 // Reset resets the Z80.
 func (z80 *Z80) Reset() {
 	z80.A, z80.F, z80.B, z80.C, z80.D, z80.E, z80.H, z80.L = 0, 0, 0, 0, 0, 0, 0, 0

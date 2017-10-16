@@ -55,7 +55,6 @@ func main() {
 	psg_init()
 	defer graphics_quit()
 	defer psg_quit()
-	state_init(cpuZ80, memory)
 	avgFPS := mainLoop(memory, cpuZ80, frameInterval)
 	log.Printf("Avg FPS: %.2f\n", avgFPS)
 
@@ -63,6 +62,7 @@ func main() {
 
 func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 	log.Println("Beginning simulation...")
+	state_init()
 	var currentTime, elapsedTime, lag int64
 	updateInterval := int64(time.Millisecond) * int64(frameInterval)
 	previousTime := time.Now().UnixNano()
@@ -89,11 +89,11 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 		graphics_render()
 
 		if nframes%(60*10) == 0 {
-			state_save()
+			state_save(cpuZ80, memory)
 		}
 
 		if gogame.IsKeyPressed(gogame.K_F12) {
-			state_revert()
+			state_revert(cpuZ80, memory)
 		}
 
 		nframes++
