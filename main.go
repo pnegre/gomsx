@@ -88,7 +88,7 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 		graphics_unlock()
 		graphics_render()
 
-		if nframes%(60*10) == 0 {
+		if nframes%(60*2) == 0 {
 			state_save(cpuZ80, memory)
 		}
 
