@@ -55,6 +55,7 @@ func main() {
 	psg_init()
 	defer graphics_quit()
 	defer psg_quit()
+	state_init(cpuZ80, memory)
 	avgFPS := mainLoop(memory, cpuZ80, frameInterval)
 	log.Printf("Avg FPS: %.2f\n", avgFPS)
 
@@ -86,6 +87,14 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 		vdp_updateBuffer()
 		graphics_unlock()
 		graphics_render()
+
+		if nframes%(60*10) == 0 {
+			state_save()
+		}
+
+		if gogame.IsKeyPressed(gogame.K_F12) {
+			state_revert()
+		}
 
 		nframes++
 	}
