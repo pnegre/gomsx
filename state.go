@@ -1,5 +1,6 @@
 package main
 
+import "container/ring"
 import "github.com/pnegre/gomsx/z80"
 
 type stateDataT struct {
@@ -19,19 +20,30 @@ type stateDataT struct {
 	}
 }
 
+func newStateData() *stateDataT {
+	sd := new(stateDataT)
+	sd.cpuBackup = new(z80.Z80)
+	return sd
+}
+
 const NSTATEDATA = 5
 
 var state_data [NSTATEDATA]stateDataT
 var state_current int = 0
+var state_ring *ring.Ring
 
 func state_init() {
-	for i := 0; i < NSTATEDATA; i++ {
-		state_data[i].cpuBackup = new(z80.Z80)
-	}
+	state_ring = ring.New(NSTATEDATA)
 }
 
 func state_save(cpu *z80.Z80, mem *Memory) {
-	data := &state_data[state_current]
+	var data *stateDataT
+	if state_ring.Value == nil {
+		data = newStateData()
+		state_ring.Value = data
+	} else {
+		data = state_ring.Value.(*stateDataT)
+	}
 
 	// Save CPU state
 	cpu.SaveState(data.cpuBackup)
@@ -49,12 +61,13 @@ func state_save(cpu *z80.Z80, mem *Memory) {
 	state_saveVDP(data)
 
 	// Advance state
-	state_current = (state_current + 1) % NSTATEDATA
+	state_ring = state_ring.Next()
 }
 
 func state_revert(cpu *z80.Z80, mem *Memory) {
-	state_current = (state_current + NSTATEDATA - 1) % NSTATEDATA
-	data := &state_data[state_current]
+	state_ring = state_ring.Move(-NSTATEDATA)
+	// state_current = (state_current + NSTATEDATA - 1) % NSTATEDATA
+	data := state_ring.Value.(*stateDataT)
 
 	// Restore CPU state
 	cpu.RestoreState(data.cpuBackup)
