@@ -28,12 +28,10 @@ func newStateData() *stateDataT {
 
 const NSTATEDATA = 5
 
-var state_data [NSTATEDATA]stateDataT
-var state_current int = 0
 var state_ring *ring.Ring
 
 func state_init() {
-	state_ring = ring.New(NSTATEDATA)
+	state_ring = ring.New(1)
 }
 
 func state_save(cpu *z80.Z80, mem *Memory) {
@@ -61,13 +59,18 @@ func state_save(cpu *z80.Z80, mem *Memory) {
 	state_saveVDP(data)
 
 	// Advance state
+	if state_ring.Len() < NSTATEDATA {
+		sr := ring.New(1)
+		state_ring.Link(sr)
+	}
 	state_ring = state_ring.Next()
 }
 
 func state_revert(cpu *z80.Z80, mem *Memory) {
-	state_ring = state_ring.Move(-NSTATEDATA)
-	// state_current = (state_current + NSTATEDATA - 1) % NSTATEDATA
+	state_ring = state_ring.Move(-(state_ring.Len() - 1))
 	data := state_ring.Value.(*stateDataT)
+	state_ring = ring.New(1)
+	state_ring.Value = data
 
 	// Restore CPU state
 	cpu.RestoreState(data.cpuBackup)
@@ -83,6 +86,10 @@ func state_revert(cpu *z80.Z80, mem *Memory) {
 
 	// Restore VDP
 	state_restoreVDP(data)
+
+	sr := ring.New(1)
+	state_ring.Link(sr)
+	state_ring = state_ring.Next()
 }
 
 func state_saveVDP(data *stateDataT) {
