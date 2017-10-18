@@ -69,13 +69,16 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 
 	startTime := time.Now().UnixNano()
 	nframes := 0
+	paused := false
 	for {
 		currentTime = time.Now().UnixNano()
 		elapsedTime = currentTime - previousTime
 		previousTime = currentTime
 		lag += elapsedTime
 		for lag >= updateInterval {
-			cpuFrame(cpuZ80, memory)
+			if !paused {
+				cpuFrame(cpuZ80, memory)
+			}
 			lag -= updateInterval
 		}
 
@@ -88,12 +91,19 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 		graphics_unlock()
 		graphics_render()
 
-		if nframes%(60*2) == 0 {
-			state_save(cpuZ80, memory)
+		if !paused {
+			if nframes%(60*2) == 0 {
+				state_save(cpuZ80, memory)
+			}
 		}
 
 		if gogame.IsKeyPressed(gogame.K_F12) {
 			state_revert(cpuZ80, memory)
+			paused = true
+		}
+
+		if gogame.IsKeyPressed(gogame.K_SPACE) {
+			paused = false
 		}
 
 		nframes++
