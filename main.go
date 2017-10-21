@@ -115,6 +115,9 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 func cpuFrame(cpuZ80 *z80.Z80, memory *Memory) {
 	cpuZ80.Cycles %= CYCLESPERFRAME
 	for cpuZ80.Cycles < CYCLESPERFRAME {
+		if cpuZ80.Halted == true {
+			break
+		}
 		cpuZ80.DoOpcode()
 	}
 
