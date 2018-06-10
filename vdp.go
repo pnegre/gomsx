@@ -105,7 +105,7 @@ func (vdp *Vdp) readPort(ad byte) byte {
 	switch {
 	case ad == 0x98:
 		// Reading from VRAM
-		//log.Printf("Reading from VRAM: %04x", vdp_pointerVRAM)
+		//log.Printf("Reading from VRAM: %04x", vdp.pointerVRAM)
 		r := vdp.vram[vdp.pointerVRAM]
 		vdp.pointerVRAM++
 		return r
@@ -136,7 +136,7 @@ func (vdp *Vdp) updateBuffer() {
 		color2 := int((vdp.registers[7] & 0x0F))
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 40; x++ {
-				vdp_drawPatternsS0(x*8, y*8, int(nameTable[x+y*40])*8, patTable, color1, color2)
+				vdp.drawPatternsS0(x*8, y*8, int(nameTable[x+y*40])*8, patTable, color1, color2)
 			}
 		}
 		break
@@ -146,7 +146,7 @@ func (vdp *Vdp) updateBuffer() {
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 32; x++ {
 				pat := int(nameTable[x+y*32])
-				vdp_drawPatternsS1(x*8, y*8, pat*8, patTable, colorTable[pat/8])
+				vdp.drawPatternsS1(x*8, y*8, pat*8, patTable, colorTable[pat/8])
 			}
 		}
 		vdp.drawSprites()
@@ -160,7 +160,7 @@ func (vdp *Vdp) updateBuffer() {
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 32; x++ {
 				pat := int(nameTable[x+y*32])
-				vdp_drawPatternsS2(x*8, y*8, pat*8, patTable, colorTable)
+				vdp.drawPatternsS2(x*8, y*8, pat*8, patTable, colorTable)
 			}
 		}
 		vdp.drawSprites()
@@ -177,7 +177,7 @@ func (vdp *Vdp) updateBuffer() {
 	}
 }
 
-func vdp_drawPatternsS0(x, y int, pt int, patTable []byte, color1, color2 int) {
+func (vdp *Vdp) drawPatternsS0(x, y int, pt int, patTable []byte, color1, color2 int) {
 	var mask byte
 	for i := 0; i < 8; i++ {
 		b := patTable[i+pt]
@@ -192,7 +192,7 @@ func vdp_drawPatternsS0(x, y int, pt int, patTable []byte, color1, color2 int) {
 		}
 	}
 }
-func vdp_drawPatternsS1(x, y int, pt int, patTable []byte, color byte) {
+func (vdp *Vdp) drawPatternsS1(x, y int, pt int, patTable []byte, color byte) {
 	color1 := int((color & 0xF0) >> 4)
 	color2 := int(color & 0x0F)
 	var mask byte
@@ -210,7 +210,7 @@ func vdp_drawPatternsS1(x, y int, pt int, patTable []byte, color byte) {
 	}
 }
 
-func vdp_drawPatternsS2(x, y int, pt int, patTable []byte, colorTable []byte) {
+func (vdp *Vdp) drawPatternsS2(x, y int, pt int, patTable []byte, colorTable []byte) {
 	var mask byte
 	var b byte
 	var color byte
@@ -261,19 +261,19 @@ func (vdp *Vdp) drawSprites() {
 		color := int(sprTable[j+3] & 0x0F)
 		if !spr16x16 {
 			patt := sprPatTable[uint16(patn)*8:]
-			drawSpr(magnif, xpos, ypos, patt, ec, color)
+			vdp.drawSpr(magnif, xpos, ypos, patt, ec, color)
 		} else {
 			patt := sprPatTable[uint16((patn>>2))*8*4:]
-			drawSpr(magnif, xpos, ypos, patt, ec, color)
-			drawSpr(magnif, xpos, ypos+8, patt[8:], ec, color)
-			drawSpr(magnif, xpos+8, ypos, patt[16:], ec, color)
-			drawSpr(magnif, xpos+8, ypos+8, patt[24:], ec, color)
+			vdp.drawSpr(magnif, xpos, ypos, patt, ec, color)
+			vdp.drawSpr(magnif, xpos, ypos+8, patt[8:], ec, color)
+			vdp.drawSpr(magnif, xpos+8, ypos, patt[16:], ec, color)
+			vdp.drawSpr(magnif, xpos+8, ypos+8, patt[24:], ec, color)
 		}
 	}
 }
 
 // TODO: sprite magnification not implemented
-func drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color int) {
+func (vdp *Vdp) drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color int) {
 	if ypos > 191 {
 		return
 	}
