@@ -55,7 +55,7 @@ func main() {
 	cpuZ80 := z80.NewZ80(memory, ports)
 	cpuZ80.Reset()
 	cpuZ80.SetPC(0)
-	msx := &MSX{cpuz80: cpuZ80, vdp: vdp}
+	msx := &MSX{cpuz80: cpuZ80, vdp: vdp, memory: memory}
 
 	if errg := graphics_init(quality); errg != nil {
 		log.Printf("Error initalizing graphics: %v", errg)
@@ -65,7 +65,6 @@ func main() {
 	defer psg_quit()
 	avgFPS := mainLoop(msx, frameInterval)
 	log.Printf("Avg FPS: %.2f\n", avgFPS)
-
 }
 
 func mainLoop(msx *MSX, frameInterval int) float64 {
@@ -99,16 +98,16 @@ func mainLoop(msx *MSX, frameInterval int) float64 {
 		graphics_unlock()
 		graphics_render()
 
-		// if !paused {
-		// 	if nframes%(60*2) == 0 {
-		// 		state_save(cpuZ80, memory)
-		// 	}
-		// }
+		if !paused {
+			if nframes%(60*2) == 0 {
+				state_save(msx)
+			}
+		}
 
-		// if gogame.IsKeyPressed(gogame.K_F12) {
-		// 	state_revert(cpuZ80, memory)
-		// 	paused = true
-		// }
+		if gogame.IsKeyPressed(gogame.K_F12) {
+			state_revert(msx)
+			paused = true
+		}
 
 		if gogame.IsKeyPressed(gogame.K_SPACE) {
 			paused = false

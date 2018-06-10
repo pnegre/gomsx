@@ -6,18 +6,7 @@ import "github.com/pnegre/gomsx/z80"
 type stateDataT struct {
 	cpuBackup   *z80.Z80
 	memContents [4][4][0x4000]byte
-	vdp         struct {
-		screenEnabled     bool
-		screenMode        int
-		valueRead         byte
-		writeState        int
-		enabledInterrupts bool
-		registers         [10]byte
-		writeToVRAM       bool
-		VRAM              [0x10000]byte
-		pointerVRAM       uint16
-		statusReg         byte
-	}
+	vdp         *Vdp
 }
 
 func newStateData() *stateDataT {
@@ -34,7 +23,7 @@ func state_init() {
 	state_ring = ring.New(1)
 }
 
-func state_save(cpu *z80.Z80, mem *Memory) {
+func state_save(msx *MSX) {
 	var data *stateDataT
 	if state_ring.Value == nil {
 		data = newStateData()
@@ -44,19 +33,19 @@ func state_save(cpu *z80.Z80, mem *Memory) {
 	}
 
 	// Save CPU state
-	cpu.SaveState(data.cpuBackup)
+	msx.cpuz80.SaveState(data.cpuBackup)
 
 	// Save RAM
 	for i := 0; i < 4; i++ {
 		for j := 0; j < 4; j++ {
 			for k := 0; k < 0x4000; k++ {
-				data.memContents[i][j][k] = mem.contents[i][j][k]
+				data.memContents[i][j][k] = msx.memory.contents[i][j][k]
 			}
 		}
 	}
 
 	// Save VDP
-	state_saveVDP(data)
+	data.vdp = msx.vdp.saveState()
 
 	// Advance state
 	if state_ring.Len() < NSTATEDATA {
@@ -66,26 +55,26 @@ func state_save(cpu *z80.Z80, mem *Memory) {
 	state_ring = state_ring.Next()
 }
 
-func state_revert(cpu *z80.Z80, mem *Memory) {
+func state_revert(msx *MSX) {
 	state_ring = state_ring.Move(-(state_ring.Len() - 1))
 	data := state_ring.Value.(*stateDataT)
 	state_ring = ring.New(1)
 	state_ring.Value = data
 
 	// Restore CPU state
-	cpu.RestoreState(data.cpuBackup)
+	msx.cpuz80.RestoreState(data.cpuBackup)
 
 	// Restore RAM
 	for i := 0; i < 4; i++ {
 		for j := 0; j < 4; j++ {
 			for k := 0; k < 0x4000; k++ {
-				mem.contents[i][j][k] = data.memContents[i][j][k]
+				msx.memory.contents[i][j][k] = data.memContents[i][j][k]
 			}
 		}
 	}
 
 	// Restore VDP
-	state_restoreVDP(data)
+	msx.vdp.restoreState(data.vdp)
 
 	sr := ring.New(1)
 	state_ring.Link(sr)

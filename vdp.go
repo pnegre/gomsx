@@ -26,6 +26,15 @@ func NewVdp() *Vdp {
 	return &Vdp{}
 }
 
+func (vdp *Vdp) saveState() *Vdp {
+	var vdp2 = *vdp
+	return &vdp2
+}
+
+func (vdp *Vdp) restoreState(vdp2 *Vdp) {
+	*vdp = *vdp2
+}
+
 func (vdp *Vdp) setFrameFlag() {
 	vdp.statusReg |= 0x80
 }
