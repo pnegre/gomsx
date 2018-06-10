@@ -9,6 +9,19 @@ const (
 	SCREEN3 = 3
 )
 
+type Vdp struct {
+	screenEnabled     bool
+	screenMode        int
+	valueRead         byte
+	writeState        int
+	enabledInterrupts bool
+	registers         [10]byte
+	writeToVRAM       bool
+	vram              [0x10000]byte
+	pointerVRAM       uint16
+	statusReg         byte
+}
+
 var vdp_screenEnabled bool = false
 var vdp_screenMode int
 var vdp_valueRead byte
