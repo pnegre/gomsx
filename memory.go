@@ -27,6 +27,16 @@ func NewMemory() *Memory {
 	return mem
 }
 
+func (self *Memory) saveState() *Memory {
+	m := Memory{}
+	m = *self
+	return &m
+}
+
+func (self *Memory) restoreState(m *Memory) {
+	*self = *m
+}
+
 // Loads 16k (one page)
 func (self *Memory) load(data []byte, page, slot int) {
 	copy(self.contents[page][slot][:], data[:0x4000])
