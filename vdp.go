@@ -9,6 +9,8 @@ const (
 	SCREEN3 = 3
 )
 
+var theVdp = NewVdp()
+
 type Vdp struct {
 	screenEnabled     bool
 	screenMode        int
@@ -22,106 +24,99 @@ type Vdp struct {
 	statusReg         byte
 }
 
-var vdp_screenEnabled bool = false
-var vdp_screenMode int
-var vdp_valueRead byte
-var vdp_writeState = 0
-var vdp_enabledInterrupts = false
-var vdp_registers [10]byte
-var vdp_writeToVRAM bool
-var vdp_VRAM [0x10000]byte
-var vdp_pointerVRAM uint16
-var vdp_statusReg byte = 0
-
-func vdp_setFrameFlag() {
-	vdp_statusReg |= 0x80
+func NewVdp() *Vdp {
+	return &Vdp{}
 }
 
-func vdp_updateRegisters() {
-	vdp_screenEnabled = vdp_registers[1]&0x40 != 0
-	vdp_enabledInterrupts = vdp_registers[1]&0x20 != 0
-	m1 := vdp_registers[1]&0x10 != 0
-	m2 := vdp_registers[1]&0x08 != 0
-	m3 := vdp_registers[0]&0x02 != 0
-	m4 := vdp_registers[0]&0x04 != 0
-	m5 := vdp_registers[0]&0x08 != 0
-	scm := vdp_screenMode
+func (vdp *Vdp) setFrameFlag() {
+	vdp.statusReg |= 0x80
+}
+
+func (vdp *Vdp) updateRegisters() {
+	vdp.screenEnabled = vdp.registers[1]&0x40 != 0
+	vdp.enabledInterrupts = vdp.registers[1]&0x20 != 0
+	m1 := vdp.registers[1]&0x10 != 0
+	m2 := vdp.registers[1]&0x08 != 0
+	m3 := vdp.registers[0]&0x02 != 0
+	m4 := vdp.registers[0]&0x04 != 0
+	m5 := vdp.registers[0]&0x08 != 0
+	scm := vdp.screenMode
 	switch {
 	case m1 == false && m2 == false && m3 == false && m4 == false && m5 == false:
-		vdp_screenMode = SCREEN1
+		vdp.screenMode = SCREEN1
 		break
 
 	case m1 == true && m2 == false && m3 == false && m4 == false && m5 == false:
-		vdp_screenMode = SCREEN0
+		vdp.screenMode = SCREEN0
 		break
 
 	case m1 == false && m2 == true && m3 == false && m4 == false && m5 == false:
-		vdp_screenMode = SCREEN3
+		vdp.screenMode = SCREEN3
 		break
 
 	case m1 == false && m2 == false && m3 == true && m4 == false && m5 == false:
-		vdp_screenMode = SCREEN2
+		vdp.screenMode = SCREEN2
 		break
 	}
-	if scm != vdp_screenMode {
-		log.Printf("Change screen mode: %d\n", vdp_screenMode)
-		graphics_setLogicalResolution(vdp_screenMode)
+	if scm != vdp.screenMode {
+		log.Printf("Change screen mode: %d\n", vdp.screenMode)
+		graphics_setLogicalResolution(vdp.screenMode)
 	}
 }
 
-func vdp_writePort(ad byte, val byte) {
+func (vdp *Vdp) writePort(ad byte, val byte) {
 	//log.Printf("VDP: Out(%02x, %02x)\n", ad, val)
 	switch {
 	case ad == 0x99:
-		if vdp_writeState == 0 {
-			vdp_valueRead = val
-			vdp_writeState = 1
+		if vdp.writeState == 0 {
+			vdp.valueRead = val
+			vdp.writeState = 1
 			return
 		} else {
-			vdp_writeState = 0
+			vdp.writeState = 0
 			// Bit 7 must be 1 for write
 			if val&0x80 != 0 {
 				regn := val - 128
-				// log.Printf("vdp[%d] = %02x\n", regn, vdp_valueRead)
-				vdp_registers[regn] = vdp_valueRead
-				// log.Printf("VDPS: %v\n", vdp_registers)
-				vdp_updateRegisters()
+				// log.Printf("vdp[%d] = %02x\n", regn, vdp.valueRead)
+				vdp.registers[regn] = vdp.valueRead
+				// log.Printf("VDPS: %v\n", vdp.registers)
+				vdp.updateRegisters()
 				return
 			} else {
-				vdp_writeToVRAM = (val&0x40 != 0)
+				vdp.writeToVRAM = (val&0x40 != 0)
 				val &= 0xBF
-				vdp_pointerVRAM = 0
-				vdp_pointerVRAM |= uint16(vdp_valueRead)
-				vdp_pointerVRAM |= uint16(val) << 8
+				vdp.pointerVRAM = 0
+				vdp.pointerVRAM |= uint16(vdp.valueRead)
+				vdp.pointerVRAM |= uint16(val) << 8
 				return
 			}
 		}
 
 	case ad == 0x98:
 		// Writing to VRAM
-		//log.Printf("Writing to VRAM: %04x -> %02x", vdp_pointerVRAM, val)
-		vdp_VRAM[vdp_pointerVRAM] = val
-		vdp_pointerVRAM++
+		//log.Printf("Writing to VRAM: %04x -> %02x", vdp.pointerVRAM, val)
+		vdp.vram[vdp.pointerVRAM] = val
+		vdp.pointerVRAM++
 		return
 
 	}
 	log.Fatalf("Not implemented: VDP: Out(%02x, %02x)", ad, val)
 }
 
-func vdp_readPort(ad byte) byte {
+func (vdp *Vdp) readPort(ad byte) byte {
 	switch {
 	case ad == 0x98:
 		// Reading from VRAM
 		//log.Printf("Reading from VRAM: %04x", vdp_pointerVRAM)
-		r := vdp_VRAM[vdp_pointerVRAM]
-		vdp_pointerVRAM++
+		r := vdp.vram[vdp.pointerVRAM]
+		vdp.pointerVRAM++
 		return r
 
 	case ad == 0x99:
 		// Reading status register
 		// TODO: mirar-ho bé....
-		var r = vdp_statusReg
-		vdp_statusReg &= 0x7F // Clear frame flag
+		var r = vdp.statusReg
+		vdp.statusReg &= 0x7F // Clear frame flag
 		return r
 	}
 
@@ -129,18 +124,18 @@ func vdp_readPort(ad byte) byte {
 	return 0
 }
 
-func vdp_updateBuffer() {
-	if !vdp_screenEnabled {
+func (vdp *Vdp) updateBuffer() {
+	if !vdp.screenEnabled {
 		return
 	}
-	nameTable := vdp_VRAM[(uint16(vdp_registers[2]) << 10):]
-	patTable := vdp_VRAM[(uint16(vdp_registers[4]) << 11):]
-	colorTable := vdp_VRAM[(uint16(vdp_registers[3]) << 6):]
+	nameTable := vdp.vram[(uint16(vdp.registers[2]) << 10):]
+	patTable := vdp.vram[(uint16(vdp.registers[4]) << 11):]
+	colorTable := vdp.vram[(uint16(vdp.registers[3]) << 6):]
 	switch {
-	case vdp_screenMode == SCREEN0:
+	case vdp.screenMode == SCREEN0:
 		// Render SCREEN0 (40x24)
-		color1 := int((vdp_registers[7] & 0xF0) >> 4)
-		color2 := int((vdp_registers[7] & 0x0F))
+		color1 := int((vdp.registers[7] & 0xF0) >> 4)
+		color2 := int((vdp.registers[7] & 0x0F))
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 40; x++ {
 				vdp_drawPatternsS0(x*8, y*8, int(nameTable[x+y*40])*8, patTable, color1, color2)
@@ -148,7 +143,7 @@ func vdp_updateBuffer() {
 		}
 		break
 
-	case vdp_screenMode == SCREEN1:
+	case vdp.screenMode == SCREEN1:
 		// Render SCREEN1 (32x24)
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 32; x++ {
@@ -156,24 +151,24 @@ func vdp_updateBuffer() {
 				vdp_drawPatternsS1(x*8, y*8, pat*8, patTable, colorTable[pat/8])
 			}
 		}
-		vdp_drawSprites()
+		vdp.drawSprites()
 		break
 
-	case vdp_screenMode == SCREEN2:
+	case vdp.screenMode == SCREEN2:
 		// Render SCREEN2
 		// Pattern table: 0000H to 17FFH
-		patTable := vdp_VRAM[(uint16(vdp_registers[4]&0x04) << 11):]
-		colorTable := vdp_VRAM[(uint16(vdp_registers[3]&0x80) << 6):]
+		patTable := vdp.vram[(uint16(vdp.registers[4]&0x04) << 11):]
+		colorTable := vdp.vram[(uint16(vdp.registers[3]&0x80) << 6):]
 		for y := 0; y < 24; y++ {
 			for x := 0; x < 32; x++ {
 				pat := int(nameTable[x+y*32])
 				vdp_drawPatternsS2(x*8, y*8, pat*8, patTable, colorTable)
 			}
 		}
-		vdp_drawSprites()
+		vdp.drawSprites()
 		break
 
-	case vdp_screenMode == SCREEN3:
+	case vdp.screenMode == SCREEN3:
 		// Render SCREEN3
 		log.Println("Drawing in screen3 not implemented yet")
 		break
@@ -246,13 +241,13 @@ func vdp_drawPatternsS2(x, y int, pt int, patTable []byte, colorTable []byte) {
 	}
 }
 
-func vdp_drawSprites() {
+func (vdp *Vdp) drawSprites() {
 	// Sprite name table: 1B00H to 1B7FH
 	// Sprite pattern table: 3800H to 3FFFH
-	sprTable := vdp_VRAM[(uint16(vdp_registers[5]) << 7):]
-	sprPatTable := vdp_VRAM[(uint16(vdp_registers[6]) << 11):]
-	magnif := (vdp_registers[1] & 0x01) != 0
-	spr16x16 := (vdp_registers[1] & 0x02) != 0
+	sprTable := vdp.vram[(uint16(vdp.registers[5]) << 7):]
+	sprPatTable := vdp.vram[(uint16(vdp.registers[6]) << 11):]
+	magnif := (vdp.registers[1] & 0x01) != 0
+	spr16x16 := (vdp.registers[1] & 0x02) != 0
 	for i, j := 0, 0; i < 32; i, j = i+1, j+4 {
 		ypos := int(sprTable[j])
 		if ypos == 0xd0 {

@@ -87,7 +87,7 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 		}
 
 		graphics_lock()
-		vdp_updateBuffer()
+		theVdp.updateBuffer()
 		graphics_unlock()
 		graphics_render()
 
@@ -121,8 +121,8 @@ func cpuFrame(cpuZ80 *z80.Z80, memory *Memory) {
 		cpuZ80.DoOpcode()
 	}
 
-	if vdp_enabledInterrupts {
-		vdp_setFrameFlag()
+	if theVdp.enabledInterrupts {
+		theVdp.setFrameFlag()
 		cpuZ80.Interrupt()
 	}
 }

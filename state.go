@@ -93,39 +93,39 @@ func state_revert(cpu *z80.Z80, mem *Memory) {
 }
 
 func state_saveVDP(data *stateDataT) {
-	data.vdp.screenEnabled = vdp_screenEnabled
-	data.vdp.screenMode = vdp_screenMode
-	data.vdp.valueRead = vdp_valueRead
-	data.vdp.writeState = vdp_writeState
-	data.vdp.enabledInterrupts = vdp_enabledInterrupts
-	data.vdp.writeToVRAM = vdp_writeToVRAM
-	data.vdp.pointerVRAM = vdp_pointerVRAM
-	data.vdp.statusReg = vdp_statusReg
+	// data.vdp.screenEnabled = vdp_screenEnabled
+	// data.vdp.screenMode = vdp_screenMode
+	// data.vdp.valueRead = vdp_valueRead
+	// data.vdp.writeState = vdp_writeState
+	// data.vdp.enabledInterrupts = vdp_enabledInterrupts
+	// data.vdp.writeToVRAM = vdp_writeToVRAM
+	// data.vdp.pointerVRAM = vdp_pointerVRAM
+	// data.vdp.statusReg = vdp_statusReg
 
-	for i := 0; i < 10; i++ {
-		data.vdp.registers[i] = vdp_registers[i]
-	}
+	// for i := 0; i < 10; i++ {
+	// 	data.vdp.registers[i] = vdp_registers[i]
+	// }
 
-	for i := 0; i < 0x10000; i++ {
-		data.vdp.VRAM[i] = vdp_VRAM[i]
-	}
+	// for i := 0; i < 0x10000; i++ {
+	// 	data.vdp.VRAM[i] = vdp_VRAM[i]
+	// }
 }
 
 func state_restoreVDP(data *stateDataT) {
-	vdp_screenEnabled = data.vdp.screenEnabled
-	vdp_screenMode = data.vdp.screenMode
-	vdp_valueRead = data.vdp.valueRead
-	vdp_writeState = data.vdp.writeState
-	vdp_enabledInterrupts = data.vdp.enabledInterrupts
-	vdp_writeToVRAM = data.vdp.writeToVRAM
-	vdp_pointerVRAM = data.vdp.pointerVRAM
-	vdp_statusReg = data.vdp.statusReg
+	// vdp_screenEnabled = data.vdp.screenEnabled
+	// vdp_screenMode = data.vdp.screenMode
+	// vdp_valueRead = data.vdp.valueRead
+	// vdp_writeState = data.vdp.writeState
+	// vdp_enabledInterrupts = data.vdp.enabledInterrupts
+	// vdp_writeToVRAM = data.vdp.writeToVRAM
+	// vdp_pointerVRAM = data.vdp.pointerVRAM
+	// vdp_statusReg = data.vdp.statusReg
 
-	for i := 0; i < 10; i++ {
-		vdp_registers[i] = data.vdp.registers[i]
-	}
+	// for i := 0; i < 10; i++ {
+	// 	vdp_registers[i] = data.vdp.registers[i]
+	// }
 
-	for i := 0; i < 0x10000; i++ {
-		vdp_VRAM[i] = data.vdp.VRAM[i]
-	}
+	// for i := 0; i < 0x10000; i++ {
+	// 	vdp_VRAM[i] = data.vdp.VRAM[i]
+	// }
 }
