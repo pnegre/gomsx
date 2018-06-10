@@ -20,6 +20,12 @@ const (
 	CYCLESPERFRAME = 60000
 )
 
+type MSX struct {
+	cpuz80 *z80.Z80
+	vdp    *Vdp
+	memory *Memory
+}
+
 func main() {
 	runtime.LockOSThread() // Assure SDL works...
 	var cart string
@@ -44,10 +50,12 @@ func main() {
 		loadRom(memory, cart, 1)
 	}
 
-	ports := new(Ports)
+	vdp := NewVdp()
+	ports := &Ports{vdp: vdp}
 	cpuZ80 := z80.NewZ80(memory, ports)
 	cpuZ80.Reset()
 	cpuZ80.SetPC(0)
+	msx := &MSX{cpuz80: cpuZ80, vdp: vdp}
 
 	if errg := graphics_init(quality); errg != nil {
 		log.Printf("Error initalizing graphics: %v", errg)
@@ -55,12 +63,12 @@ func main() {
 	psg_init()
 	defer graphics_quit()
 	defer psg_quit()
-	avgFPS := mainLoop(memory, cpuZ80, frameInterval)
+	avgFPS := mainLoop(msx, frameInterval)
 	log.Printf("Avg FPS: %.2f\n", avgFPS)
 
 }
 
-func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
+func mainLoop(msx *MSX, frameInterval int) float64 {
 	log.Println("Beginning simulation...")
 	state_init()
 	var currentTime, elapsedTime, lag int64
@@ -77,7 +85,7 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 		lag += elapsedTime
 		for lag >= updateInterval {
 			if !paused {
-				cpuFrame(cpuZ80, memory)
+				cpuFrame(msx)
 			}
 			lag -= updateInterval
 		}
@@ -87,20 +95,20 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 		}
 
 		graphics_lock()
-		theVdp.updateBuffer()
+		msx.vdp.updateBuffer()
 		graphics_unlock()
 		graphics_render()
 
-		if !paused {
-			if nframes%(60*2) == 0 {
-				state_save(cpuZ80, memory)
-			}
-		}
+		// if !paused {
+		// 	if nframes%(60*2) == 0 {
+		// 		state_save(cpuZ80, memory)
+		// 	}
+		// }
 
-		if gogame.IsKeyPressed(gogame.K_F12) {
-			state_revert(cpuZ80, memory)
-			paused = true
-		}
+		// if gogame.IsKeyPressed(gogame.K_F12) {
+		// 	state_revert(cpuZ80, memory)
+		// 	paused = true
+		// }
 
 		if gogame.IsKeyPressed(gogame.K_SPACE) {
 			paused = false
@@ -112,18 +120,18 @@ func mainLoop(memory *Memory, cpuZ80 *z80.Z80, frameInterval int) float64 {
 	return float64(nframes) / float64(delta)
 }
 
-func cpuFrame(cpuZ80 *z80.Z80, memory *Memory) {
-	cpuZ80.Cycles %= CYCLESPERFRAME
-	for cpuZ80.Cycles < CYCLESPERFRAME {
-		if cpuZ80.Halted == true {
+func cpuFrame(msx *MSX) {
+	msx.cpuz80.Cycles %= CYCLESPERFRAME
+	for msx.cpuz80.Cycles < CYCLESPERFRAME {
+		if msx.cpuz80.Halted == true {
 			break
 		}
-		cpuZ80.DoOpcode()
+		msx.cpuz80.DoOpcode()
 	}
 
-	if theVdp.enabledInterrupts {
-		theVdp.setFrameFlag()
-		cpuZ80.Interrupt()
+	if msx.vdp.enabledInterrupts {
+		msx.vdp.setFrameFlag()
+		msx.cpuz80.Interrupt()
 	}
 }
 

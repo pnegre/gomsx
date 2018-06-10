@@ -3,6 +3,7 @@ package main
 import "log"
 
 type Ports struct {
+	vdp *Vdp
 }
 
 func (self *Ports) ReadPort(address uint16) byte {
@@ -15,7 +16,7 @@ func (self *Ports) ReadPort(address uint16) byte {
 		return psg_readPort(ad)
 
 	case ad >= 0x98 && ad <= 0x9b:
-		return theVdp.readPort(ad)
+		return self.vdp.readPort(ad)
 	}
 
 	log.Printf("ReadPort: %02x\n", ad)
@@ -38,7 +39,7 @@ func (self *Ports) WritePort(address uint16, b byte) {
 		return
 
 	case ad >= 0x98 && ad <= 0x9b:
-		theVdp.writePort(ad, b)
+		self.vdp.writePort(ad, b)
 		return
 
 	case ad >= 0x00 && ad <= 0x01:

@@ -9,8 +9,6 @@ const (
 	SCREEN3 = 3
 )
 
-var theVdp = NewVdp()
-
 type Vdp struct {
 	screenEnabled     bool
 	screenMode        int
