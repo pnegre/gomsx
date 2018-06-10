@@ -37,13 +37,6 @@ func state_save(msx *MSX) {
 
 	// Save RAM
 	data.memory = msx.memory.saveState()
-	// for i := 0; i < 4; i++ {
-	// 	for j := 0; j < 4; j++ {
-	// 		for k := 0; k < 0x4000; k++ {
-	// 			data.memContents[i][j][k] = msx.memory.contents[i][j][k]
-	// 		}
-	// 	}
-	// }
 
 	// Save VDP
 	data.vdp = msx.vdp.saveState()
@@ -67,13 +60,6 @@ func state_revert(msx *MSX) {
 
 	// Restore RAM
 	msx.memory.restoreState(data.memory)
-	// for i := 0; i < 4; i++ {
-	// 	for j := 0; j < 4; j++ {
-	// 		for k := 0; k < 0x4000; k++ {
-	// 			msx.memory.contents[i][j][k] = data.memContents[i][j][k]
-	// 		}
-	// 	}
-	// }
 
 	// Restore VDP
 	msx.vdp.restoreState(data.vdp)
