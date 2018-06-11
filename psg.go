@@ -22,11 +22,10 @@ import "github.com/pnegre/gogame"
 
 const FREQUENCY = 22000
 
-
 type PSG struct {
-	regs [16]byte
-	regNext byte
-	bytesCass []byte
+	regs        [16]byte
+	regNext     byte
+	bytesCass   []byte
 	sound_tones [3]*ToneGenerator
 }
 
@@ -42,13 +41,13 @@ func NewPSG() *PSG {
 
 func sound_init(psg *PSG) {
 	sound_device, _ = gogame.NewAudioDevice(FREQUENCY)
-	sound_device.SetCallback(func (data []int16) {
+	sound_device.SetCallback(func(data []int16) {
 		for i := 0; i < len(data); i++ {
 			data[i] = 0
 		}
 		psg.feedSamples(data)
 		scc_feedSamples(data)
-	
+
 		// Limit maximum
 		for i := 0; i < len(data); i++ {
 			if data[i] > 32760 {
@@ -134,7 +133,7 @@ func cassete_getNextBit() byte {
 }
 
 // TODO: envelopes
-func (psg *PSG)doTones(chn int) {
+func (psg *PSG) doTones(chn int) {
 	freq := (int(psg.regs[chn*2+1]&0x0f) << 8) | int(psg.regs[chn*2])
 	envelopeEnabled := (psg.regs[8+chn] & 0x10) != 0
 	if freq > 0 {

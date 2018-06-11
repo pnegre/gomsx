@@ -24,7 +24,7 @@ type MSX struct {
 	vdp    *Vdp
 	memory *Memory
 	ppi    *PPI
-	psg *PSG
+	psg    *PSG
 }
 
 func main() {
