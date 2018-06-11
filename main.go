@@ -66,11 +66,11 @@ func main() {
 	sound_init(psg)
 	defer graphics_quit()
 	defer sound_quit()
-	avgFPS := mainLoop(msx, frameInterval)
+	avgFPS := msx.mainLoop(frameInterval)
 	log.Printf("Avg FPS: %.2f\n", avgFPS)
 }
 
-func mainLoop(msx *MSX, frameInterval int) float64 {
+func (msx *MSX) mainLoop(frameInterval int) float64 {
 	log.Println("Beginning simulation...")
 	state_init()
 	var currentTime, elapsedTime, lag int64
@@ -87,7 +87,7 @@ func mainLoop(msx *MSX, frameInterval int) float64 {
 		lag += elapsedTime
 		for lag >= updateInterval {
 			if !paused {
-				cpuFrame(msx)
+				msx.cpuFrame()
 			}
 			lag -= updateInterval
 		}
@@ -122,7 +122,7 @@ func mainLoop(msx *MSX, frameInterval int) float64 {
 	return float64(nframes) / float64(delta)
 }
 
-func cpuFrame(msx *MSX) {
+func (msx *MSX) cpuFrame() {
 	msx.cpuz80.Cycles %= CYCLESPERFRAME
 	for msx.cpuz80.Cycles < CYCLESPERFRAME {
 		if msx.cpuz80.Halted == true {
