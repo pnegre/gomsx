@@ -19,82 +19,83 @@ package main
 
 import "log"
 import "github.com/pnegre/gogame"
-import "io/ioutil"
 
 const FREQUENCY = 22000
 
-var psg_regs [16]byte
-var psg_regNext byte
-var psg_bytesCass []byte
 
-var sound_tones [3]*ToneGenerator
+type PSG struct {
+	regs [16]byte
+	regNext byte
+	bytesCass []byte
+	sound_tones [3]*ToneGenerator
+}
+
 var sound_device *gogame.AudioDevice
 
-// var sound_noise *Noise
+func NewPSG() *PSG {
+	psg := &PSG{}
+	psg.sound_tones[0] = NewToneGenerator()
+	psg.sound_tones[1] = NewToneGenerator()
+	psg.sound_tones[2] = NewToneGenerator()
+	return psg
+}
 
-func psg_init() {
+func sound_init(psg *PSG) {
 	sound_device, _ = gogame.NewAudioDevice(FREQUENCY)
-	sound_tones[0] = NewToneGenerator()
-	sound_tones[1] = NewToneGenerator()
-	sound_tones[2] = NewToneGenerator()
-	// sound_noise = NewNoise()
-	sound_device.SetCallback(sound_callback)
-	// gogame.RegisterSoundCallback(sound_callback)
+	sound_device.SetCallback(func (data []int16) {
+		for i := 0; i < len(data); i++ {
+			data[i] = 0
+		}
+		psg.feedSamples(data)
+		scc_feedSamples(data)
+	
+		// Limit maximum
+		for i := 0; i < len(data); i++ {
+			if data[i] > 32760 {
+				data[i] = 32760
+			}
+			if data[i] < -32760 {
+				data[i] = -32760
+			}
+		}
+	})
 	sound_device.Start()
 }
 
-func sound_callback(data []int16) {
-	for i := 0; i < len(data); i++ {
-		data[i] = 0
-	}
-	psg_feedSamples(data)
-	scc_feedSamples(data)
-
-	// Limit maximum
-	for i := 0; i < len(data); i++ {
-		if data[i] > 32760 {
-			data[i] = 32760
-		}
-		if data[i] < -32760 {
-			data[i] = -32760
-		}
-	}
-}
-
-func psg_quit() {
+func sound_quit() {
 	sound_device.Stop()
 	sound_device.Close()
 }
 
-func psg_feedSamples(data []int16) {
-	sound_tones[0].feedSamples(data)
-	sound_tones[1].feedSamples(data)
-	sound_tones[2].feedSamples(data)
+func (psg *PSG) feedSamples(data []int16) {
+	psg.sound_tones[0].feedSamples(data)
+	psg.sound_tones[1].feedSamples(data)
+	psg.sound_tones[2].feedSamples(data)
 }
 
-func psg_loadCassette(fileName string) {
-	var err error
-	psg_bytesCass, err = ioutil.ReadFile(fileName)
-	if err != nil {
-		log.Println(err)
-		psg_bytesCass = nil
-	}
-	log.Println("PSG: Loaded cassete:", fileName)
-}
+// func psg_loadCassette(fileName string) {
+// 	var err error
+// 	psg_bytesCass, err = ioutil.ReadFile(fileName)
+// 	if err != nil {
+// 		log.Println(err)
+// 		psg_bytesCass = nil
+// 	}
+// 	log.Println("PSG: Loaded cassete:", fileName)
+// }
 
-func psg_writePort(ad byte, val byte) {
+func (psg *PSG) writePort(ad byte, val byte) {
 	switch {
 	case ad == 0xa0:
 		// Register write port
-		psg_regNext = val
+		psg.regNext = val
 		return
 
 	case ad == 0xa1:
 		// Write value to port
-		psg_regs[psg_regNext] = val
-		if psg_regNext < 14 {
+		psg.regs[psg.regNext] = val
+		if psg.regNext < 14 {
 			for i := 0; i < 3; i++ {
-				sound_doTones(i)
+				psg.doTones(i)
 			}
 
 			// TODO: sound_doNoises()
@@ -105,22 +106,22 @@ func psg_writePort(ad byte, val byte) {
 	log.Fatalf("Sound, not implemented: out(%02x,%02x)", ad, val)
 }
 
-func psg_readPort(ad byte) byte {
+func (psg *PSG) readPort(ad byte) byte {
 	switch {
 	case ad == 0xa2:
 		// Read value from port
-		if psg_regNext == 0x0e {
+		if psg.regNext == 0x0e {
 			// joystick triggers i cassete input
 			bitCass := cassete_getNextBit() << 7
 			// Per ara ho posem a 1 (no moviment de joystick)
 			return 0x3f | bitCass
 		}
-		if psg_regNext == 0x0f {
+		if psg.regNext == 0x0f {
 			// PSG port 15 (joystick select)
 			// TODO: millorar
 			return 0
 		}
-		return psg_regs[psg_regNext]
+		return psg.regs[psg.regNext]
 	}
 
 	log.Fatalf("Sound, not implemented: in(%02x)", ad)
@@ -133,22 +134,22 @@ func cassete_getNextBit() byte {
 }
 
 // TODO: envelopes
-func sound_doTones(chn int) {
-	freq := (int(psg_regs[chn*2+1]&0x0f) << 8) | int(psg_regs[chn*2])
-	envelopeEnabled := (psg_regs[8+chn] & 0x10) != 0
+func (psg *PSG)doTones(chn int) {
+	freq := (int(psg.regs[chn*2+1]&0x0f) << 8) | int(psg.regs[chn*2])
+	envelopeEnabled := (psg.regs[8+chn] & 0x10) != 0
 	if freq > 0 {
 		realFreq := float32(111861) / float32(freq)
 		if envelopeEnabled {
-			// envFreq := (uint16(psg_regs[12]) << 8) | uint16(psg_regs[11])
-			// envShape := psg_regs[13] & 0x0F
+			// envFreq := (uint16(psg.regs[12]) << 8) | uint16(psg.regs[11])
+			// envShape := psg.regs[13] & 0x0F
 			// sound_tones[chn].setEnvelope(envFreq, envShape)
 		} else {
-			volume := float32(psg_regs[8+chn] & 0x0F)
-			sound_tones[chn].setVolume(volume)
-			sound_tones[chn].setFrequency(realFreq)
+			volume := float32(psg.regs[8+chn] & 0x0F)
+			psg.sound_tones[chn].setVolume(volume)
+			psg.sound_tones[chn].setFrequency(realFreq)
 		}
 	}
-	sound_tones[chn].activate((psg_regs[7] & (0x01 << uint(chn))) == 0)
+	psg.sound_tones[chn].activate((psg.regs[7] & (0x01 << uint(chn))) == 0)
 }
 
 func sound_doNoises() {

@@ -24,6 +24,7 @@ type MSX struct {
 	vdp    *Vdp
 	memory *Memory
 	ppi    *PPI
+	psg *PSG
 }
 
 func main() {
@@ -51,19 +52,20 @@ func main() {
 		memory.loadRom(cart, 1)
 	}
 
+	psg := NewPSG()
 	vdp := NewVdp()
-	ports := &Ports{vdp: vdp, ppi: ppi}
+	ports := &Ports{vdp: vdp, ppi: ppi, psg: psg}
 	cpuZ80 := z80.NewZ80(memory, ports)
 	cpuZ80.Reset()
 	cpuZ80.SetPC(0)
-	msx := &MSX{cpuz80: cpuZ80, vdp: vdp, memory: memory, ppi: ppi}
+	msx := &MSX{cpuz80: cpuZ80, vdp: vdp, memory: memory, ppi: ppi, psg: psg}
 
 	if errg := graphics_init(quality); errg != nil {
 		log.Printf("Error initalizing graphics: %v", errg)
 	}
-	psg_init()
+	sound_init(psg)
 	defer graphics_quit()
-	defer psg_quit()
+	defer sound_quit()
 	avgFPS := mainLoop(msx, frameInterval)
 	log.Printf("Avg FPS: %.2f\n", avgFPS)
 }
