@@ -18,9 +18,6 @@ package main
 */
 
 import "log"
-import "github.com/pnegre/gogame"
-
-const FREQUENCY = 22000
 
 type PSG struct {
 	regs        [16]byte
@@ -29,41 +26,12 @@ type PSG struct {
 	sound_tones [3]*ToneGenerator
 }
 
-var sound_device *gogame.AudioDevice
-
 func NewPSG() *PSG {
 	psg := &PSG{}
 	psg.sound_tones[0] = NewToneGenerator()
 	psg.sound_tones[1] = NewToneGenerator()
 	psg.sound_tones[2] = NewToneGenerator()
 	return psg
-}
-
-func sound_init(psg *PSG) {
-	sound_device, _ = gogame.NewAudioDevice(FREQUENCY)
-	sound_device.SetCallback(func(data []int16) {
-		for i := 0; i < len(data); i++ {
-			data[i] = 0
-		}
-		psg.feedSamples(data)
-		scc_feedSamples(data)
-
-		// Limit maximum
-		for i := 0; i < len(data); i++ {
-			if data[i] > 32760 {
-				data[i] = 32760
-			}
-			if data[i] < -32760 {
-				data[i] = -32760
-			}
-		}
-	})
-	sound_device.Start()
-}
-
-func sound_quit() {
-	sound_device.Stop()
-	sound_device.Close()
 }
 
 func (psg *PSG) feedSamples(data []int16) {
