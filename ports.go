@@ -4,13 +4,14 @@ import "log"
 
 type Ports struct {
 	vdp *Vdp
+	ppi *PPI
 }
 
 func (self *Ports) ReadPort(address uint16) byte {
 	ad := byte(address & 0xFF)
 	switch {
 	case ad >= 0xa8 && ad <= 0xab:
-		return ppi_readPort(ad)
+		return self.ppi.readPort(ad)
 
 	case ad >= 0xa0 && ad <= 0xa2:
 		return psg_readPort(ad)
@@ -27,7 +28,7 @@ func (self *Ports) WritePort(address uint16, b byte) {
 	ad := byte(address & 0xFF)
 	switch {
 	case ad >= 0xa8 && ad <= 0xab:
-		ppi_writePort(ad, b)
+		self.ppi.writePort(ad, b)
 		return
 
 	case ad >= 0xa0 && ad <= 0xa2:

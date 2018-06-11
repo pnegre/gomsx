@@ -23,6 +23,7 @@ type MSX struct {
 	cpuz80 *z80.Z80
 	vdp    *Vdp
 	memory *Memory
+	ppi    *PPI
 }
 
 func main() {
@@ -42,7 +43,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	memory := NewMemory()
+	ppi := NewPPI()
+	memory := NewMemory(ppi)
 	memory.loadBiosBasic(systemRom)
 
 	if cart != "" {
@@ -50,11 +52,11 @@ func main() {
 	}
 
 	vdp := NewVdp()
-	ports := &Ports{vdp: vdp}
+	ports := &Ports{vdp: vdp, ppi: ppi}
 	cpuZ80 := z80.NewZ80(memory, ports)
 	cpuZ80.Reset()
 	cpuZ80.SetPC(0)
-	msx := &MSX{cpuz80: cpuZ80, vdp: vdp, memory: memory}
+	msx := &MSX{cpuz80: cpuZ80, vdp: vdp, memory: memory, ppi: ppi}
 
 	if errg := graphics_init(quality); errg != nil {
 		log.Printf("Error initalizing graphics: %v", errg)

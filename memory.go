@@ -14,9 +14,10 @@ type Memory struct {
 	canWrite   [4][4]bool
 	mapper     Mapper
 	slotMapper int
+	ppi        *PPI
 }
 
-func NewMemory() *Memory {
+func NewMemory(ppi *PPI) *Memory {
 	mem := new(Memory)
 	mem.mapper = nil
 	mem.slotMapper = -1
@@ -25,6 +26,7 @@ func NewMemory() *Memory {
 			mem.canWrite[i][j] = true
 		}
 	}
+	mem.ppi = ppi
 	return mem
 }
 
@@ -130,7 +132,7 @@ func (self *Memory) ReadByte(address uint16) byte {
 // into account contention.
 func (self *Memory) ReadByteInternal(address uint16) byte {
 	page := address / 0x4000
-	slot := ppi_pgSlots[page]
+	slot := self.ppi.pgSlots[page]
 
 	if self.mapper != nil && self.slotMapper == slot && (page == 1 || page == 2) {
 		return self.mapper.readByte(address)
@@ -150,7 +152,7 @@ func (self *Memory) WriteByte(address uint16, value byte) {
 // into account contention.
 func (self *Memory) WriteByteInternal(address uint16, value byte) {
 	page := address / 0x4000
-	slot := ppi_pgSlots[page]
+	slot := self.ppi.pgSlots[page]
 
 	if self.mapper != nil && self.slotMapper == slot && (page == 1 || page == 2) {
 		self.mapper.writeByte(address, value)
