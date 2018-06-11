@@ -1,6 +1,7 @@
 package main
 
 import "log"
+import "io/ioutil"
 
 type Mapper interface {
 	readByte(address uint16) byte
@@ -35,6 +36,78 @@ func (self *Memory) saveState() *Memory {
 
 func (self *Memory) restoreState(m *Memory) {
 	*self = *m
+}
+
+func (self *Memory) loadBiosBasic(fname string) {
+	buffer, err := ioutil.ReadFile(fname)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Load BIOS
+	self.load(buffer, 0, 0)
+	if len(buffer) > 0x4000 {
+		// Load BASIC, if present
+		self.load(buffer[0x4000:], 1, 0)
+	}
+}
+
+func (self *Memory) loadRom(fname string, slot int) {
+	buffer, err := ioutil.ReadFile(fname)
+	if err != nil {
+		log.Fatal(err)
+	}
+	switch getCartType(buffer) {
+	case KONAMI4:
+		log.Printf("Loading ROM %s to slot 1 as type KONAMI4\n", fname)
+		mapper := NewMapperKonami4(buffer)
+		self.setMapper(mapper, slot)
+		return
+
+	case KONAMI5:
+		log.Printf("Loading ROM %s to slot 1 as type KONAMI5\n", fname)
+		mapper := NewMapperKonami5(buffer)
+		self.setMapper(mapper, slot)
+		return
+
+	case ASCII8KB:
+		log.Printf("Loading ROM %s to slot 1 as type ASCII8KB\n", fname)
+		mapper := NewMapperASCII8(buffer)
+		self.setMapper(mapper, slot)
+		return
+
+	case NORMAL:
+		log.Println("Cartridge is type NORMAL")
+
+	case UNKNOWN:
+		log.Println("Cartridge is type UNKNOWN")
+	}
+
+	log.Printf("Trying to load as a standard cartridge...\n")
+
+	npages := len(buffer) / 0x4000
+	switch npages {
+	case 1:
+		// Load ROM to page 1, slot 1
+		// TODO: mirrored????
+		log.Printf("Loading ROM %s to slot 1 (16KB)\n", fname)
+		self.load(buffer, 1, slot)
+	case 2:
+		// Load ROM to slot 1. Mirrored pg1&pg2 <=> pg3&pg4
+		log.Printf("Loading ROM %s to slot 1 (32KB)\n", fname)
+		self.load(buffer, 0, slot)
+		self.load(buffer, 1, slot)
+		self.load(buffer[0x4000:], 2, slot)
+		self.load(buffer[0x4000:], 3, slot)
+	case 4:
+		log.Printf("Loading ROM %s to slot 1 (64KB)\n", fname)
+		self.load(buffer, 0, slot)
+		self.load(buffer[0x4000:], 1, slot)
+		self.load(buffer[0x8000:], 2, slot)
+		self.load(buffer[0xC000:], 3, slot)
+	default:
+		panic("ROM size not supported")
+	}
+
 }
 
 // Loads 16k (one page)

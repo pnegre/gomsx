@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
@@ -44,10 +43,10 @@ func main() {
 	}
 
 	memory := NewMemory()
-	loadBiosBasic(memory, systemRom)
+	memory.loadBiosBasic(systemRom)
 
 	if cart != "" {
-		loadRom(memory, cart, 1)
+		memory.loadRom(cart, 1)
 	}
 
 	vdp := NewVdp()
@@ -132,76 +131,4 @@ func cpuFrame(msx *MSX) {
 		msx.vdp.setFrameFlag()
 		msx.cpuz80.Interrupt()
 	}
-}
-
-func loadBiosBasic(memory *Memory, fname string) {
-	buffer, err := ioutil.ReadFile(fname)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Load BIOS
-	memory.load(buffer, 0, 0)
-	if len(buffer) > 0x4000 {
-		// Load BASIC, if present
-		memory.load(buffer[0x4000:], 1, 0)
-	}
-}
-
-func loadRom(memory *Memory, fname string, slot int) {
-	buffer, err := ioutil.ReadFile(fname)
-	if err != nil {
-		log.Fatal(err)
-	}
-	switch getCartType(buffer) {
-	case KONAMI4:
-		log.Printf("Loading ROM %s to slot 1 as type KONAMI4\n", fname)
-		mapper := NewMapperKonami4(buffer)
-		memory.setMapper(mapper, slot)
-		return
-
-	case KONAMI5:
-		log.Printf("Loading ROM %s to slot 1 as type KONAMI5\n", fname)
-		mapper := NewMapperKonami5(buffer)
-		memory.setMapper(mapper, slot)
-		return
-
-	case ASCII8KB:
-		log.Printf("Loading ROM %s to slot 1 as type ASCII8KB\n", fname)
-		mapper := NewMapperASCII8(buffer)
-		memory.setMapper(mapper, slot)
-		return
-
-	case NORMAL:
-		log.Println("Cartridge is type NORMAL")
-
-	case UNKNOWN:
-		log.Println("Cartridge is type UNKNOWN")
-	}
-
-	log.Printf("Trying to load as a standard cartridge...\n")
-
-	npages := len(buffer) / 0x4000
-	switch npages {
-	case 1:
-		// Load ROM to page 1, slot 1
-		// TODO: mirrored????
-		log.Printf("Loading ROM %s to slot 1 (16KB)\n", fname)
-		memory.load(buffer, 1, slot)
-	case 2:
-		// Load ROM to slot 1. Mirrored pg1&pg2 <=> pg3&pg4
-		log.Printf("Loading ROM %s to slot 1 (32KB)\n", fname)
-		memory.load(buffer, 0, slot)
-		memory.load(buffer, 1, slot)
-		memory.load(buffer[0x4000:], 2, slot)
-		memory.load(buffer[0x4000:], 3, slot)
-	case 4:
-		log.Printf("Loading ROM %s to slot 1 (64KB)\n", fname)
-		memory.load(buffer, 0, slot)
-		memory.load(buffer[0x4000:], 1, slot)
-		memory.load(buffer[0x8000:], 2, slot)
-		memory.load(buffer[0xC000:], 3, slot)
-	default:
-		panic("ROM size not supported")
-	}
-
 }
