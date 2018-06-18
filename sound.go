@@ -1,17 +1,16 @@
 package main
 
-import "log"
 import "github.com/pnegre/gogame"
 
 const FREQUENCY = 22000
 
 var sound_device *gogame.AudioDevice
 
-func sound_init(psg *PSG) {
+func sound_init(psg *PSG) error {
 	var err error
 	sound_device, err = gogame.NewAudioDevice(FREQUENCY)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 	sound_device.SetCallback(func(data []int16) {
 		for i := 0; i < len(data); i++ {
@@ -31,6 +30,7 @@ func sound_init(psg *PSG) {
 		}
 	})
 	sound_device.Start()
+	return nil
 }
 
 func sound_quit() {

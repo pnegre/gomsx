@@ -201,6 +201,7 @@ func (vdp *Vdp) drawPatternsS0(x, y int, pt int, patTable []byte, color1, color2
 		}
 	}
 }
+
 func (vdp *Vdp) drawPatternsS1(x, y int, pt int, patTable []byte, color byte) {
 	color1 := int((color & 0xF0) >> 4)
 	color2 := int(color & 0x0F)

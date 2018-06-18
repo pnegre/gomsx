@@ -51,10 +51,13 @@ func main() {
 	msx := &MSX{cpuz80: cpuZ80, vdp: vdp, memory: memory, ppi: ppi, psg: psg}
 
 	if errg := graphics_init(quality); errg != nil {
-		log.Printf("Error initalizing graphics: %v", errg)
+		log.Fatalf("Error initalizing graphics: %v", errg.Error())
 	}
-	sound_init(psg)
 	defer graphics_quit()
+
+	if errs := sound_init(psg); errs != nil {
+		log.Fatalf("Error intializing sound: %v", errs.Error())
+	}
 	defer sound_quit()
 
 	avgFPS := msx.mainLoop(frameInterval)
