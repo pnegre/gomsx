@@ -20,6 +20,7 @@ type Vdp struct {
 	vram              [0x10000]byte
 	pointerVRAM       uint16
 	statusReg         byte
+	magnifNum         int
 }
 
 func NewVdp() *Vdp {
@@ -256,6 +257,7 @@ func (vdp *Vdp) drawSprites() {
 	sprPatTable := vdp.vram[(uint16(vdp.registers[6]) << 11):]
 	magnif := (vdp.registers[1] & 0x01) != 0
 	spr16x16 := (vdp.registers[1] & 0x02) != 0
+	vdp.magnifNum = 0
 	for i, j := 0, 0; i < 32; i, j = i+1, j+4 {
 		ypos := int(sprTable[j])
 		if ypos == 0xd0 {
@@ -282,7 +284,6 @@ func (vdp *Vdp) drawSprites() {
 	}
 }
 
-// TODO: sprite magnification not implemented
 func (vdp *Vdp) drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color int) {
 	if ypos > 191 {
 		return
@@ -291,8 +292,29 @@ func (vdp *Vdp) drawSpr(magnif bool, xpos, ypos int, patt []byte, ec bool, color
 	for y := 0; y < 8; y++ {
 		b := patt[y]
 		for x, mask := 0, byte(0x80); mask > 0; mask >>= 1 {
+			if magnif && x == 0 && y == 0 {
+				if vdp.magnifNum == 4 {
+					vdp.magnifNum = 1
+				} else {
+					vdp.magnifNum++
+				}
+			}
 			if mask&b != 0 {
-				graphics_drawPixel(xpos+x, ypos+y, color)
+				if magnif {
+					X, Y := x*2, y*2
+					if vdp.magnifNum == 2 || vdp.magnifNum == 4 {
+						Y += 8
+					}
+					if vdp.magnifNum == 3 || vdp.magnifNum == 4 {
+						X += 8
+					}
+					graphics_drawPixel(xpos+X, ypos+Y, color)
+					graphics_drawPixel(xpos+X+1, ypos+Y, color)
+					graphics_drawPixel(xpos+X, ypos+Y+1, color)
+					graphics_drawPixel(xpos+X+1, ypos+Y+1, color)
+				} else {
+					graphics_drawPixel(xpos+x, ypos+y, color)
+				}
 			}
 			x++
 		}
