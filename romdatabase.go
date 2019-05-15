@@ -8,7 +8,12 @@ import "errors"
 const XMLDATABASE = "softwaredb.xml"
 
 func searchInRomDatabase(romToSearch string) (string, error) {
-	type Softwaredb struct {
+	bytes, err := ioutil.ReadFile(XMLDATABASE)
+	if err != nil {
+		return "", err
+	}
+
+	var swdb struct {
 		XMLName xml.Name `xml:"softwaredb"`
 		Soft    []struct {
 			XMLName xml.Name `xml:"software"`
@@ -21,12 +26,6 @@ func searchInRomDatabase(romToSearch string) (string, error) {
 			} `xml:"dump"`
 		} `xml:"software"`
 	}
-
-	bytes, err := ioutil.ReadFile(XMLDATABASE)
-	if err != nil {
-		return "", err
-	}
-	var swdb Softwaredb
 	xml.Unmarshal(bytes, &swdb)
 
 	for i := 0; i < len(swdb.Soft); i++ {
