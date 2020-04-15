@@ -42,6 +42,8 @@ func (msx *MSX) mainLoop(frameInterval int) float64 {
 			break
 		}
 
+		checkFullScreen()
+
 		graphics_lock()
 		msx.vdp.updateBuffer()
 		graphics_unlock()
@@ -82,3 +84,98 @@ func (msx *MSX) cpuFrame() {
 		msx.cpuz80.Interrupt()
 	}
 }
+
+// Closure
+var checkFullScreen = func() func() {
+	state := 0
+	fullscr := false
+	var last int64 = -1
+	var t int64
+	return func() {
+		_, _, but := gogame.GetMouseState()
+		pressed := but == gogame.MOUSE_BUTTON_LEFT
+		switch state {
+		case 0:
+			if pressed {
+				state = 1
+				last = time.Now().UnixNano() / 1000000
+			}
+		case 1:
+			if !pressed {
+				state = 2
+			}
+		case 2:
+			t = time.Now().UnixNano() / 1000000
+			if t-last > 500 {
+				state = 0
+				break
+			}
+			if pressed {
+				state = 3
+			}
+		case 3:
+			t = time.Now().UnixNano() / 1000000
+			if t-last > 1500 {
+				state = 0
+				break
+			}
+			if !pressed {
+				fullscr = !fullscr
+				gogame.SetFullScreen(fullscr)
+				state = 0
+			}
+		}
+	}
+}()
+
+/*
+
+
+#define DOUBLECLICKTIME 550
+void checkFullScreen() {
+    static int x, y;
+    static int state = 0;
+    static int last = -1;
+    int t;
+    Uint32 but = SDL_GetMouseState(&x, &y);
+    int pressed = but & SDL_BUTTON(SDL_BUTTON_LEFT);
+    switch (state) {
+        case 0:
+            if (pressed) {
+                state = 1;
+                last = SDL_GetTicks();
+            }
+            break;
+        case 1:
+            if (!pressed) {
+                state = 2;
+            }
+            break;
+        case 2:
+            t = SDL_GetTicks();
+            if ((t - last) > DOUBLECLICKTIME) {
+                state = 0;
+                break;
+            }
+            if (pressed) {
+                state = 3;
+            }
+            break;
+        case 3:
+            t = SDL_GetTicks();
+            if ((t - last) > DOUBLECLICKTIME) {
+                state = 0;
+                break;
+            }
+            if (!pressed) {
+                // DOUBLE CLICK PRODUCED!!!!
+                fullscreen = !fullscreen;
+                SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+
+                state = 0;
+            }
+            break;
+    }
+}
+
+*/
