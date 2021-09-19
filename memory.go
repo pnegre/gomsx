@@ -1,7 +1,9 @@
 package main
 
-import "log"
-import "io/ioutil"
+import (
+	"io/ioutil"
+	"log"
+)
 
 type Mapper interface {
 	readByte(address uint16) byte
@@ -53,7 +55,7 @@ func (self *Memory) loadBiosBasic(fname string) {
 	}
 }
 
-func (self *Memory) loadRom(fname string, slot int) {
+func (self *Memory) loadRom(fname string, slot int, mtype string) {
 	buffer, err := ioutil.ReadFile(fname)
 	if err != nil {
 		log.Fatal(err)
@@ -85,6 +87,14 @@ func (self *Memory) loadRom(fname string, slot int) {
 	}
 
 	log.Printf("Trying to load as a standard cartridge...\n")
+
+	if len(mtype) != 0 {
+		if mtype == "KONAMI4" {
+			mapper := NewMapperKonami4(buffer)
+			self.setMapper(mapper, slot)
+			return
+		}
+	}
 
 	npages := len(buffer) / 0x4000
 	switch npages {

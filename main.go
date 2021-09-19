@@ -23,10 +23,12 @@ func main() {
 	var systemRom string
 	var quality bool
 	var frameInterval int
+	var mtype string
 	flag.StringVar(&cart, "cart", "", "ROM in SLOT 1")
 	flag.StringVar(&systemRom, "sys", SYSTEMROMFILE, "System file")
 	flag.BoolVar(&quality, "quality", true, "Best quality rendering")
 	flag.IntVar(&frameInterval, "fint", INTERVAL, "Frame interval in milliseconds")
+	flag.StringVar(&mtype, "mtype", "", "Mapper type (KONAMI4...)")
 	flag.Parse()
 
 	if flag.NArg() > 0 {
@@ -39,7 +41,7 @@ func main() {
 	memory.loadBiosBasic(systemRom)
 
 	if cart != "" {
-		memory.loadRom(cart, 1)
+		memory.loadRom(cart, 1, mtype)
 	}
 
 	psg := NewPSG()
