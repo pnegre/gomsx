@@ -16,6 +16,37 @@ type MSX struct {
 	psg    *PSG
 }
 
+type Controls struct {
+	f12   int
+	space int
+}
+
+func (controls *Controls) update() {
+	if gogame.IsKeyPressed(gogame.K_F12) {
+		if controls.f12 == 0 {
+			controls.f12 = 1
+		} else if controls.f12 == 1 {
+			controls.f12 = 2
+		}
+	} else {
+		controls.f12 = 0
+	}
+
+	if gogame.IsKeyPressed(gogame.K_SPACE) {
+		if controls.space == 0 {
+			controls.space = 1
+		} else if controls.space == 1 {
+			controls.space = 2
+		}
+	} else {
+		controls.space = 0
+	}
+}
+
+func NewControls() *Controls {
+	return &Controls{0, 0}
+}
+
 func (msx *MSX) mainLoop(frameInterval int) float64 {
 	log.Println("Beginning simulation...")
 	state_init()
@@ -26,6 +57,7 @@ func (msx *MSX) mainLoop(frameInterval int) float64 {
 	startTime := time.Now().UnixNano()
 	nframes := 0
 	paused := false
+	controls := NewControls()
 	for {
 		currentTime = time.Now().UnixNano()
 		elapsedTime = currentTime - previousTime
@@ -55,7 +87,8 @@ func (msx *MSX) mainLoop(frameInterval int) float64 {
 			}
 		}
 
-		if gogame.IsKeyPressed(gogame.K_F12) {
+		controls.update()
+		if controls.f12 == 1 {
 			state_revert(msx)
 			paused = true
 		}

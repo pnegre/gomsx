@@ -2,6 +2,7 @@ package main
 
 import "container/ring"
 import "github.com/pnegre/gomsx/z80"
+import "log"
 
 type stateDataT struct {
 	cpuBackup *z80.Z80
@@ -20,17 +21,18 @@ const NSTATEDATA = 5
 var state_ring *ring.Ring
 
 func state_init() {
-	state_ring = ring.New(1)
+	state_ring = ring.New(NSTATEDATA)
+	for i := 0; i < NSTATEDATA; i++ {
+		state_ring.Value = nil
+		state_ring = state_ring.Next()
+	}
 }
 
 func state_save(msx *MSX) {
 	var data *stateDataT
-	if state_ring.Value == nil {
-		data = newStateData()
-		state_ring.Value = data
-	} else {
-		data = state_ring.Value.(*stateDataT)
-	}
+	data = newStateData()
+	state_ring.Value = data
+	state_ring = state_ring.Next()
 
 	// Save CPU state
 	msx.cpuz80.SaveState(data.cpuBackup)
@@ -40,20 +42,21 @@ func state_save(msx *MSX) {
 
 	// Save VDP
 	data.vdp = msx.vdp.saveState()
-
-	// Advance state
-	if state_ring.Len() < NSTATEDATA {
-		sr := ring.New(1)
-		state_ring.Link(sr)
-	}
-	state_ring = state_ring.Next()
 }
 
 func state_revert(msx *MSX) {
-	state_ring = state_ring.Move(-(state_ring.Len() - 1))
+	state_ring = state_ring.Prev()
+
+	count := 0
+	for state_ring.Value == nil && count < NSTATEDATA {
+		state_ring = state_ring.Prev()
+	}
+	if count >= NSTATEDATA {
+		return
+	}
+
+	log.Println("Reverting state...")
 	data := state_ring.Value.(*stateDataT)
-	state_ring = ring.New(1)
-	state_ring.Value = data
 
 	// Restore CPU state
 	msx.cpuz80.RestoreState(data.cpuBackup)
@@ -63,8 +66,4 @@ func state_revert(msx *MSX) {
 
 	// Restore VDP
 	msx.vdp.restoreState(data.vdp)
-
-	sr := ring.New(1)
-	state_ring.Link(sr)
-	state_ring = state_ring.Next()
 }
