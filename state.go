@@ -44,19 +44,28 @@ func state_save(msx *MSX) {
 	data.vdp = msx.vdp.saveState()
 }
 
-func state_revert(msx *MSX) {
+func get_revert_data() *stateDataT {
 	state_ring = state_ring.Prev()
 
 	count := 0
 	for state_ring.Value == nil && count < NSTATEDATA {
 		state_ring = state_ring.Prev()
+		count++
 	}
 	if count >= NSTATEDATA {
+		return nil
+	}
+
+	return state_ring.Value.(*stateDataT)
+}
+
+func state_revert(msx *MSX) {
+	data := get_revert_data()
+	if data == nil {
 		return
 	}
 
 	log.Println("Reverting state...")
-	data := state_ring.Value.(*stateDataT)
 
 	// Restore CPU state
 	msx.cpuz80.RestoreState(data.cpuBackup)
