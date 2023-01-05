@@ -23,20 +23,16 @@ type Controls struct {
 
 func (controls *Controls) update() {
 	if gogame.IsKeyPressed(gogame.K_F12) {
-		if controls.f12 == 0 {
-			controls.f12 = 1
-		} else if controls.f12 == 1 {
-			controls.f12 = 2
+		if (controls.f12) < 2 {
+			controls.f12++
 		}
 	} else {
 		controls.f12 = 0
 	}
 
 	if gogame.IsKeyPressed(gogame.K_SPACE) {
-		if controls.space == 0 {
-			controls.space = 1
-		} else if controls.space == 1 {
-			controls.space = 2
+		if (controls.space) < 2 {
+			controls.space++
 		}
 	} else {
 		controls.space = 0
@@ -47,19 +43,23 @@ func NewControls() *Controls {
 	return &Controls{0, 0}
 }
 
+func nanoseconds() int64 {
+	return time.Now().UnixNano()
+}
+
 func (msx *MSX) mainLoop(frameInterval int) float64 {
 	log.Println("Beginning simulation...")
 	state_init()
-	var currentTime, elapsedTime, lag int64
-	updateInterval := int64(time.Millisecond) * int64(frameInterval)
-	previousTime := time.Now().UnixNano()
-
-	startTime := time.Now().UnixNano()
-	nframes := 0
-	paused := false
 	controls := NewControls()
+
+	var currentTime, elapsedTime, lag, nframes int64
+	updateInterval := int64(time.Millisecond) * int64(frameInterval)
+
+	startTime := nanoseconds()
+	previousTime := startTime
+	paused := false
 	for {
-		currentTime = time.Now().UnixNano()
+		currentTime = nanoseconds()
 		elapsedTime = currentTime - previousTime
 		previousTime = currentTime
 		lag += elapsedTime
@@ -93,13 +93,13 @@ func (msx *MSX) mainLoop(frameInterval int) float64 {
 			paused = true
 		}
 
-		if gogame.IsKeyPressed(gogame.K_SPACE) {
+		if controls.space == 1 {
 			paused = false
 		}
 
 		nframes++
 	}
-	delta := (time.Now().UnixNano() - startTime) / int64(time.Second)
+	delta := (nanoseconds() - startTime) / int64(time.Second)
 	return float64(nframes) / float64(delta)
 }
 
