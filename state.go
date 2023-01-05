@@ -16,7 +16,7 @@ func newStateData() *stateDataT {
 	return sd
 }
 
-const NSTATEDATA = 5
+const NSTATEDATA = 15
 
 var state_ring *ring.Ring
 
