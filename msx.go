@@ -82,7 +82,7 @@ func (msx *MSX) mainLoop(frameInterval int) float64 {
 		graphics_render()
 
 		if !paused {
-			if nframes%(60*2) == 0 {
+			if nframes%(60*5) == 0 {
 				state_save(msx)
 			}
 		}
