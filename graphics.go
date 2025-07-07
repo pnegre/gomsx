@@ -22,8 +22,8 @@ var colors []gogame.Color
 var graphics_tex256 *gogame.Texture
 var graphics_tex320 *gogame.Texture
 
-var graphics_pixels256 [256 * 192]int
-var graphics_pixels320 [320 * 192]int
+var graphics_pixels256 [256 * 192 * 3]byte
+var graphics_pixels320 [320 * 192 * 3]byte
 var graphics_mode int = MODE256
 
 var win_h, win_w int
@@ -58,12 +58,10 @@ func graphics_init(quality bool) error {
 
 	w, h := gogame.GetDesktopDisplayResolution()
 	log.Println("Desktop resolution: ", w, "x", h)
-	//print("Desktop resolution: ", w, "x", h)
 
 	win_h = (h * 70) / 100
 	win_w = (win_h * 4) / 3 // 4:3 aspect ratio
 	log.Println("Window resolution: ", win_w, "x", win_h)
-	//print("Window resolution: ", win_w, "x", win_h)
 
 	if err = gogame.Init(WINTITLE, win_w, win_h); err != nil {
 		return err
@@ -81,13 +79,6 @@ func graphics_init(quality bool) error {
 		return err
 	}
 
-	// Initialize pixel buffers
-	for i := 0; i < MSX_W1*MSX_H; i++ {
-		graphics_pixels320[i] = 0 // Transparent
-	}
-	for i := 0; i < MSX_W2*MSX_H; i++ {
-		graphics_pixels256[i] = 0 // Transparent
-	}
 	return nil
 }
 
@@ -97,26 +88,15 @@ func graphics_quit() {
 	gogame.Quit()
 }
 
-func updatePixels(tex *gogame.Texture, pixels []int, width, height int) {
-	tex.Lock()
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			var color = colors[pixels[y*width+x]]
-			tex.Pixel(x, y, &color)
-		}
-	}
-	tex.Unlock()
-}
-
 func graphics_render() {
 	gogame.RenderClear()
 	var tex *gogame.Texture
 	if graphics_mode == MODE320 {
 		tex = graphics_tex320
-		updatePixels(tex, graphics_pixels320[:], MSX_W1, MSX_H)
+		tex.Update(graphics_pixels320[:])
 	} else if graphics_mode == MODE256 {
 		tex = graphics_tex256
-		updatePixels(tex, graphics_pixels256[:], MSX_W2, MSX_H)
+		tex.Update(graphics_pixels256[:])
 	} else {
 		panic("render: mode not supported")
 	}
@@ -130,13 +110,21 @@ func graphics_drawPixel(x, y int, color int) {
 		if x < 0 || x >= MSX_W1 || y < 0 || y >= MSX_H {
 			return
 		}
-		graphics_pixels320[y*MSX_W1+x] = color
+		gcolor := colors[color]
+		delta := 3 * (y*MSX_W1 + x)
+		graphics_pixels320[delta] = gcolor.R
+		graphics_pixels320[delta+1] = gcolor.G
+		graphics_pixels320[delta+2] = gcolor.B
 		return
 	} else if graphics_mode == MODE256 {
 		if x < 0 || x >= MSX_W2 || y < 0 || y >= MSX_H {
 			return
 		}
-		graphics_pixels256[y*MSX_W2+x] = color
+		gcolor := colors[color]
+		delta := 3 * (y*MSX_W2 + x)
+		graphics_pixels256[delta] = gcolor.R
+		graphics_pixels256[delta+1] = gcolor.G
+		graphics_pixels256[delta+2] = gcolor.B
 		return
 	}
 	panic("drawPixel: mode not supported")
