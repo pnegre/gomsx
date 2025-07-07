@@ -20,8 +20,8 @@ var colors []*gogame.Color
 var graphics_tex256 *gogame.Texture
 var graphics_tex320 *gogame.Texture
 
-var graphics_pixels256 [256 * 192]*gogame.Color
-var graphics_pixels320 [320 * 192]*gogame.Color
+var graphics_pixels256 [256 * 192]int
+var graphics_pixels320 [320 * 192]int
 var graphics_mode int = MODE256
 
 func init() {
@@ -67,10 +67,10 @@ func graphics_init(quality bool) error {
 
 	// Initialize pixel buffers
 	for i := 0; i < MSX_W1*MSX_H; i++ {
-		graphics_pixels320[i] = colors[0] // Transparent
+		graphics_pixels320[i] = 0 // Transparent
 	}
 	for i := 0; i < MSX_W2*MSX_H; i++ {
-		graphics_pixels256[i] = colors[0] // Transparent
+		graphics_pixels256[i] = 0 // Transparent
 	}
 	return nil
 }
@@ -81,31 +81,44 @@ func graphics_quit() {
 	gogame.Quit()
 }
 
+func updatePixels(tex *gogame.Texture, pixels []int, width, height int) {
+	tex.Lock()
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			var color = colors[pixels[y*width+x]]
+			tex.Pixel(x, y, color)
+		}
+	}
+	tex.Unlock()
+}
+
 func graphics_render() {
 	gogame.RenderClear()
 	var tex *gogame.Texture
 
 	if graphics_mode == MODE320 {
 		tex = graphics_tex320
-		tex.Lock()
-		for y := 0; y < MSX_H; y++ {
-			for x := 0; x < MSX_W1; x++ {
-				var color = graphics_pixels320[y*MSX_W1+x]
-				tex.Pixel(x, y, color)
-			}
-		}
-		tex.Unlock()
+		updatePixels(tex, graphics_pixels320[:], MSX_W1, MSX_H)
+		// tex.Lock()
+		// for y := 0; y < MSX_H; y++ {
+		// 	for x := 0; x < MSX_W1; x++ {
+		// 		var color = graphics_pixels320[y*MSX_W1+x]
+		// 		tex.Pixel(x, y, color)
+		// 	}
+		// }
+		// tex.Unlock()
 		//graphics_ActiveTexture.SetPixels(graphics_pixels320[:])
 	} else if graphics_mode == MODE256 {
 		tex = graphics_tex256
-		tex.Lock()
-		for y := 0; y < MSX_H; y++ {
-			for x := 0; x < MSX_W2; x++ {
-				var color = graphics_pixels256[y*MSX_W2+x]
-				tex.Pixel(x, y, color)
-			}
-		}
-		tex.Unlock()
+		updatePixels(tex, graphics_pixels256[:], MSX_W2, MSX_H)
+		// tex.Lock()
+		// for y := 0; y < MSX_H; y++ {
+		// 	for x := 0; x < MSX_W2; x++ {
+		// 		var color = graphics_pixels256[y*MSX_W2+x]
+		// 		tex.Pixel(x, y, color)
+		// 	}
+		// }
+		// tex.Unlock()
 		//graphics_ActiveTexture.SetPixels(graphics_pixels256[:])
 	} else {
 		panic("render: mode not supported")
@@ -119,13 +132,13 @@ func graphics_drawPixel(x, y int, color int) {
 		if x < 0 || x >= MSX_W1 || y < 0 || y >= MSX_H {
 			return
 		}
-		graphics_pixels320[y*MSX_W1+x] = colors[color]
+		graphics_pixels320[y*MSX_W1+x] = color
 		return
 	} else if graphics_mode == MODE256 {
 		if x < 0 || x >= MSX_W2 || y < 0 || y >= MSX_H {
 			return
 		}
-		graphics_pixels256[y*MSX_W2+x] = colors[color]
+		graphics_pixels256[y*MSX_W2+x] = color
 		return
 	}
 	panic("drawPixel: mode not supported")
