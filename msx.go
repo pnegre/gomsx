@@ -76,9 +76,7 @@ func (msx *MSX) mainLoop(frameInterval int) float64 {
 
 		checkFullScreen()
 
-		graphics_lock()
 		msx.vdp.updateBuffer()
-		graphics_unlock()
 		graphics_render()
 
 		if !paused {

@@ -19,7 +19,6 @@ const (
 var colors []*gogame.Color
 var graphics_tex256 *gogame.Texture
 var graphics_tex320 *gogame.Texture
-var graphics_ActiveTexture *gogame.Texture
 
 var graphics_pixels256 [256 * 192]*gogame.Color
 var graphics_pixels320 [320 * 192]*gogame.Color
@@ -65,7 +64,6 @@ func graphics_init(quality bool) error {
 		return err
 	}
 	graphics_tex256.SetDimensions(WIN_W, WIN_H)
-	graphics_ActiveTexture = graphics_tex256
 
 	// Initialize pixel buffers
 	for i := 0; i < MSX_W1*MSX_H; i++ {
@@ -83,36 +81,36 @@ func graphics_quit() {
 	gogame.Quit()
 }
 
-func graphics_lock() {
-	graphics_ActiveTexture.Lock()
-}
-
-func graphics_unlock() {
-	graphics_ActiveTexture.Unlock()
-}
-
 func graphics_render() {
 	gogame.RenderClear()
+	var tex *gogame.Texture
+
 	if graphics_mode == MODE320 {
+		tex = graphics_tex320
+		tex.Lock()
 		for y := 0; y < MSX_H; y++ {
 			for x := 0; x < MSX_W1; x++ {
 				var color = graphics_pixels320[y*MSX_W1+x]
-				graphics_ActiveTexture.Pixel(x, y, color)
+				tex.Pixel(x, y, color)
 			}
 		}
+		tex.Unlock()
 		//graphics_ActiveTexture.SetPixels(graphics_pixels320[:])
 	} else if graphics_mode == MODE256 {
+		tex = graphics_tex256
+		tex.Lock()
 		for y := 0; y < MSX_H; y++ {
 			for x := 0; x < MSX_W2; x++ {
 				var color = graphics_pixels256[y*MSX_W2+x]
-				graphics_ActiveTexture.Pixel(x, y, color)
+				tex.Pixel(x, y, color)
 			}
 		}
+		tex.Unlock()
 		//graphics_ActiveTexture.SetPixels(graphics_pixels256[:])
 	} else {
 		panic("render: mode not supported")
 	}
-	graphics_ActiveTexture.Blit(0, 0)
+	tex.Blit(0, 0)
 	gogame.RenderPresent()
 }
 
@@ -137,15 +135,12 @@ func graphics_drawPixel(x, y int, color int) {
 func graphics_setLogicalResolution(scrMode int) {
 	switch scrMode {
 	case SCREEN0:
-		graphics_ActiveTexture = graphics_tex320
 		graphics_mode = MODE320
 		return
 	case SCREEN2:
-		graphics_ActiveTexture = graphics_tex256
 		graphics_mode = MODE256
 		return
 	case SCREEN1:
-		graphics_ActiveTexture = graphics_tex256
 		graphics_mode = MODE256
 		return
 	}
