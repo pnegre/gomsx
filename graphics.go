@@ -11,10 +11,19 @@ const (
 	MSX_H    = 192
 )
 
+const (
+	MODE256 = iota
+	MODE320
+)
+
 var colors []*gogame.Color
 var graphics_tex256 *gogame.Texture
 var graphics_tex320 *gogame.Texture
 var graphics_ActiveTexture *gogame.Texture
+
+var graphics_pixels256 [256 * 192]*gogame.Color
+var graphics_pixels320 [320 * 192]*gogame.Color
+var graphics_mode int = MODE256
 
 func init() {
 	colors = []*gogame.Color{
@@ -57,6 +66,14 @@ func graphics_init(quality bool) error {
 	}
 	graphics_tex256.SetDimensions(WIN_W, WIN_H)
 	graphics_ActiveTexture = graphics_tex256
+
+	// Initialize pixel buffers
+	for i := 0; i < MSX_W1*MSX_H; i++ {
+		graphics_pixels320[i] = colors[0] // Transparent
+	}
+	for i := 0; i < MSX_W2*MSX_H; i++ {
+		graphics_pixels256[i] = colors[0] // Transparent
+	}
 	return nil
 }
 
@@ -76,24 +93,60 @@ func graphics_unlock() {
 
 func graphics_render() {
 	gogame.RenderClear()
+	if graphics_mode == MODE320 {
+		for y := 0; y < MSX_H; y++ {
+			for x := 0; x < MSX_W1; x++ {
+				var color = graphics_pixels320[y*MSX_W1+x]
+				graphics_ActiveTexture.Pixel(x, y, color)
+			}
+		}
+		//graphics_ActiveTexture.SetPixels(graphics_pixels320[:])
+	} else if graphics_mode == MODE256 {
+		for y := 0; y < MSX_H; y++ {
+			for x := 0; x < MSX_W2; x++ {
+				var color = graphics_pixels256[y*MSX_W2+x]
+				graphics_ActiveTexture.Pixel(x, y, color)
+			}
+		}
+		//graphics_ActiveTexture.SetPixels(graphics_pixels256[:])
+	} else {
+		panic("render: mode not supported")
+	}
 	graphics_ActiveTexture.Blit(0, 0)
 	gogame.RenderPresent()
 }
 
 func graphics_drawPixel(x, y int, color int) {
-	graphics_ActiveTexture.Pixel(x, y, colors[color])
+	if graphics_mode == MODE320 {
+		if x < 0 || x >= MSX_W1 || y < 0 || y >= MSX_H {
+			return
+		}
+		graphics_pixels320[y*MSX_W1+x] = colors[color]
+		return
+	} else if graphics_mode == MODE256 {
+		if x < 0 || x >= MSX_W2 || y < 0 || y >= MSX_H {
+			return
+		}
+		graphics_pixels256[y*MSX_W2+x] = colors[color]
+		return
+	}
+	panic("drawPixel: mode not supported")
+	//graphics_ActiveTexture.Pixel(x, y, colors[color])
 }
 
 func graphics_setLogicalResolution(scrMode int) {
 	switch scrMode {
 	case SCREEN0:
 		graphics_ActiveTexture = graphics_tex320
+		graphics_mode = MODE320
 		return
 	case SCREEN2:
 		graphics_ActiveTexture = graphics_tex256
+		graphics_mode = MODE256
 		return
 	case SCREEN1:
 		graphics_ActiveTexture = graphics_tex256
+		graphics_mode = MODE256
 		return
 	}
 	panic("setLogicalResolution: mode not supported")
