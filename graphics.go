@@ -58,12 +58,10 @@ func graphics_init(quality bool) error {
 	if err != nil {
 		return err
 	}
-	graphics_tex320.SetDimensions(WIN_W, WIN_H)
 	graphics_tex256, err = gogame.NewEmptyTexture(MSX_W2, MSX_H)
 	if err != nil {
 		return err
 	}
-	graphics_tex256.SetDimensions(WIN_W, WIN_H)
 
 	// Initialize pixel buffers
 	for i := 0; i < MSX_W1*MSX_H; i++ {
@@ -104,7 +102,8 @@ func graphics_render() {
 	} else {
 		panic("render: mode not supported")
 	}
-	tex.Blit(0, 0)
+	rect := gogame.Rect{X: 0, Y: 0, W: WIN_W, H: WIN_H}
+	tex.BlitRect(&rect)
 	gogame.RenderPresent()
 }
 
