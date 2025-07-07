@@ -1,6 +1,10 @@
 package main
 
-import "github.com/pnegre/gogame"
+import (
+	"log"
+
+	"github.com/pnegre/gogame"
+)
 
 const (
 	WINTITLE = "gomsx"
@@ -53,11 +57,13 @@ func graphics_init(quality bool) error {
 	}
 
 	w, h := gogame.GetDesktopDisplayResolution()
-	print("Desktop resolution: ", w, "x", h)
+	log.Println("Desktop resolution: ", w, "x", h)
+	//print("Desktop resolution: ", w, "x", h)
 
 	win_h = (h * 70) / 100
 	win_w = (win_h * 4) / 3 // 4:3 aspect ratio
-	print("Window resolution: ", win_w, "x", win_h)
+	log.Println("Window resolution: ", win_w, "x", win_h)
+	//print("Window resolution: ", win_w, "x", win_h)
 
 	if err = gogame.Init(WINTITLE, win_w, win_h); err != nil {
 		return err
