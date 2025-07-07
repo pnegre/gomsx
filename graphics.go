@@ -4,8 +4,6 @@ import "github.com/pnegre/gogame"
 
 const (
 	WINTITLE = "gomsx"
-	WIN_W    = 800
-	WIN_H    = 600
 	MSX_W1   = 320
 	MSX_W2   = 256
 	MSX_H    = 192
@@ -23,6 +21,8 @@ var graphics_tex320 *gogame.Texture
 var graphics_pixels256 [256 * 192]int
 var graphics_pixels320 [320 * 192]int
 var graphics_mode int = MODE256
+
+var win_h, win_w int
 
 func init() {
 	colors = []gogame.Color{
@@ -47,10 +47,22 @@ func init() {
 
 func graphics_init(quality bool) error {
 	var err error
-	if err = gogame.Init(WINTITLE, WIN_W, WIN_H); err != nil {
+
+	if err = gogame.InitSDL(); err != nil {
 		return err
 	}
-	gogame.SetLogicalSize(WIN_W, WIN_H)
+
+	w, h := gogame.GetDesktopDisplayResolution()
+	print("Desktop resolution: ", w, "x", h)
+
+	win_h = (h * 70) / 100
+	win_w = (win_h * 4) / 3 // 4:3 aspect ratio
+	print("Window resolution: ", win_w, "x", win_h)
+
+	if err = gogame.Init(WINTITLE, win_w, win_h); err != nil {
+		return err
+	}
+	gogame.SetLogicalSize(win_w, win_h)
 	if quality {
 		gogame.SetScaleQuality(1)
 	}
@@ -102,7 +114,7 @@ func graphics_render() {
 	} else {
 		panic("render: mode not supported")
 	}
-	rect := gogame.Rect{X: 0, Y: 0, W: WIN_W, H: WIN_H}
+	rect := gogame.Rect{X: 0, Y: 0, W: win_w, H: win_h}
 	tex.BlitRect(&rect)
 	gogame.RenderPresent()
 }
