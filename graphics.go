@@ -99,27 +99,9 @@ func graphics_render() {
 	if graphics_mode == MODE320 {
 		tex = graphics_tex320
 		updatePixels(tex, graphics_pixels320[:], MSX_W1, MSX_H)
-		// tex.Lock()
-		// for y := 0; y < MSX_H; y++ {
-		// 	for x := 0; x < MSX_W1; x++ {
-		// 		var color = graphics_pixels320[y*MSX_W1+x]
-		// 		tex.Pixel(x, y, color)
-		// 	}
-		// }
-		// tex.Unlock()
-		//graphics_ActiveTexture.SetPixels(graphics_pixels320[:])
 	} else if graphics_mode == MODE256 {
 		tex = graphics_tex256
 		updatePixels(tex, graphics_pixels256[:], MSX_W2, MSX_H)
-		// tex.Lock()
-		// for y := 0; y < MSX_H; y++ {
-		// 	for x := 0; x < MSX_W2; x++ {
-		// 		var color = graphics_pixels256[y*MSX_W2+x]
-		// 		tex.Pixel(x, y, color)
-		// 	}
-		// }
-		// tex.Unlock()
-		//graphics_ActiveTexture.SetPixels(graphics_pixels256[:])
 	} else {
 		panic("render: mode not supported")
 	}
@@ -142,7 +124,6 @@ func graphics_drawPixel(x, y int, color int) {
 		return
 	}
 	panic("drawPixel: mode not supported")
-	//graphics_ActiveTexture.Pixel(x, y, colors[color])
 }
 
 func graphics_setLogicalResolution(scrMode int) {
