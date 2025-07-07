@@ -16,7 +16,7 @@ const (
 	MODE320
 )
 
-var colors []*gogame.Color
+var colors []gogame.Color
 var graphics_tex256 *gogame.Texture
 var graphics_tex320 *gogame.Texture
 
@@ -25,7 +25,7 @@ var graphics_pixels320 [320 * 192]int
 var graphics_mode int = MODE256
 
 func init() {
-	colors = []*gogame.Color{
+	colors = []gogame.Color{
 		{R: 0x00, G: 0x00, B: 0x00, A: 255}, // Transparent
 		{R: 0x00, G: 0x00, B: 0x00, A: 255}, // Black
 		{R: 0x20, G: 0xc8, B: 0x40, A: 255}, // Green
@@ -86,7 +86,7 @@ func updatePixels(tex *gogame.Texture, pixels []int, width, height int) {
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 			var color = colors[pixels[y*width+x]]
-			tex.Pixel(x, y, color)
+			tex.Pixel(x, y, &color)
 		}
 	}
 	tex.Unlock()
@@ -95,7 +95,6 @@ func updatePixels(tex *gogame.Texture, pixels []int, width, height int) {
 func graphics_render() {
 	gogame.RenderClear()
 	var tex *gogame.Texture
-
 	if graphics_mode == MODE320 {
 		tex = graphics_tex320
 		updatePixels(tex, graphics_pixels320[:], MSX_W1, MSX_H)
