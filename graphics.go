@@ -22,8 +22,9 @@ var colors []gogame.Color
 var graphics_tex256 *gogame.Texture
 var graphics_tex320 *gogame.Texture
 
-var graphics_pixels256 [256 * 192 * 3]byte
-var graphics_pixels320 [320 * 192 * 3]byte
+var pitch int = 4
+var graphics_pixels256 [256 * 192 * 4]byte
+var graphics_pixels320 [320 * 192 * 4]byte
 var graphics_mode int = MODE256
 
 var win_h, win_w int
@@ -111,20 +112,22 @@ func graphics_drawPixel(x, y int, color int) {
 			return
 		}
 		gcolor := colors[color]
-		delta := 3 * (y*MSX_W1 + x)
+		delta := pitch * (y*MSX_W1 + x)
 		graphics_pixels320[delta] = gcolor.R
 		graphics_pixels320[delta+1] = gcolor.G
 		graphics_pixels320[delta+2] = gcolor.B
+		graphics_pixels320[delta+3] = gcolor.A
 		return
 	} else if graphics_mode == MODE256 {
 		if x < 0 || x >= MSX_W2 || y < 0 || y >= MSX_H {
 			return
 		}
 		gcolor := colors[color]
-		delta := 3 * (y*MSX_W2 + x)
+		delta := pitch * (y*MSX_W2 + x)
 		graphics_pixels256[delta] = gcolor.R
 		graphics_pixels256[delta+1] = gcolor.G
 		graphics_pixels256[delta+2] = gcolor.B
+		graphics_pixels256[delta+3] = gcolor.A
 		return
 	}
 	panic("drawPixel: mode not supported")
